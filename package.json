@@ -1,0 +1,14 @@
+{
+  "name": "motor-pedagogico-pba",
+  "version": "1.0.0",
+  "description": "Motor pedagógico para el Diseño Curricular de la Provincia de Buenos Aires",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
+  },
+  "devDependencies": {
+    "vercel": "^39.0.0"
+  }
+}

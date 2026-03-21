@@ -1,0 +1,2261 @@
+[
+  {
+    "area": "Matemática",
+    "grado": "1",
+    "bloque": "Números Naturales",
+    "item_original": "Contextos y uso social de los números",
+    "objetivo": "Explorar el uso social de los números en situaciones cotidianas reconociendo para qué sirven",
+    "tipo": "contenido",
+    "id": "pba_0001"
+  },
+  {
+    "area": "Matemática",
+    "grado": "1",
+    "bloque": "Números Naturales",
+    "item_original": "Valor de las cifras según la posición",
+    "objetivo": "Identificar el valor posicional de las cifras en números de hasta dos cifras distinguiendo unidades y decenas",
+    "tipo": "contenido",
+    "id": "pba_0002"
+  },
+  {
+    "area": "Matemática",
+    "grado": "1",
+    "bloque": "Números Naturales",
+    "item_original": "Operaciones de suma y resta",
+    "objetivo": "Resolver situaciones sencillas de suma y resta comprendiendo el sentido de cada operación",
+    "tipo": "contenido",
+    "id": "pba_0003"
+  },
+  {
+    "area": "Matemática",
+    "grado": "1",
+    "bloque": "Números Naturales",
+    "item_original": "Números de diversa cantidad de cifras",
+    "objetivo": "Leer, escribir y ordenar números reconociendo regularidades en la serie numérica oral y escrita",
+    "tipo": "contenido",
+    "id": "pba_0004"
+  },
+  {
+    "area": "Matemática",
+    "grado": "1",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Uso de la calculadora",
+    "objetivo": "Utilizar la calculadora para explorar resultados y verificar cálculos en situaciones problemáticas",
+    "tipo": "contenido",
+    "id": "pba_0005"
+  },
+  {
+    "area": "Matemática",
+    "grado": "1",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Operaciones de suma y resta en distintos sentidos",
+    "objetivo": "Resolver problemas de suma y resta en distintos sentidos usando estrategias propias de cálculo",
+    "tipo": "contenido",
+    "id": "pba_0006"
+  },
+  {
+    "area": "Matemática",
+    "grado": "1",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Cálculos aproximados de suma y resta",
+    "objetivo": "Producir cálculos aproximados de sumas y restas para estimar resultados en situaciones cotidianas",
+    "tipo": "contenido",
+    "id": "pba_0007"
+  },
+  {
+    "area": "Matemática",
+    "grado": "1",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Cantidad de elementos en colecciones con agrupamientos iguales",
+    "objetivo": "Determinar la cantidad de elementos en colecciones organizadas en grupos iguales como introducción a la multiplicación",
+    "tipo": "contenido",
+    "id": "pba_0008"
+  },
+  {
+    "area": "Matemática",
+    "grado": "1",
+    "bloque": "Medida",
+    "item_original": "Unidades de medida de longitud, capacidad y peso",
+    "objetivo": "Explorar unidades de medida de longitud, capacidad y peso iniciándose en el uso de instrumentos convencionales",
+    "tipo": "contenido",
+    "id": "pba_0009"
+  },
+  {
+    "area": "Matemática",
+    "grado": "1",
+    "bloque": "Medida",
+    "item_original": "Unidades de medida de tiempo",
+    "objetivo": "Identificar unidades de medida de tiempo como días, semanas y meses en situaciones de la vida cotidiana",
+    "tipo": "contenido",
+    "id": "pba_0010"
+  },
+  {
+    "area": "Matemática",
+    "grado": "1",
+    "bloque": "Geometría",
+    "item_original": "Figuras geométricas",
+    "objetivo": "Reconocer y describir figuras geométricas identificando lados curvos, rectos y características básicas",
+    "tipo": "contenido",
+    "id": "pba_0011"
+  },
+  {
+    "area": "Matemática",
+    "grado": "1",
+    "bloque": "Geometría",
+    "item_original": "Prismas y pirámides",
+    "objetivo": "Explorar prismas y pirámides identificando sus características y elementos principales",
+    "tipo": "contenido",
+    "id": "pba_0012"
+  },
+  {
+    "area": "Matemática",
+    "grado": "1",
+    "bloque": "Geometría",
+    "item_original": "Orientación en el micro y mesoespacio",
+    "objetivo": "Orientarse en el espacio cercano usando referencias para describir ubicaciones y trayectos",
+    "tipo": "contenido",
+    "id": "pba_0013"
+  },
+  {
+    "area": "Matemática",
+    "grado": "1",
+    "bloque": "Espacio",
+    "item_original": "Comunicación de posiciones y desplazamientos",
+    "objetivo": "Comunicar posiciones y desplazamientos en el espacio usando lenguaje matemático y referencias concretas",
+    "tipo": "contenido",
+    "id": "pba_0014"
+  },
+  {
+    "area": "Matemática",
+    "grado": "2",
+    "bloque": "Números Naturales",
+    "item_original": "Números hasta el 100 o 150",
+    "objetivo": "Leer, escribir y ordenar números hasta el 100 o 150 reconociendo regularidades en la serie",
+    "tipo": "contenido",
+    "id": "pba_0015"
+  },
+  {
+    "area": "Matemática",
+    "grado": "2",
+    "bloque": "Números Naturales",
+    "item_original": "Valor de las cifras según la posición",
+    "objetivo": "Comprender el valor posicional de las cifras en números de hasta tres cifras diferenciando unidades, decenas y centenas",
+    "tipo": "contenido",
+    "id": "pba_0016"
+  },
+  {
+    "area": "Matemática",
+    "grado": "2",
+    "bloque": "Números Naturales",
+    "item_original": "Números de diversa cantidad de cifras",
+    "objetivo": "Analizar regularidades de la serie numérica para leer y escribir números de diversa cantidad de cifras",
+    "tipo": "contenido",
+    "id": "pba_0017"
+  },
+  {
+    "area": "Matemática",
+    "grado": "2",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Operaciones de suma y resta en distintos sentidos",
+    "objetivo": "Resolver problemas usando suma y resta en distintos sentidos seleccionando estrategias adecuadas de cálculo",
+    "tipo": "contenido",
+    "id": "pba_0018"
+  },
+  {
+    "area": "Matemática",
+    "grado": "2",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Problemas que involucran sumas y multiplicaciones",
+    "objetivo": "Resolver situaciones problemáticas que combinan sumas reiteradas como introducción al sentido de la multiplicación",
+    "tipo": "contenido",
+    "id": "pba_0019"
+  },
+  {
+    "area": "Matemática",
+    "grado": "2",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Uso de la calculadora en problemas multiplicativos",
+    "objetivo": "Utilizar la calculadora para explorar y verificar resultados en problemas multiplicativos",
+    "tipo": "contenido",
+    "id": "pba_0020"
+  },
+  {
+    "area": "Matemática",
+    "grado": "2",
+    "bloque": "Medida",
+    "item_original": "Unidades de medida de longitud, capacidad y peso",
+    "objetivo": "Medir longitudes, capacidades y pesos usando unidades convencionales e iniciándose en sus equivalencias",
+    "tipo": "contenido",
+    "id": "pba_0021"
+  },
+  {
+    "area": "Matemática",
+    "grado": "2",
+    "bloque": "Medida",
+    "item_original": "Unidades de medida de tiempo",
+    "objetivo": "Utilizar el calendario y el reloj para medir y relacionar unidades de tiempo en situaciones cotidianas",
+    "tipo": "contenido",
+    "id": "pba_0022"
+  },
+  {
+    "area": "Matemática",
+    "grado": "2",
+    "bloque": "Geometría",
+    "item_original": "Figuras geométricas",
+    "objetivo": "Identificar y comparar figuras geométricas según sus lados y vértices en contextos de exploración concreta",
+    "tipo": "contenido",
+    "id": "pba_0023"
+  },
+  {
+    "area": "Matemática",
+    "grado": "2",
+    "bloque": "Geometría",
+    "item_original": "Prismas y pirámides de distintas bases",
+    "objetivo": "Comparar prismas y pirámides de distintas bases reconociendo sus características y elementos constitutivos",
+    "tipo": "contenido",
+    "id": "pba_0024"
+  },
+  {
+    "area": "Matemática",
+    "grado": "2",
+    "bloque": "Espacio",
+    "item_original": "Orientación en el micro y mesoespacio",
+    "objetivo": "Orientarse en espacios conocidos describiendo posiciones y trayectos con referencias precisas",
+    "tipo": "contenido",
+    "id": "pba_0025"
+  },
+  {
+    "area": "Matemática",
+    "grado": "2",
+    "bloque": "Espacio",
+    "item_original": "Producción e interpretación de representaciones planas",
+    "objetivo": "Producir e interpretar representaciones planas sencillas de espacios reales usando puntos de referencia",
+    "tipo": "contenido",
+    "id": "pba_0026"
+  },
+  {
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Números Naturales",
+    "item_original": "Números de diversa cantidad de cifras",
+    "objetivo": "Leer, escribir y comparar números de diversa cantidad de cifras comprendiendo el sistema de numeración decimal",
+    "tipo": "contenido",
+    "id": "pba_0027"
+  },
+  {
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Números Naturales",
+    "item_original": "Valor de las cifras según la posición",
+    "objetivo": "Comprender el valor posicional para descomponer y recomponer números de hasta cinco cifras",
+    "tipo": "contenido",
+    "id": "pba_0028"
+  },
+  {
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Números Naturales",
+    "item_original": "Operaciones de suma y resta",
+    "objetivo": "Resolver situaciones problemáticas usando algoritmos de suma y resta justificando los procedimientos utilizados",
+    "tipo": "contenido",
+    "id": "pba_0029"
+  },
+  {
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Cálculo mental de sumas",
+    "objetivo": "Calcular mentalmente sumas usando estrategias propias basadas en propiedades de los números",
+    "tipo": "contenido",
+    "id": "pba_0030"
+  },
+  {
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Cálculos aproximados de suma",
+    "objetivo": "Estimar resultados de sumas para anticipar y controlar la razonabilidad de los cálculos",
+    "tipo": "contenido",
+    "id": "pba_0031"
+  },
+  {
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Uso de la calculadora",
+    "objetivo": "Utilizar la calculadora para resolver y verificar cálculos en situaciones problemáticas variadas",
+    "tipo": "contenido",
+    "id": "pba_0032"
+  },
+  {
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Algoritmos de suma y resta",
+    "objetivo": "Comprender y aplicar los algoritmos convencionales de suma y resta en la resolución de problemas",
+    "tipo": "contenido",
+    "id": "pba_0033"
+  },
+  {
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Estrategias de cálculo mental",
+    "objetivo": "Desarrollar y comparar estrategias personales de cálculo mental para sumar y restar con eficiencia",
+    "tipo": "contenido",
+    "id": "pba_0034"
+  },
+  {
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Medida",
+    "item_original": "Unidades de medida de longitud, capacidad y peso",
+    "objetivo": "Usar unidades convencionales de longitud, capacidad y peso estableciendo equivalencias entre ellas",
+    "tipo": "contenido",
+    "id": "pba_0035"
+  },
+  {
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Medida",
+    "item_original": "Fracciones para expresar medidas",
+    "objetivo": "Utilizar fracciones para expresar medidas cuando el resultado no es un número entero",
+    "tipo": "contenido",
+    "id": "pba_0036"
+  },
+  {
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Medida",
+    "item_original": "Unidades de medida de tiempo",
+    "objetivo": "Leer el reloj y convertir unidades de tiempo resolviendo problemas que involucran duración y cronología",
+    "tipo": "contenido",
+    "id": "pba_0037"
+  },
+  {
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Medida",
+    "item_original": "Problemas con medidas convencionales",
+    "objetivo": "Resolver problemas que involucran medidas convencionales seleccionando la unidad y el instrumento adecuado",
+    "tipo": "contenido",
+    "id": "pba_0038"
+  },
+  {
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Espacio",
+    "item_original": "Orientación en el micro y mesoespacio",
+    "objetivo": "Orientarse en espacios más amplios usando referencias geográficas y puntos cardinales básicos",
+    "tipo": "contenido",
+    "id": "pba_0039"
+  },
+  {
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Espacio",
+    "item_original": "Relaciones entre el sujeto y los objetos en el espacio",
+    "objetivo": "Describir relaciones espaciales entre objetos y personas usando vocabulario matemático preciso",
+    "tipo": "contenido",
+    "id": "pba_0040"
+  },
+  {
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Espacio",
+    "item_original": "Comunicación de posiciones y desplazamientos",
+    "objetivo": "Comunicar posiciones y desplazamientos usando referencias y representaciones convencionales",
+    "tipo": "contenido",
+    "id": "pba_0041"
+  },
+  {
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Espacio",
+    "item_original": "Producción e interpretación de croquis y planos",
+    "objetivo": "Producir e interpretar croquis y planos sencillos representando espacios conocidos con escala informal",
+    "tipo": "contenido",
+    "id": "pba_0042"
+  },
+  {
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Espacio",
+    "item_original": "Diferentes puntos de vista desde los que se puede ver un objeto",
+    "objetivo": "Identificar y representar un objeto desde distintos puntos de vista reconociendo cómo cambia su aspecto",
+    "tipo": "contenido",
+    "id": "pba_0043"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Números Naturales",
+    "item_original": "Números hasta el orden de los millones",
+    "objetivo": "Leer, escribir y ordenar números hasta el orden de los millones reconociendo el valor posicional de cada cifra",
+    "tipo": "contenido",
+    "id": "pba_0044"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Números Naturales",
+    "item_original": "Composición y descomposición de números",
+    "objetivo": "Componer y descomponer números en distintos órdenes para comprender la estructura del sistema decimal",
+    "tipo": "contenido",
+    "id": "pba_0045"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Números Naturales",
+    "item_original": "Sistemas de numeración posicional y otros sistemas",
+    "objetivo": "Comparar el sistema de numeración decimal con otros sistemas reconociendo el valor del principio posicional",
+    "tipo": "contenido",
+    "id": "pba_0046"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Cálculos mentales estimativos de suma y resta",
+    "objetivo": "Calcular mentalmente sumas y restas usando estrategias de estimación para anticipar resultados",
+    "tipo": "contenido",
+    "id": "pba_0047"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Cálculos mentales de multiplicaciones y divisiones",
+    "objetivo": "Resolver mentalmente multiplicaciones y divisiones utilizando propiedades y relaciones entre los números",
+    "tipo": "contenido",
+    "id": "pba_0048"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Combinación de elementos de dos colecciones",
+    "objetivo": "Resolver problemas de combinatoria calculando la cantidad de pares posibles entre dos colecciones",
+    "tipo": "contenido",
+    "id": "pba_0049"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Cálculo estimativo de multiplicación y división",
+    "objetivo": "Estimar resultados de multiplicaciones y divisiones para controlar la razonabilidad de los procedimientos",
+    "tipo": "contenido",
+    "id": "pba_0050"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Uso de la calculadora",
+    "objetivo": "Utilizar la calculadora para resolver problemas complejos y explorar propiedades de las operaciones",
+    "tipo": "contenido",
+    "id": "pba_0051"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Números Racionales",
+    "item_original": "Fracciones de uso social",
+    "objetivo": "Reconocer fracciones de uso social interpretando su significado en contextos cotidianos concretos",
+    "tipo": "contenido",
+    "id": "pba_0052"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Números Racionales",
+    "item_original": "Fracciones para expresar medidas",
+    "objetivo": "Utilizar fracciones para expresar medidas y resultados de repartos que no son exactos",
+    "tipo": "contenido",
+    "id": "pba_0053"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Números Racionales",
+    "item_original": "El entero y sus partes",
+    "objetivo": "Comprender la relación entre el entero y sus partes para interpretar el significado del numerador y denominador",
+    "tipo": "contenido",
+    "id": "pba_0054"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Números Racionales",
+    "item_original": "Fracciones equivalentes y comparación",
+    "objetivo": "Reconocer fracciones equivalentes y comparar fracciones usando distintas representaciones y estrategias",
+    "tipo": "contenido",
+    "id": "pba_0055"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Números Racionales",
+    "item_original": "Fracciones en la recta numérica",
+    "objetivo": "Ubicar fracciones en la recta numérica para comparar magnitudes y comprender su valor relativo",
+    "tipo": "contenido",
+    "id": "pba_0056"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Números Racionales",
+    "item_original": "Suma y resta de fracciones",
+    "objetivo": "Resolver sumas y restas de fracciones con igual y distinto denominador en situaciones problemáticas",
+    "tipo": "contenido",
+    "id": "pba_0057"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Medidas",
+    "item_original": "Pertinencia de la relación",
+    "objetivo": "Evaluar la pertinencia de las medidas elegidas para resolver un problema seleccionando unidades adecuadas",
+    "tipo": "contenido",
+    "id": "pba_0058"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Medidas",
+    "item_original": "Unidades de medida del SIMELA",
+    "objetivo": "Conocer y utilizar las unidades del Sistema Métrico Legal Argentino resolviendo problemas de medición",
+    "tipo": "contenido",
+    "id": "pba_0059"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Medidas",
+    "item_original": "Sistema Métrico Legal Argentino",
+    "objetivo": "Comprender la organización del Sistema Métrico Legal Argentino estableciendo equivalencias entre sus unidades",
+    "tipo": "contenido",
+    "id": "pba_0060"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Geometría",
+    "item_original": "Circunferencia y círculo",
+    "objetivo": "Distinguir circunferencia y círculo identificando sus elementos como radio, diámetro y centro",
+    "tipo": "contenido",
+    "id": "pba_0061"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Geometría",
+    "item_original": "Construcción de circunferencias con compás",
+    "objetivo": "Construir circunferencias con compás controlando el radio para producir figuras con medidas precisas",
+    "tipo": "contenido",
+    "id": "pba_0062"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Geometría",
+    "item_original": "Ángulos",
+    "objetivo": "Reconocer y clasificar ángulos según su amplitud identificando ángulos rectos, agudos y obtusos",
+    "tipo": "contenido",
+    "id": "pba_0063"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Geometría",
+    "item_original": "Cuerpos geométricos",
+    "objetivo": "Clasificar cuerpos geométricos según sus características estableciendo relaciones entre figuras y cuerpos",
+    "tipo": "contenido",
+    "id": "pba_0064"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Geometría",
+    "item_original": "Figuras geométricas",
+    "objetivo": "Analizar y clasificar figuras geométricas según sus propiedades utilizando vocabulario geométrico preciso",
+    "tipo": "contenido",
+    "id": "pba_0065"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Espacio",
+    "item_original": "Ubicación de puntos en el plano con coordenadas",
+    "objetivo": "Ubicar puntos en el plano usando coordenadas para determinar posiciones de manera unívoca",
+    "tipo": "contenido",
+    "id": "pba_0067"
+  },
+  {
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Espacio",
+    "item_original": "Orientación en el espacio mediante referencias",
+    "objetivo": "Orientarse en el espacio usando referencias convencionales como puntos cardinales y coordenadas simples",
+    "tipo": "contenido",
+    "id": "pba_0068"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Números Naturales",
+    "item_original": "Números de toda la serie",
+    "objetivo": "Leer, escribir y ordenar números hasta los millones comprendiendo el valor posicional en todos los órdenes",
+    "tipo": "contenido",
+    "id": "pba_0069"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Cálculos mentales de multiplicaciones y divisiones",
+    "objetivo": "Utilizar estrategias de cálculo mental para resolver multiplicaciones y divisiones con fluidez y eficiencia",
+    "tipo": "contenido",
+    "id": "pba_0070"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Cálculo estimativo de multiplicación y división",
+    "objetivo": "Estimar resultados de multiplicaciones y divisiones para anticipar y controlar la razonabilidad de los cálculos",
+    "tipo": "contenido",
+    "id": "pba_0071"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Uso de la calculadora",
+    "objetivo": "Utilizar la calculadora para resolver problemas complejos interpretando correctamente los resultados obtenidos",
+    "tipo": "contenido",
+    "id": "pba_0072"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Múltiplos y divisores",
+    "objetivo": "Identificar múltiplos y divisores comunes de dos o más números para resolver problemas de divisibilidad",
+    "tipo": "contenido",
+    "id": "pba_0073"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Proporcionalidad",
+    "item_original": "Proporcionalidad directa",
+    "objetivo": "Reconocer relaciones de proporcionalidad directa entre magnitudes identificando la constante de proporcionalidad",
+    "tipo": "contenido",
+    "id": "pba_0074"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Proporcionalidad",
+    "item_original": "Problemas de proporcionalidad directa",
+    "objetivo": "Resolver problemas de proporcionalidad directa usando tablas y relaciones entre magnitudes",
+    "tipo": "contenido",
+    "id": "pba_0075"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Proporcionalidad",
+    "item_original": "Pertinencia de la relación",
+    "objetivo": "Determinar si una relación entre magnitudes es proporcional distinguiéndola de relaciones no proporcionales",
+    "tipo": "contenido",
+    "id": "pba_0076"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Medidas",
+    "item_original": "Unidades de longitud, capacidad y peso",
+    "objetivo": "Convertir entre unidades de longitud, capacidad y peso del sistema métrico resolviendo problemas de medición",
+    "tipo": "contenido",
+    "id": "pba_0077"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Medidas",
+    "item_original": "SIMELA",
+    "objetivo": "Aplicar las unidades del Sistema Métrico Legal Argentino estableciendo equivalencias en situaciones problemáticas",
+    "tipo": "contenido",
+    "id": "pba_0078"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Medidas",
+    "item_original": "Unidades de medida de ángulos",
+    "objetivo": "Medir ángulos usando el transportador reconociendo las unidades del sistema sexagesimal",
+    "tipo": "contenido",
+    "id": "pba_0079"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Medidas",
+    "item_original": "Amplitud de ángulos",
+    "objetivo": "Comparar y clasificar ángulos según su amplitud construyéndolos con instrumentos de medición",
+    "tipo": "contenido",
+    "id": "pba_0080"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Medidas",
+    "item_original": "Perímetro de figuras planas",
+    "objetivo": "Calcular el perímetro de figuras planas sumando la longitud de sus lados en situaciones concretas",
+    "tipo": "contenido",
+    "id": "pba_0081"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Medidas",
+    "item_original": "Área de figuras planas",
+    "objetivo": "Calcular el área de rectángulos y triángulos usando fórmulas y comprendiendo su significado geométrico",
+    "tipo": "contenido",
+    "id": "pba_0082"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Medidas",
+    "item_original": "Independencia entre perímetro y área",
+    "objetivo": "Analizar que el perímetro y el área son medidas independientes explorando figuras con igual perímetro y distinto área",
+    "tipo": "contenido",
+    "id": "pba_0083"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Geometría",
+    "item_original": "Rectas paralelas y perpendiculares",
+    "objetivo": "Identificar y trazar rectas paralelas y perpendiculares usando instrumentos geométricos con precisión",
+    "tipo": "contenido",
+    "id": "pba_0084"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Geometría",
+    "item_original": "Rectángulos y cuadrados",
+    "objetivo": "Analizar las propiedades de rectángulos y cuadrados reconociendo sus diagonales y relaciones entre lados",
+    "tipo": "contenido",
+    "id": "pba_0085"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Geometría",
+    "item_original": "Prismas y pirámides",
+    "objetivo": "Clasificar prismas y pirámides según sus bases y caras estableciendo relaciones entre cuerpos y figuras planas",
+    "tipo": "contenido",
+    "id": "pba_0086"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Geometría",
+    "item_original": "Triángulos",
+    "objetivo": "Clasificar triángulos según sus lados y ángulos verificando la suma de sus ángulos interiores",
+    "tipo": "contenido",
+    "id": "pba_0087"
+  },
+  {
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Espacio",
+    "item_original": "Ubicación de puntos en el plano con coordenadas cartesianas",
+    "objetivo": "Ubicar y representar puntos en el plano cartesiano usando pares ordenados de coordenadas",
+    "tipo": "contenido",
+    "id": "pba_0088"
+  },
+  {
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Números Naturales",
+    "item_original": "Números de toda la serie",
+    "objetivo": "Leer, escribir y operar con números hasta los miles de millones consolidando el sistema de numeración decimal",
+    "tipo": "contenido",
+    "id": "pba_0089"
+  },
+  {
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Números Racionales",
+    "item_original": "Fracciones como cociente de dos números naturales",
+    "objetivo": "Interpretar las fracciones como cociente de dos números naturales vinculando la división con la notación fraccionaria",
+    "tipo": "contenido",
+    "id": "pba_0090"
+  },
+  {
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Números Racionales",
+    "item_original": "Fracciones para expresar relaciones",
+    "objetivo": "Utilizar fracciones para expresar relaciones entre cantidades en situaciones de proporcionalidad y comparación",
+    "tipo": "contenido",
+    "id": "pba_0091"
+  },
+  {
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Proporcionalidad",
+    "item_original": "Pertinencia de la relación de proporcionalidad",
+    "objetivo": "Analizar si una relación entre magnitudes es proporcional fundamentando la decisión con argumentos matemáticos",
+    "tipo": "contenido",
+    "id": "pba_0092"
+  },
+  {
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Proporcionalidad",
+    "item_original": "Relación entre número y porcentaje",
+    "objetivo": "Comprender la relación entre fracciones, decimales y porcentajes resolviendo problemas de la vida cotidiana",
+    "tipo": "contenido",
+    "id": "pba_0093"
+  },
+  {
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Proporcionalidad",
+    "item_original": "Representaciones gráficas",
+    "objetivo": "Producir e interpretar representaciones gráficas de relaciones proporcionales como tablas y gráficos",
+    "tipo": "contenido",
+    "id": "pba_0094"
+  },
+  {
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Medidas",
+    "item_original": "Unidades de longitud, capacidad y peso",
+    "objetivo": "Resolver problemas que involucran conversiones entre múltiplos y submúltiplos de las unidades de medida",
+    "tipo": "contenido",
+    "id": "pba_0095"
+  },
+  {
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Medidas",
+    "item_original": "Equivalencia entre unidades de medida",
+    "objetivo": "Establecer equivalencias entre unidades de medida del sistema métrico operando con ellas en problemas complejos",
+    "tipo": "contenido",
+    "id": "pba_0096"
+  },
+  {
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Medidas",
+    "item_original": "Sistemas sexagesimales de medida de ángulos",
+    "objetivo": "Operar con unidades sexagesimales de medida de ángulos y tiempo resolviendo situaciones de conversión",
+    "tipo": "contenido",
+    "id": "pba_0097"
+  },
+  {
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Medidas",
+    "item_original": "Sistemas decimales de medida",
+    "objetivo": "Comparar los sistemas decimales y sexagesimales de medida reconociendo sus características y usos",
+    "tipo": "contenido",
+    "id": "pba_0098"
+  },
+  {
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Medidas",
+    "item_original": "Área y perímetro",
+    "objetivo": "Calcular áreas y perímetros de figuras compuestas aplicando fórmulas y estrategias de descomposición",
+    "tipo": "contenido",
+    "id": "pba_0099"
+  },
+  {
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Medidas",
+    "item_original": "Relación entre perímetro y área en distintas figuras",
+    "objetivo": "Analizar la relación entre perímetro y área en distintas figuras comprendiendo que una no determina la otra",
+    "tipo": "contenido",
+    "id": "pba_0100"
+  },
+  {
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Geometría y espacio",
+    "item_original": "Triángulos",
+    "objetivo": "Construir triángulos con instrumentos geométricos analizando las condiciones necesarias para su existencia",
+    "tipo": "contenido",
+    "id": "pba_0101"
+  },
+  {
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Geometría y espacio",
+    "item_original": "Cuadriláteros",
+    "objetivo": "Clasificar cuadriláteros según sus propiedades estableciendo relaciones de inclusión entre sus familias",
+    "tipo": "contenido",
+    "id": "pba_0102"
+  },
+  {
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Geometría y espacio",
+    "item_original": "Cubos, prismas y pirámides",
+    "objetivo": "Analizar cubos, prismas y pirámides calculando su volumen e identificando sus desarrollos planos",
+    "tipo": "contenido",
+    "id": "pba_0103"
+  },
+  {
+    "id": "pba_0104",
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Multiplicación: problemas en distintos sentidos",
+    "objetivo": "Resolver problemas de multiplicación que involucran series proporcionales, organizaciones rectangulares y combinación de elementos, relacionando las distintas situaciones con la escritura multiplicativa",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pba_0105",
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "División: reparto, partición y resto",
+    "objetivo": "Resolver problemas de reparto equitativo y partición analizando el resto de la división y expresándolo como fracción cuando corresponde",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pba_0106",
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Cálculo mental de multiplicación y división",
+    "objetivo": "Construir y utilizar estrategias de cálculo mental para multiplicar y dividir, usando la tabla pitagórica y las regularidades de la multiplicación por la unidad seguida de ceros",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pba_0107",
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Algoritmo de multiplicación",
+    "objetivo": "Analizar, comparar y utilizar distintos algoritmos de multiplicación por una cifra, relacionándolos con el cálculo mental y las descomposiciones numéricas",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pba_0108",
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Algoritmo de división",
+    "objetivo": "Explorar y utilizar el algoritmo de división por una cifra, comprendiendo las relaciones entre dividendo, divisor, cociente y resto",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pba_0109",
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Geometría",
+    "item_original": "Figuras geométricas: características y clasificación",
+    "objetivo": "Reconocer, describir y clasificar figuras geométricas según sus características (lados curvos o rectos, cantidad de lados y vértices), identificando similitudes y diferencias entre cuadrados, rectángulos y triángulos",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pba_0110",
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Geometría",
+    "item_original": "Cuerpos geométricos: prismas y pirámides",
+    "objetivo": "Identificar y describir prismas y pirámides de distintas bases reconociendo sus elementos (caras, aristas y vértices) y anticipando sus desarrollos planos",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pba_0111",
+    "area": "Matemática",
+    "grado": "3",
+    "bloque": "Geometría",
+    "item_original": "Relaciones entre figuras y cuerpos",
+    "objetivo": "Establecer relaciones entre las caras de los cuerpos geométricos y las figuras planas que las forman, anticipando qué figura corresponde a cada cara",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pba_0112",
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Números Racionales",
+    "item_original": "Fracciones: equivalencia y comparación",
+    "objetivo": "Comparar y ordenar fracciones estableciendo equivalencias y argumentando el criterio utilizado, usando la recta numérica como herramienta",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pba_0113",
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Números Racionales",
+    "item_original": "Fracciones: suma y resta",
+    "objetivo": "Resolver problemas de suma y resta de fracciones usando estrategias de cálculo mental, relaciones y equivalencias entre fracciones",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pba_0114",
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Números Racionales",
+    "item_original": "Fracciones: multiplicación y división por un natural",
+    "objetivo": "Resolver problemas que implican multiplicar o dividir una fracción por un número natural, apoyándose en las relaciones ya construidas entre fracciones y operaciones",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pba_0115",
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Números Racionales",
+    "item_original": "Números decimales: lectura, escritura y valor posicional",
+    "objetivo": "Leer, escribir y ordenar números decimales analizando el significado de décimos, centésimos y milésimos, usando la recta numérica para establecer relaciones",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pba_0116",
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Números Racionales",
+    "item_original": "Números decimales: operaciones",
+    "objetivo": "Sumar, restar y multiplicar números decimales usando estrategias de cálculo mental y algorítmico, estimando resultados y controlando su razonabilidad",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pba_0117",
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Números Racionales",
+    "item_original": "Relación entre fracciones y decimales",
+    "objetivo": "Establecer equivalencias entre expresiones fraccionarias y decimales en contextos de dinero y medida, reconociendo la relación entre fracciones decimales y su escritura decimal",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pba_0118",
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Múltiplos, divisores y divisibilidad",
+    "objetivo": "Resolver problemas usando múltiplos y divisores comunes, y aplicar criterios de divisibilidad del 2, del 5 y del 10 para validar afirmaciones y anticipar resultados",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pba_0119",
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Proporcionalidad",
+    "item_original": "Proporcionalidad inversa",
+    "objetivo": "Resolver problemas sencillos de proporcionalidad inversa reconociendo que cuando una magnitud se duplica la otra se reduce a la mitad, y comparando estrategias de resolución",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pba_0120",
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Números Racionales",
+    "item_original": "Fracciones: operaciones (suma, resta y multiplicación)",
+    "objetivo": "Resolver problemas de suma, resta y multiplicación de fracciones usando estrategias de cálculo mental y equivalencias, eligiendo el recurso más conveniente según los números involucrados",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pba_0121",
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Números Racionales",
+    "item_original": "Números decimales: operaciones y valor posicional",
+    "objetivo": "Sumar, restar, multiplicar y dividir números decimales usando cálculo mental y algorítmico, analizando el valor posicional de cada cifra decimal y estimando resultados",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pba_0122",
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Números Racionales",
+    "item_original": "Equivalencia entre fracciones y decimales",
+    "objetivo": "Establecer equivalencias entre expresiones fraccionarias y decimales, encontrando fracciones a partir de decimales y viceversa, y ubicando ambas en la recta numérica",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g1_001",
+    "area": "Ciencias Naturales",
+    "grado": "1",
+    "bloque": "Seres vivos",
+    "item_original": "Los animales: partes del cuerpo y clasificación",
+    "objetivo": "Observar y describir las estructuras externas de los animales (extremidades, coberturas) distinguiendo vertebrados e invertebrados, y reconocer al ser humano como animal",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g1_002",
+    "area": "Ciencias Naturales",
+    "grado": "1",
+    "bloque": "Seres vivos",
+    "item_original": "Las plantas: partes y tipos",
+    "objetivo": "Reconocer las partes comunes de las plantas con flor (hojas, tallo, raíz, flor, fruto, semilla) y distinguir árboles, arbustos y hierbas según las características del tallo y la altura",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g1_003",
+    "area": "Ciencias Naturales",
+    "grado": "1",
+    "bloque": "Seres vivos",
+    "item_original": "El cuerpo humano: partes externas",
+    "objetivo": "Explorar y reconocer la conformación externa del cuerpo humano identificando cabeza, tronco y extremidades, comparando semejanzas y diferencias con otros animales",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g1_004",
+    "area": "Ciencias Naturales",
+    "grado": "1",
+    "bloque": "Materiales",
+    "item_original": "Líquidos y sólidos: propiedades y diferencias",
+    "objetivo": "Explorar y comparar materiales líquidos y sólidos describiendo sus características (fluidez, viscosidad, plasticidad, elasticidad) y relacionar las propiedades de los sólidos con sus usos cotidianos",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g1_005",
+    "area": "Ciencias Naturales",
+    "grado": "1",
+    "bloque": "El mundo físico",
+    "item_original": "Las fuerzas y sus efectos",
+    "objetivo": "Explorar y reconocer los efectos que producen las fuerzas sobre los objetos: deformación y cambio en el estado de movimiento, identificando situaciones de la vida cotidiana donde actúan fuerzas de contacto",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g1_006",
+    "area": "Ciencias Naturales",
+    "grado": "1",
+    "bloque": "La Tierra y el universo",
+    "item_original": "El paisaje y sus elementos",
+    "objetivo": "Observar y describir los elementos que componen diferentes paisajes (agua, aire, tierra, cielo, seres vivos) reconociendo la diversidad de paisajes de la provincia y clasificándolos según criterios sencillos",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g1_007",
+    "area": "Ciencias Naturales",
+    "grado": "1",
+    "bloque": "La Tierra y el universo",
+    "item_original": "El cielo: Sol, Luna y estrellas",
+    "objetivo": "Observar y describir los principales astros del cielo diurno y nocturno (Sol, Luna y estrellas) distinguiendo las características del cielo de día y de noche",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g2_001",
+    "area": "Ciencias Naturales",
+    "grado": "2",
+    "bloque": "Seres vivos",
+    "item_original": "Los animales: estructuras para el desplazamiento",
+    "objetivo": "Observar y comparar las estructuras que usan los animales para desplazarse (patas, alas, aletas) relacionando cada estructura con el medio donde viven: acuático, terrestre o aéreo",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g2_002",
+    "area": "Ciencias Naturales",
+    "grado": "2",
+    "bloque": "Seres vivos",
+    "item_original": "Las plantas: dispersión de semillas y frutos",
+    "objetivo": "Reconocer y comparar las distintas formas en que se dispersan semillas y frutos (por el viento, el agua, los animales, apertura explosiva) relacionando las características de cada semilla con su tipo de dispersión",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g2_003",
+    "area": "Ciencias Naturales",
+    "grado": "2",
+    "bloque": "Seres vivos",
+    "item_original": "El cuerpo humano: cambios y crecimiento",
+    "objetivo": "Identificar y describir los cambios físicos que ocurren en las personas desde el nacimiento hasta la adultez, reconociendo las etapas de la vida y los cuidados necesarios para un buen crecimiento (alimentación, higiene, descanso)",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g2_004",
+    "area": "Ciencias Naturales",
+    "grado": "2",
+    "bloque": "Seres vivos",
+    "item_original": "Cuidado de la salud y los dientes",
+    "objetivo": "Reconocer prácticas saludables cotidianas (alimentación equilibrada, higiene, descanso) y comprender la importancia del cuidado dental, relacionando hábitos con el bienestar personal",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g2_005",
+    "area": "Ciencias Naturales",
+    "grado": "2",
+    "bloque": "Materiales",
+    "item_original": "Propiedades ópticas: opacos, translúcidos y transparentes",
+    "objetivo": "Explorar el comportamiento de los materiales frente a la luz clasificándolos en opacos, translúcidos y transparentes, y relacionar esas propiedades con los usos que las personas hacen de los objetos fabricados con ellos",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g2_006",
+    "area": "Ciencias Naturales",
+    "grado": "2",
+    "bloque": "El mundo físico",
+    "item_original": "Tipos de movimiento: trayectorias y rapidez",
+    "objetivo": "Observar y comparar el movimiento de distintos objetos describiendo el tipo de trayectoria (recta, circular, ondulada), el sentido y la rapidez, y representar gráficamente diferentes trayectorias",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g2_007",
+    "area": "Ciencias Naturales",
+    "grado": "2",
+    "bloque": "La Tierra y el universo",
+    "item_original": "Geoformas: llanuras, montañas y costas",
+    "objetivo": "Identificar y describir las geoformas básicas presentes en los paisajes (llanuras, montañas, costas de ríos, lagos y mares) comparando sus características y representándolas mediante dibujos o maquetas",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g2_008",
+    "area": "Ciencias Naturales",
+    "grado": "2",
+    "bloque": "La Tierra y el universo",
+    "item_original": "Movimientos aparentes del Sol y la Luna",
+    "objetivo": "Observar y registrar el movimiento aparente del Sol, la Luna y las estrellas en relación con el ciclo día-noche, describiendo su posición en el cielo en diferentes momentos del día",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g3_001",
+    "area": "Ciencias Naturales",
+    "grado": "3",
+    "bloque": "Seres vivos",
+    "item_original": "Los animales: alimentación y dietas",
+    "objetivo": "Reconocer y comparar la diversidad de dietas (herbívoros, carnívoros, omnívoros) relacionando las estructuras dentarias y tipos de pico con el tipo de alimentación, e identificar respuestas animales ante la disminución de alimentos (hibernación, migración)",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g3_002",
+    "area": "Ciencias Naturales",
+    "grado": "3",
+    "bloque": "Seres vivos",
+    "item_original": "Las plantas: cambios a lo largo del año",
+    "objetivo": "Observar y registrar los cambios en las plantas a lo largo del año (plantas anuales y perennes, caducas y persistentes), relacionando esos cambios con regularidades ambientales como las estaciones",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g3_003",
+    "area": "Ciencias Naturales",
+    "grado": "3",
+    "bloque": "Seres vivos",
+    "item_original": "El cuerpo humano: sistemas de nutrición",
+    "objetivo": "Identificar los órganos principales de la digestión, la circulación y la respiración, reconociendo su función en la nutrición del cuerpo y registrando cambios en la frecuencia cardíaca y respiratoria ante distintos esfuerzos",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g3_004",
+    "area": "Ciencias Naturales",
+    "grado": "3",
+    "bloque": "Seres vivos",
+    "item_original": "El cuerpo humano: sistema osteo-artro-muscular",
+    "objetivo": "Reconocer la estructura del esqueleto, las articulaciones y los músculos, comprendiendo su función de sostén y movimiento del cuerpo",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g3_005",
+    "area": "Ciencias Naturales",
+    "grado": "3",
+    "bloque": "Seres vivos",
+    "item_original": "Cuidado de la salud: enfermedades y prevención",
+    "objetivo": "Distinguir enfermedades contagiosas y no contagiosas, y reconocer las medidas de prevención: vacunas, higiene personal y desinfección",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g3_006",
+    "area": "Ciencias Naturales",
+    "grado": "3",
+    "bloque": "Materiales",
+    "item_original": "Cambios de estado y transformaciones de materiales",
+    "objetivo": "Explorar y describir los cambios de estado (sólido a líquido y viceversa) por efecto de la temperatura, y reconocer transformaciones donde el material se convierte en otro distinto, como la oxidación y la corrosión",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g3_007",
+    "area": "Ciencias Naturales",
+    "grado": "3",
+    "bloque": "Materiales",
+    "item_original": "Mezclas y métodos de separación",
+    "objetivo": "Explorar y clasificar mezclas entre sólidos, líquidos y entre sólidos y líquidos, y reconocer los métodos para separar sus componentes (tamizado, decantación, filtrado, imantación, evaporación)",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g3_008",
+    "area": "Ciencias Naturales",
+    "grado": "3",
+    "bloque": "Mundo físico",
+    "item_original": "La luz: fuentes y propagación",
+    "objetivo": "Distinguir fuentes de luz naturales y artificiales, y reconocer que la luz se propaga en línea recta, identificando cómo el recorrido de la luz permite ver los objetos",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g3_009",
+    "area": "Ciencias Naturales",
+    "grado": "3",
+    "bloque": "La Tierra y el universo",
+    "item_original": "Fenómenos meteorológicos y tiempo atmosférico",
+    "objetivo": "Describir los principales fenómenos meteorológicos (lluvia, viento, nubes, arco iris) y caracterizar el tiempo atmosférico según la temperatura, las nubes y el viento",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g3_010",
+    "area": "Ciencias Naturales",
+    "grado": "3",
+    "bloque": "La Tierra y el universo",
+    "item_original": "El Sol, la Luna y los puntos cardinales",
+    "objetivo": "Observar y describir los movimientos aparentes del Sol y la Luna, identificar los puntos cardinales como referencia de orientación, y reconocer los cambios en el aspecto de la Luna a lo largo de su ciclo",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g4_001",
+    "area": "Ciencias Naturales",
+    "grado": "4",
+    "bloque": "Seres vivos",
+    "item_original": "Características y clasificación de los seres vivos",
+    "objetivo": "Reconocer las características comunes de todos los seres vivos (ciclo vital, nutrición, reproducción) y clasificarlos en grandes grupos: animales, plantas, hongos pluricelulares y microorganismos",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g4_002",
+    "area": "Ciencias Naturales",
+    "grado": "4",
+    "bloque": "Seres vivos",
+    "item_original": "Reproducción en plantas y animales",
+    "objetivo": "Reconocer la reproducción sexual y asexual como formas de perpetuación de la vida, identificando ejemplos en distintos seres vivos",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g4_003",
+    "area": "Ciencias Naturales",
+    "grado": "4",
+    "bloque": "Seres vivos",
+    "item_original": "Estructuras de sostén en plantas y animales",
+    "objetivo": "Identificar las estructuras de sostén y conducción en plantas, y los esqueletos internos y externos en animales, relacionándolos con sus funciones de movimiento, sostén y protección",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g4_004",
+    "area": "Ciencias Naturales",
+    "grado": "4",
+    "bloque": "Seres vivos",
+    "item_original": "Medios aeroterrestres y adaptaciones",
+    "objetivo": "Reconocer los medios aeroterrestres del territorio provincial y nacional, describir las adaptaciones morfofisiológicas de animales y plantas a medios fríos y al desierto, e identificar el impacto de las actividades humanas",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g4_005",
+    "area": "Ciencias Naturales",
+    "grado": "4",
+    "bloque": "Materiales",
+    "item_original": "Los materiales y el calor",
+    "objetivo": "Explorar y clasificar materiales según su capacidad de conducir el calor, distinguiendo buenos y malos conductores y relacionando esta propiedad con sus usos cotidianos",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g4_006",
+    "area": "Ciencias Naturales",
+    "grado": "4",
+    "bloque": "Materiales",
+    "item_original": "Los materiales y la electricidad",
+    "objetivo": "Explorar y clasificar materiales según su capacidad de conducir la electricidad, distinguiendo conductores y aislantes, y relacionar la conductividad eléctrica con la conductividad térmica",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g4_007",
+    "area": "Ciencias Naturales",
+    "grado": "4",
+    "bloque": "Materiales",
+    "item_original": "Los materiales y el magnetismo",
+    "objetivo": "Explorar la interacción entre materiales e imanes, reconociendo cuáles son atraídos y cuáles no, y relacionando el magnetismo con las familias de materiales (metales, cerámicos, plásticos)",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g4_008",
+    "area": "Ciencias Naturales",
+    "grado": "4",
+    "bloque": "Materiales",
+    "item_original": "Familias de materiales: metales, cerámicos y plásticos",
+    "objetivo": "Reconocer las características de los metales, cerámicos y plásticos, y conocer cómo se obtienen y transforman, relacionando sus propiedades con sus usos",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g4_009",
+    "area": "Ciencias Naturales",
+    "grado": "4",
+    "bloque": "Mundo físico",
+    "item_original": "Las fuerzas: tipos y efectos",
+    "objetivo": "Reconocer y distinguir fuerzas de contacto y fuerzas a distancia, describir sus efectos sobre los objetos y explorar situaciones donde actúan más de una fuerza simultáneamente",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g4_010",
+    "area": "Ciencias Naturales",
+    "grado": "4",
+    "bloque": "La Tierra y el universo",
+    "item_original": "La Tierra como sistema: geosfera, hidrosfera, atmósfera y biosfera",
+    "objetivo": "Reconocer la Tierra como un sistema material compuesto por subsistemas (geosfera, hidrosfera, atmósfera y biosfera) y describir las características principales de cada uno",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g4_011",
+    "area": "Ciencias Naturales",
+    "grado": "4",
+    "bloque": "La Tierra y el universo",
+    "item_original": "Historia de la Tierra: fósiles y tiempo geológico",
+    "objetivo": "Comprender la noción de fósil y su relación con los cambios de la Tierra a lo largo del tiempo geológico, reconociendo cambios bruscos y lentos del paisaje",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g4_012",
+    "area": "Ciencias Naturales",
+    "grado": "4",
+    "bloque": "La Tierra y el universo",
+    "item_original": "La Tierra en el sistema solar",
+    "objetivo": "Reconocer la esfericidad de la Tierra y su tamaño en relación al Sol y la Luna, iniciando una aproximación al sistema solar",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g5_001",
+    "area": "Ciencias Naturales",
+    "grado": "5",
+    "bloque": "Seres vivos",
+    "item_original": "Microorganismos: características e importancia",
+    "objetivo": "Identificar y caracterizar microorganismos uni y pluricelulares, reconociendo sus similitudes y diferencias con otros seres vivos y distinguiendo microorganismos beneficiosos y perjudiciales para la sociedad",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g5_002",
+    "area": "Ciencias Naturales",
+    "grado": "5",
+    "bloque": "Seres vivos",
+    "item_original": "El cuerpo humano: organización en sistemas de órganos",
+    "objetivo": "Reconocer la organización general del cuerpo humano como integración de sistemas de órganos, identificando los sistemas involucrados en las funciones vitales de nutrición",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g5_003",
+    "area": "Ciencias Naturales",
+    "grado": "5",
+    "bloque": "Seres vivos",
+    "item_original": "Los alimentos: composición, transformación y dietas",
+    "objetivo": "Reconocer la composición e importancia de los alimentos, describir las transformaciones que sufren durante la digestión, y valorar la diversidad de dietas según el contexto sociocultural",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g5_004",
+    "area": "Ciencias Naturales",
+    "grado": "5",
+    "bloque": "Seres vivos",
+    "item_original": "Medios acuáticos: adaptaciones e impacto humano",
+    "objetivo": "Identificar los medios acuáticos y humedales del territorio provincial y nacional, describir las adaptaciones morfofisiológicas de los seres vivos al medio acuático, y reconocer el impacto de las actividades humanas",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g5_005",
+    "area": "Ciencias Naturales",
+    "grado": "5",
+    "bloque": "Materiales",
+    "item_original": "Los materiales y el calor: temperatura y cambios de estado",
+    "objetivo": "Reconocer la transferencia de calor desde cuerpos de mayor a menor temperatura, describir los estados de agregación de los materiales y sus cambios de estado al variar la temperatura, usando el termómetro como instrumento de medición",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g5_006",
+    "area": "Ciencias Naturales",
+    "grado": "5",
+    "bloque": "Materiales",
+    "item_original": "El aire: composición y propiedades",
+    "objetivo": "Reconocer los efectos observables de la presencia del aire e identificar al aire como una mezcla de gases, explorando sus propiedades",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g5_007",
+    "area": "Ciencias Naturales",
+    "grado": "5",
+    "bloque": "Mundo físico",
+    "item_original": "El sonido: fuentes, propagación e interacción con materiales",
+    "objetivo": "Identificar las vibraciones como fuente de sonido, reconocer que el sonido requiere un medio material para propagarse, y explorar los efectos del sonido al interactuar con diferentes materiales (reflexión, absorción, transmisión)",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g5_008",
+    "area": "Ciencias Naturales",
+    "grado": "5",
+    "bloque": "La Tierra y el universo",
+    "item_original": "La hidrosfera: el agua en la Tierra",
+    "objetivo": "Identificar los espacios donde se encuentra el agua en la Tierra (subterránea, superficial, atmosférica), reconocer la hidrosfera como subsistema terrestre y comprender el agua como bien común, analizando su contaminación y cuidado",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g5_009",
+    "area": "Ciencias Naturales",
+    "grado": "5",
+    "bloque": "La Tierra y el universo",
+    "item_original": "Sistema Sol-Tierra-Luna: movimientos y fenómenos",
+    "objetivo": "Describir los movimientos de rotación y traslación de la Tierra, relacionarlos con el día y las estaciones, e identificar las fases de la Luna y la producción de eclipses",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g6_001",
+    "area": "Ciencias Naturales",
+    "grado": "6",
+    "bloque": "Seres vivos",
+    "item_original": "La nutrición en el cuerpo humano: sistemas digestivo y circulatorio",
+    "objetivo": "Identificar las estructuras y funciones de los sistemas digestivo y circulatorio en la nutrición del cuerpo humano, reconociendo la relación entre ambos sistemas",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g6_002",
+    "area": "Ciencias Naturales",
+    "grado": "6",
+    "bloque": "Seres vivos",
+    "item_original": "La reproducción humana: sistemas y desarrollo",
+    "objetivo": "Reconocer los sistemas reproductores femenino y masculino, el papel de las hormonas en el desarrollo, el ciclo menstrual, y las medidas de prevención de infecciones de transmisión sexual (ITS)",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g6_003",
+    "area": "Ciencias Naturales",
+    "grado": "6",
+    "bloque": "Seres vivos",
+    "item_original": "Adaptaciones morfofisiológicas al vuelo",
+    "objetivo": "Reconocer y describir las adaptaciones morfofisiológicas que presentan los animales con capacidad de vuelo en relación con el medio aeroterrestre",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g6_004",
+    "area": "Ciencias Naturales",
+    "grado": "6",
+    "bloque": "Materiales",
+    "item_original": "Mezclas y soluciones",
+    "objetivo": "Distinguir mezclas de soluciones por sus características observables, identificar los componentes de una solución (soluto y solvente) y clasificar soluciones en diluidas y concentradas",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g6_005",
+    "area": "Ciencias Naturales",
+    "grado": "6",
+    "bloque": "Materiales",
+    "item_original": "Métodos de separación de mezclas y soluciones",
+    "objetivo": "Seleccionar y aplicar métodos de separación adecuados para mezclas y soluciones sólido-líquido y líquido-líquido, relacionando el método elegido con las características de los materiales",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g6_006",
+    "area": "Ciencias Naturales",
+    "grado": "6",
+    "bloque": "Materiales",
+    "item_original": "Combustión y corrosión: transformaciones químicas",
+    "objetivo": "Reconocer la combustión y la corrosión como transformaciones químicas donde los materiales se convierten en otros distintos, identificando ejemplos cotidianos y distinguiéndolas de los cambios de estado",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g6_007",
+    "area": "Ciencias Naturales",
+    "grado": "6",
+    "bloque": "Mundo físico",
+    "item_original": "La luz: reflexión, refracción e instrumentos ópticos",
+    "objetivo": "Describir la propagación de la luz y su interacción con los objetos, reconocer los fenómenos de reflexión y refracción, e identificar la función de instrumentos ópticos como lupa, microscopio y telescopio",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g6_008",
+    "area": "Ciencias Naturales",
+    "grado": "6",
+    "bloque": "La Tierra y el universo",
+    "item_original": "La atmósfera: composición, estructura y cuidado",
+    "objetivo": "Describir la composición y estructura de la atmósfera, reconocer su relación con otros subsistemas terrestres, caracterizar el tiempo atmosférico y el clima, y comprender la atmósfera como bien común que requiere cuidado",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cn_g6_009",
+    "area": "Ciencias Naturales",
+    "grado": "6",
+    "bloque": "La Tierra y el universo",
+    "item_original": "El sistema solar y la exploración del universo",
+    "objetivo": "Reconocer los planetas, satélites, asteroides y otros cuerpos del sistema solar, aproximarse a la ubicación de la Tierra en el sistema solar, e identificar los principales instrumentos de exploración del universo",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g1_001",
+    "area": "Ciencias Sociales",
+    "grado": "1",
+    "bloque": "Las sociedades a través del tiempo",
+    "item_original": "La vida cotidiana en el pasado cercano",
+    "objetivo": "Reconocer aspectos de la vida cotidiana de distintos grupos sociales en el pasado cercano (cuando los abuelos eran chicos), comparando costumbres, oficios y formas de vida con el presente",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g1_002",
+    "area": "Ciencias Sociales",
+    "grado": "1",
+    "bloque": "Las sociedades a través del tiempo",
+    "item_original": "La vida cotidiana en la sociedad colonial",
+    "objetivo": "Conocer aspectos de la vida cotidiana de distintos grupos sociales en la época colonial (pueblos originarios, negros, blancos, mestizos), reconociendo desigualdades y comparando con el presente",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g1_003",
+    "area": "Ciencias Sociales",
+    "grado": "1",
+    "bloque": "Las sociedades a través del tiempo",
+    "item_original": "Una institución en dos contextos históricos",
+    "objetivo": "Conocer cómo funcionaba una institución (educativa, de salud, cultural o deportiva) en el pasado y en el presente, identificando cambios y continuidades en sus funciones y actores",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g1_004",
+    "area": "Ciencias Sociales",
+    "grado": "1",
+    "bloque": "Sociedades y territorios",
+    "item_original": "Paisajes rurales y urbanos",
+    "objetivo": "Observar y describir paisajes rurales y urbanos identificando sus elementos característicos y las diferencias entre ambos contextos",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g1_005",
+    "area": "Ciencias Sociales",
+    "grado": "1",
+    "bloque": "Sociedades y territorios",
+    "item_original": "Los trabajos para producir bienes primarios",
+    "objetivo": "Reconocer distintas formas en que las personas producen bienes primarios en diferentes contextos, identificando trabajos, trabajadores y técnicas utilizadas",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g1_006",
+    "area": "Ciencias Sociales",
+    "grado": "1",
+    "bloque": "Sociedades y territorios",
+    "item_original": "El transporte de pasajeros",
+    "objetivo": "Conocer los distintos medios de transporte de pasajeros en áreas rurales y urbanas, reconociendo problemas de acceso y las normas que regulan la circulación",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g2_001",
+    "area": "Ciencias Sociales",
+    "grado": "2",
+    "bloque": "Las sociedades a través del tiempo",
+    "item_original": "Familias en culturas diversas del mundo y del país",
+    "objetivo": "Reconocer formas de organización familiar en contextos culturales diversos del país y del mundo, comparando costumbres, valores, roles y formas de crianza, y valorando la diversidad cultural",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g2_002",
+    "area": "Ciencias Sociales",
+    "grado": "2",
+    "bloque": "Las sociedades a través del tiempo",
+    "item_original": "Vida cotidiana en una sociedad del pasado (Egipto, Grecia o Roma)",
+    "objetivo": "Conocer aspectos de la vida cotidiana de distintos grupos sociales en una sociedad del mundo antiguo (Egipto, Grecia o Roma), reconociendo formas de organización, conflictos y comparando con el presente",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g2_003",
+    "area": "Ciencias Sociales",
+    "grado": "2",
+    "bloque": "Las sociedades a través del tiempo",
+    "item_original": "Cambios en las comunicaciones a lo largo del tiempo",
+    "objetivo": "Reconocer cambios significativos en las formas de comunicación desde los chasquis incas, pasando por el correo y el teléfono, hasta las comunicaciones actuales, identificando continuidades y transformaciones",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g2_004",
+    "area": "Ciencias Sociales",
+    "grado": "2",
+    "bloque": "Sociedades y territorios",
+    "item_original": "Producción industrial y artesanal",
+    "objetivo": "Reconocer las diferencias entre la producción industrial y artesanal de un bien, identificando trabajos, trabajadores, tecnologías y normas que regulan su fabricación",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g2_005",
+    "area": "Ciencias Sociales",
+    "grado": "2",
+    "bloque": "Sociedades y territorios",
+    "item_original": "Los servicios en áreas rurales y urbanas",
+    "objetivo": "Conocer cómo se organizan y prestan los servicios (agua, electricidad, gas) en distintos contextos rurales y urbanos, identificando problemas de acceso y formas de control ciudadano",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g3_001",
+    "area": "Ciencias Sociales",
+    "grado": "3",
+    "bloque": "Las sociedades a través del tiempo",
+    "item_original": "Pueblos originarios del actual territorio argentino",
+    "objetivo": "Conocer las formas de vida de los pueblos originarios del actual territorio argentino (cazadores-recolectores y agricultores, nómades y sedentarios), reconociendo su organización social, trabajos, viviendas y aportes a la identidad nacional",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g3_002",
+    "area": "Ciencias Sociales",
+    "grado": "3",
+    "bloque": "Las sociedades a través del tiempo",
+    "item_original": "Migraciones hacia la Argentina",
+    "objetivo": "Reconocer los motivos que impulsan a las personas a migrar en distintas épocas y el impacto de los procesos migratorios en la vida cotidiana, valorando la diversidad de orígenes como parte de la identidad argentina",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g3_003",
+    "area": "Ciencias Sociales",
+    "grado": "3",
+    "bloque": "Sociedades y territorios",
+    "item_original": "Circuitos productivos",
+    "objetivo": "Conocer las distintas etapas de un circuito productivo (lácteo, cerealero, frutícola u otro), identificando actores, trabajos, tecnologías y relaciones entre espacios rurales y urbanos",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g3_004",
+    "area": "Ciencias Sociales",
+    "grado": "3",
+    "bloque": "Sociedades y territorios",
+    "item_original": "La vida social en áreas rurales y urbanas",
+    "objetivo": "Describir y comparar aspectos de la vida cotidiana de las personas en áreas rurales, grandes ciudades y localidades pequeñas, reconociendo problemas sociales y ambientales en distintos contextos",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g4_001",
+    "area": "Ciencias Sociales",
+    "grado": "4",
+    "bloque": "Las sociedades a través del tiempo",
+    "item_original": "Los pueblos originarios americanos en el siglo XV: mayas, aztecas e incas",
+    "objetivo": "Conocer los modos de vida, organización social, formas de producción y estratificación de las sociedades maya, azteca e inca antes de la conquista española",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g4_002",
+    "area": "Ciencias Sociales",
+    "grado": "4",
+    "bloque": "Las sociedades a través del tiempo",
+    "item_original": "La conquista española de América",
+    "objetivo": "Comprender las motivaciones de la conquista española, sus consecuencias sobre los pueblos originarios de América y las formas de resistencia que estos opusieron",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g4_003",
+    "area": "Ciencias Sociales",
+    "grado": "4",
+    "bloque": "Las sociedades a través del tiempo",
+    "item_original": "La sociedad colonial: organización, trabajo y comercio",
+    "objetivo": "Conocer la organización de la sociedad colonial americana (mita, encomienda, esclavitud, monopolio comercial) y su estructura jerárquica y desigual entre los siglos XVI y XVII",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g4_004",
+    "area": "Ciencias Sociales",
+    "grado": "4",
+    "bloque": "Sociedades y territorios",
+    "item_original": "Ambientes y recursos naturales de la provincia de Buenos Aires",
+    "objetivo": "Reconocer la diversidad de ambientes de la provincia de Buenos Aires (pastizal pampeano, espinal, delta, sierras, costa atlántica) y los recursos naturales que se encuentran en cada uno, identificando su aprovechamiento y los problemas ambientales asociados",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g4_005",
+    "area": "Ciencias Sociales",
+    "grado": "4",
+    "bloque": "Sociedades y territorios",
+    "item_original": "Actividades productivas y calidad de vida en Buenos Aires",
+    "objetivo": "Conocer las principales actividades productivas rurales y urbanas de la provincia de Buenos Aires (agricultura, ganadería, industria), comparando la calidad de vida y el acceso a servicios en distintos contextos",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g5_001",
+    "area": "Ciencias Sociales",
+    "grado": "5",
+    "bloque": "Las sociedades a través del tiempo",
+    "item_original": "La crisis del orden colonial y el Virreinato del Río de la Plata",
+    "objetivo": "Comprender las causas de la crisis del orden colonial en el siglo XVIII, la creación del Virreinato del Río de la Plata y las tensiones sociales y económicas que generó en la sociedad colonial",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g5_002",
+    "area": "Ciencias Sociales",
+    "grado": "5",
+    "bloque": "Las sociedades a través del tiempo",
+    "item_original": "La Revolución de Mayo y la Independencia (1810-1820)",
+    "objetivo": "Conocer las causas y el desarrollo de la Revolución de Mayo, las guerras de independencia, la campaña sanmartiniana y la declaración de la Independencia, reconociendo los distintos grupos sociales involucrados",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g5_003",
+    "area": "Ciencias Sociales",
+    "grado": "5",
+    "bloque": "Las sociedades a través del tiempo",
+    "item_original": "Autonomías provinciales, unitarios y federales",
+    "objetivo": "Comprender el período post-independiente caracterizado por las autonomías provinciales, los conflictos entre unitarios y federales y la sociedad en tiempos de Rosas",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g5_004",
+    "area": "Ciencias Sociales",
+    "grado": "5",
+    "bloque": "Sociedades y territorios",
+    "item_original": "Diversidad de ambientes y recursos naturales en Argentina",
+    "objetivo": "Reconocer la diversidad de ambientes del territorio argentino y sus recursos naturales, identificando las principales actividades productivas (agricultura, ganadería, minería, forestación) en distintas regiones",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g5_005",
+    "area": "Ciencias Sociales",
+    "grado": "5",
+    "bloque": "Sociedades y territorios",
+    "item_original": "Problemas ambientales en Argentina",
+    "objetivo": "Identificar los principales problemas ambientales del territorio argentino (agotamiento del suelo, contaminación hídrica y atmosférica, desertificación, deforestación), reconociendo sus causas, actores involucrados y posibles respuestas",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g5_006",
+    "area": "Ciencias Sociales",
+    "grado": "5",
+    "bloque": "Sociedades y territorios",
+    "item_original": "Ciudades argentinas: organización y calidad de vida",
+    "objetivo": "Conocer la organización del espacio urbano argentino, comparando ciudades de distintos tamaños y sus características en cuanto a servicios, actividades productivas y condiciones de vida de la población",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g6_001",
+    "area": "Ciencias Sociales",
+    "grado": "6",
+    "bloque": "Las sociedades a través del tiempo",
+    "item_original": "La construcción del Estado nacional argentino (1853-1880)",
+    "objetivo": "Comprender el proceso de construcción del Estado nacional argentino, los conflictos y consensos entre distintos actores, y el rol del Estado en la conformación de una economía agroexportadora",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g6_002",
+    "area": "Ciencias Sociales",
+    "grado": "6",
+    "bloque": "Las sociedades a través del tiempo",
+    "item_original": "La economía agroexportadora: inmigración y transformación del territorio",
+    "objetivo": "Conocer las características del modelo agroexportador, la atracción de capitales e inmigrantes, los cambios en la infraestructura y el proceso de urbanización entre 1880 y 1916",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g6_003",
+    "area": "Ciencias Sociales",
+    "grado": "6",
+    "bloque": "Las sociedades a través del tiempo",
+    "item_original": "La sociedad y el régimen político oligárquico (1880-1916)",
+    "objetivo": "Conocer las formas de vida de distintos grupos sociales (élite terrateniente, sectores medios, trabajadores), los aportes culturales de los inmigrantes y el régimen político oligárquico con sus mecanismos de exclusión y la Reforma Electoral de 1912",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g6_004",
+    "area": "Ciencias Sociales",
+    "grado": "6",
+    "bloque": "Sociedades y territorios",
+    "item_original": "Ambientes y recursos naturales en América Latina",
+    "objetivo": "Reconocer la diversidad de ambientes y recursos naturales de América Latina, identificando distintas formas de producción agrícola y organización del trabajo rural en la región",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g6_005",
+    "area": "Ciencias Sociales",
+    "grado": "6",
+    "bloque": "Sociedades y territorios",
+    "item_original": "Problemas ambientales y áreas protegidas en América Latina",
+    "objetivo": "Identificar problemas ambientales en América Latina, reconocer distintas modalidades de áreas protegidas y comprender el significado del desarrollo sustentable, incluyendo el papel de las organizaciones civiles y del Estado",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g6_006",
+    "area": "Ciencias Sociales",
+    "grado": "6",
+    "bloque": "Sociedades y territorios",
+    "item_original": "Ciudades e industrias en América Latina",
+    "objetivo": "Conocer los procesos de conformación de áreas metropolitanas en América Latina, las desigualdades sociales en el mundo urbano y las diferencias en condiciones de vida entre ciudades grandes y pequeñas de la región",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g3_005",
+    "area": "Ciencias Sociales",
+    "grado": "3",
+    "bloque": "Ciudadanía y participación",
+    "item_original": "Instituciones políticas y participación ciudadana",
+    "objetivo": "Reconocer las instituciones y organizaciones políticas del medio local, provincial y nacional, identificar las funciones de las autoridades en cada nivel y conocer distintas formas de participación ciudadana en la vida social y política",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g4_006",
+    "area": "Ciencias Sociales",
+    "grado": "4",
+    "bloque": "Ciudadanía y participación",
+    "item_original": "Organización política del Estado: gobierno federal, provincias y municipios",
+    "objetivo": "Comprender la organización federal del Estado argentino reconociendo los tres niveles de gobierno (nacional, provincial y municipal), la división política del territorio, las funciones de cada nivel y el rol de La Plata como capital provincial",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g5_007",
+    "area": "Ciencias Sociales",
+    "grado": "5",
+    "bloque": "Sociedades y territorios",
+    "item_original": "La construcción histórica del territorio argentino",
+    "objetivo": "Comprender cómo se fue conformando el territorio argentino entre 1810 y 1880, leyendo mapas históricos que muestran la evolución política del país desde las Provincias Unidas hasta la formación del Estado nacional",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g6_007",
+    "area": "Ciencias Sociales",
+    "grado": "6",
+    "bloque": "Las sociedades a través del tiempo",
+    "item_original": "Democracias y dictaduras en la Argentina del siglo XX",
+    "objetivo": "Reconocer la inestabilidad política de la Argentina a lo largo del siglo XX, identificar las rupturas del orden democrático y las resistencias de la sociedad, valorando la democracia como sistema político",
+    "tipo": "contenido"
+  },
+  {
+    "id": "cs_g6_008",
+    "area": "Ciencias Sociales",
+    "grado": "6",
+    "bloque": "Sociedades y territorios",
+    "item_original": "Organización política de América Latina y el Mercosur",
+    "objetivo": "Conocer la organización política del territorio latinoamericano, la diversidad cultural de sus sociedades, los procesos de integración regional y el Mercosur: países que lo integran, acuerdos establecidos e intereses en juego",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g1_001",
+    "area": "Prácticas del Lenguaje",
+    "grado": "1",
+    "bloque": "Lectura literaria",
+    "item_original": "Lectura de cuentos tradicionales y de autor",
+    "objetivo": "Escuchar y comprender cuentos tradicionales, fábulas y cuentos de autores variados, construyendo el sentido del texto y participando en intercambios sobre lo leído",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g1_002",
+    "area": "Prácticas del Lenguaje",
+    "grado": "1",
+    "bloque": "Lectura literaria",
+    "item_original": "Lectura de poesía: coplas, adivinanzas y trabalenguas",
+    "objetivo": "Explorar y disfrutar textos poéticos de tradición oral (coplas, nanas, adivinanzas, trabalenguas) y poesías de autor, reconociendo juegos del lenguaje, rimas y ritmo",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g1_003",
+    "area": "Prácticas del Lenguaje",
+    "grado": "1",
+    "bloque": "Escritura creativa",
+    "item_original": "Escritura de textos literarios con ayuda del docente",
+    "objetivo": "Producir textos literarios breves dictando al docente o escribiendo en forma autónoma inicial, planificando qué y cómo escribir y revisando lo producido",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g1_004",
+    "area": "Prácticas del Lenguaje",
+    "grado": "1",
+    "bloque": "Lectura de textos informativos",
+    "item_original": "Exploración y lectura de textos informativos sencillos",
+    "objetivo": "Explorar textos informativos usando el paratexto (títulos, imágenes, índices) para anticipar su contenido y localizar información, con ayuda del docente",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g1_005",
+    "area": "Prácticas del Lenguaje",
+    "grado": "1",
+    "bloque": "Escritura de textos informativos",
+    "item_original": "Escritura de textos informativos breves con ayuda del docente",
+    "objetivo": "Producir textos informativos breves dictando al docente para comunicar información aprendida, tomando decisiones sobre qué incluir y cómo organizarlo",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g1_006",
+    "area": "Prácticas del Lenguaje",
+    "grado": "1",
+    "bloque": "Ortografía y sistema de escritura",
+    "item_original": "Sistema de escritura: grafemas, fonemas y nombre propio",
+    "objetivo": "Reconocer las letras, sus sonidos y sus trazos (imprenta mayúscula y minúscula), escribir el nombre propio de manera convencional, comprender la correspondencia entre fonemas y grafemas, y comenzar a usar punto y mayúsculas",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g1_007",
+    "area": "Prácticas del Lenguaje",
+    "grado": "1",
+    "bloque": "Medios y ciudadanía",
+    "item_original": "Lectura y comentario de noticias y mensajes del entorno",
+    "objetivo": "Leer con el docente noticias y mensajes sencillos del entorno cotidiano, comentarlos e intercambiar opiniones en situaciones de comunicación variadas",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g2_001",
+    "area": "Prácticas del Lenguaje",
+    "grado": "2",
+    "bloque": "Lectura literaria",
+    "item_original": "Lectura de cuentos, fábulas e historietas",
+    "objetivo": "Leer con creciente autonomía cuentos de autores variados, fábulas e historietas, construyendo el sentido del texto, relacionándolo con otros leídos y expresando opiniones fundamentadas",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g2_002",
+    "area": "Prácticas del Lenguaje",
+    "grado": "2",
+    "bloque": "Lectura literaria",
+    "item_original": "Seguir un autor o género literario",
+    "objetivo": "Participar en itinerarios de lectura siguiendo a un autor, un personaje o un género, seleccionando textos con criterio propio y compartiendo las experiencias de lectura",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g2_003",
+    "area": "Prácticas del Lenguaje",
+    "grado": "2",
+    "bloque": "Escritura creativa",
+    "item_original": "Escritura de reescrituras y nuevas versiones de cuentos",
+    "objetivo": "Producir reescrituras de cuentos tradicionales o nuevas versiones de textos leídos, planificando la escritura, usando borradores y revisando el texto hasta alcanzar una versión satisfactoria",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g2_004",
+    "area": "Prácticas del Lenguaje",
+    "grado": "2",
+    "bloque": "Lectura de textos informativos",
+    "item_original": "Lectura para buscar y registrar información",
+    "objetivo": "Buscar y localizar información en textos informativos usando el paratexto como guía, seleccionar lo relevante y registrarlo mediante escritura o notas sencillas",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g2_005",
+    "area": "Prácticas del Lenguaje",
+    "grado": "2",
+    "bloque": "Escritura de textos informativos",
+    "item_original": "Escritura para comunicar lo aprendido",
+    "objetivo": "Producir textos escritos para comunicar lo aprendido sobre un tema, tomando decisiones sobre el género, el destinatario y la información a incluir, y revisando lo escrito",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g2_006",
+    "area": "Prácticas del Lenguaje",
+    "grado": "2",
+    "bloque": "Ortografía y sistema de escritura",
+    "item_original": "Sistema de escritura: escritura convencional, plural y punto",
+    "objetivo": "Consolidar la escritura convencional de palabras y textos breves, reconocer marcas de género y número, usar el punto y la coma correctamente, y recurrir a familias de palabras para resolver dudas ortográficas",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g2_007",
+    "area": "Prácticas del Lenguaje",
+    "grado": "2",
+    "bloque": "Medios y ciudadanía",
+    "item_original": "Lectura y comentario de noticias de los medios",
+    "objetivo": "Leer con el docente noticias y mensajes de medios de comunicación, comentarlos intercambiando puntos de vista y tomando posición ante temas de interés",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g3_001",
+    "area": "Prácticas del Lenguaje",
+    "grado": "3",
+    "bloque": "Lectura literaria",
+    "item_original": "Lectura autónoma de textos literarios de distintos géneros",
+    "objetivo": "Leer de forma autónoma textos literarios de distintos géneros (cuentos, fábulas, poesías, teatro), construyendo el sentido del texto, relacionándolo con otros leídos y compartiendo interpretaciones con fundamentación",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g3_002",
+    "area": "Prácticas del Lenguaje",
+    "grado": "3",
+    "bloque": "Escritura creativa",
+    "item_original": "Escritura de textos literarios: narraciones y reescrituras",
+    "objetivo": "Producir narraciones originales, reescrituras o versiones dramáticas de textos leídos, planificando, revisando con borradores y editando el texto con atención al género, el propósito y el destinatario",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g3_003",
+    "area": "Prácticas del Lenguaje",
+    "grado": "3",
+    "bloque": "Lectura de textos informativos",
+    "item_original": "Lectura para estudiar: búsqueda y selección de información",
+    "objetivo": "Buscar, seleccionar y comprender información en textos informativos de distintas fuentes, usando el paratexto como guía y confirmando o ajustando las anticipaciones realizadas",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g3_004",
+    "area": "Prácticas del Lenguaje",
+    "grado": "3",
+    "bloque": "Escritura de textos informativos",
+    "item_original": "Escritura para comunicar lo aprendido: exposiciones y notas",
+    "objetivo": "Producir exposiciones escritas y notas para comunicar lo aprendido sobre un tema, organizando la información con progresión temática y revisando el texto producido",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g3_005",
+    "area": "Prácticas del Lenguaje",
+    "grado": "3",
+    "bloque": "Ortografía y sistema de escritura",
+    "item_original": "Ortografía: sílaba tónica, terminaciones verbales y uso de mayúsculas",
+    "objetivo": "Identificar la sílaba tónica como preparación para la tildación, reconocer terminaciones verbales (-aba del pretérito imperfecto), usar mayúsculas correctamente, y aplicar familias de palabras para resolver dudas ortográficas (g/j, c/s)",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g3_006",
+    "area": "Prácticas del Lenguaje",
+    "grado": "3",
+    "bloque": "Medios y ciudadanía",
+    "item_original": "Lectura crítica de noticias y medios de comunicación",
+    "objetivo": "Leer, mirar y comentar noticias de los medios de comunicación, identificar la organización del género y comenzar a analizar críticamente la información que presentan",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g4_001",
+    "area": "Prácticas del Lenguaje",
+    "grado": "4",
+    "bloque": "Lectura literaria",
+    "item_original": "Lectura de obras literarias de autor: cuentos, novela y poesía",
+    "objetivo": "Leer obras literarias de autor de mayor extensión y complejidad (cuentos, novela gráfica, haikus, poesía), avanzando en la lectura sin detenerse en cada dificultad y construyendo interpretaciones fundamentadas",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g4_002",
+    "area": "Prácticas del Lenguaje",
+    "grado": "4",
+    "bloque": "Escritura creativa",
+    "item_original": "Escritura de textos literarios con transformaciones narrativas",
+    "objetivo": "Producir textos literarios que incluyan transformaciones del texto fuente (cambio de narrador, de personaje, de final), usando procedimientos de escritor como borradores, revisión y edición final",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g4_003",
+    "area": "Prácticas del Lenguaje",
+    "grado": "4",
+    "bloque": "Lectura de textos informativos",
+    "item_original": "Lectura para estudiar: subrayado, notas al margen y glosarios",
+    "objetivo": "Leer textos de estudio usando estrategias de comprensión lectora: subrayado, notas al margen, elaboración de glosarios, para construir el sentido del texto y preparar exposiciones",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g4_004",
+    "area": "Prácticas del Lenguaje",
+    "grado": "4",
+    "bloque": "Escritura de textos informativos",
+    "item_original": "Escritura de textos explicativos e informes",
+    "objetivo": "Producir textos explicativos (artículos de enciclopedia, informes) para comunicar lo aprendido, usando vocabulario del ámbito de estudio, párrafos organizados y signos de puntuación correctos",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g4_005",
+    "area": "Prácticas del Lenguaje",
+    "grado": "4",
+    "bloque": "Ortografía y sistema de escritura",
+    "item_original": "Ortografía: reglas de acentuación, raya de diálogo y signos de puntuación",
+    "objetivo": "Iniciarse en las reglas generales de acentuación, usar punto seguido y aparte, coma y raya de diálogo correctamente, aplicar terminaciones ortográficas (-aje, -ducir, -bundo/a, diminutivos) y usar el diccionario para consultar dudas",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g4_006",
+    "area": "Prácticas del Lenguaje",
+    "grado": "4",
+    "bloque": "Medios y ciudadanía",
+    "item_original": "Análisis crítico de noticias, publicidades y textos de los medios",
+    "objetivo": "Analizar críticamente noticias, publicidades y otros textos de los medios de comunicación, identificando recursos, distinguiendo propaganda de publicidad y tomando posición fundamentada",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g5_001",
+    "area": "Prácticas del Lenguaje",
+    "grado": "5",
+    "bloque": "Lectura literaria",
+    "item_original": "Lectura y análisis de textos literarios: narrativa, poesía y teatro",
+    "objetivo": "Leer con autonomía y analizar textos literarios de distintos géneros (narrativa, poesía, teatro), participando en círculos de lectores, debatiendo interpretaciones y fundamentando opiniones más allá del gusto personal",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g5_002",
+    "area": "Prácticas del Lenguaje",
+    "grado": "5",
+    "bloque": "Escritura creativa",
+    "item_original": "Escritura literaria: invención, reescritura y poemas visuales",
+    "objetivo": "Producir textos literarios de invención a partir de consignas creativas (incluyendo poemas visuales), ejerciendo prácticas de escritor desde la planificación hasta la edición y difusión del texto",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g5_003",
+    "area": "Prácticas del Lenguaje",
+    "grado": "5",
+    "bloque": "Lectura de textos informativos",
+    "item_original": "Lectura para estudiar: búsqueda en múltiples fuentes y toma de notas",
+    "objetivo": "Buscar y seleccionar información en publicaciones impresas y digitales usando distintos sistemas de búsqueda, tomar notas y subrayar para apoyar la comprensión y preparar producciones escritas u orales",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g5_004",
+    "area": "Prácticas del Lenguaje",
+    "grado": "5",
+    "bloque": "Escritura de textos informativos",
+    "item_original": "Escritura de resúmenes, informes y textos explicativos",
+    "objetivo": "Producir resúmenes e informes reelaborando información de distintas fuentes, usando cohesión textual, vocabulario del ámbito de estudio y signos de puntuación de manera pertinente",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g5_005",
+    "area": "Prácticas del Lenguaje",
+    "grado": "5",
+    "bloque": "Ortografía y sistema de escritura",
+    "item_original": "Ortografía: tilde en hiato, homófonos y correlación de tiempos verbales",
+    "objetivo": "Conocer la normativa básica de tildación y la tilde cuando se produce hiato, reconocer homófonos frecuentes, controlar la correlación de tiempos verbales en narraciones (pretérito perfecto e imperfecto) y usar conectores adecuadamente",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g5_006",
+    "area": "Prácticas del Lenguaje",
+    "grado": "5",
+    "bloque": "Medios y ciudadanía",
+    "item_original": "Análisis de noticias, entrevistas y publicidades en los medios",
+    "objetivo": "Leer y analizar críticamente noticias, entrevistas y publicidades en distintos formatos mediáticos, distinguiendo propaganda de publicidad comercial y confrontando opiniones sobre lo leído o visto",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g6_001",
+    "area": "Prácticas del Lenguaje",
+    "grado": "6",
+    "bloque": "Lectura literaria",
+    "item_original": "Lectura de obras literarias extensas y complejas",
+    "objetivo": "Leer e interpretar obras literarias más extensas y complejas, participando en debates sobre sus sentidos, fundamentando opiniones con argumentos que vayan más allá del gusto personal y relacionando textos entre sí",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g6_002",
+    "area": "Prácticas del Lenguaje",
+    "grado": "6",
+    "bloque": "Escritura creativa",
+    "item_original": "Escritura literaria: transposición y edición de textos",
+    "objetivo": "Producir textos literarios ejerciendo distintas prácticas de escritor: transposición de géneros, reescrituras con cambios de perspectiva, desde la planificación hasta la edición y difusión final",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g6_003",
+    "area": "Prácticas del Lenguaje",
+    "grado": "6",
+    "bloque": "Lectura de textos informativos",
+    "item_original": "Lectura crítica y comparación de fuentes múltiples",
+    "objetivo": "Seleccionar y explorar con autonomía materiales de estudio en publicaciones impresas y digitales, relacionar y comparar información de distintas fuentes para elaborar textos escritos y audiovisuales",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g6_004",
+    "area": "Prácticas del Lenguaje",
+    "grado": "6",
+    "bloque": "Escritura de textos informativos",
+    "item_original": "Escritura de textos de estudio: cuadros, esquemas e informes",
+    "objetivo": "Reelaborar información en textos coherentes de estudio, elaborar cuadros y esquemas como apoyos visuales, usando párrafos como unidad, cohesión textual y vocabulario del ámbito correspondiente",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g6_005",
+    "area": "Prácticas del Lenguaje",
+    "grado": "6",
+    "bloque": "Ortografía y sistema de escritura",
+    "item_original": "Ortografía: tilde diacrítica, adverbios en -mente y homófonos",
+    "objetivo": "Aplicar la tilde diacrítica, tildar adverbios terminados en -mente, reconocer y escribir correctamente homófonos frecuentes (hecho/echo, valla/vaya, halla/haya), usar mayúsculas en siglas y acrónimos, y revisar la correlación de tiempos verbales en pasado",
+    "tipo": "contenido"
+  },
+  {
+    "id": "pdl_g6_006",
+    "area": "Prácticas del Lenguaje",
+    "grado": "6",
+    "bloque": "Medios y ciudadanía",
+    "item_original": "Debate, columna de opinión y participación ciudadana con el lenguaje",
+    "objetivo": "Confrontar opiniones sobre temas de interés social a partir de distintas fuentes, producir textos de opinión y participar en debates, grabar columnas de opinión radial o producir textos para distintos medios",
+    "tipo": "contenido"
+  }
+]
