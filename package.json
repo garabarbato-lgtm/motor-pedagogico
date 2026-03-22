@@ -2,6 +2,7 @@
   "name": "motor-pedagogico-pba",
   "version": "1.0.0",
   "description": "Motor pedagógico para el Diseño Curricular de la Provincia de Buenos Aires",
+  "type": "module",
   "scripts": {
     "dev": "vercel dev"
   },
