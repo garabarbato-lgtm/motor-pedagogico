@@ -139,7 +139,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
               borderRadius: 7, border: `2px solid ${C.borderFuerte}`,
               background: C.borderFuerte, color: C.acento, cursor: "pointer"
             }}>
-            🖨 Imprimir
+            🖨 Imprimir ficha
           </button>
           <button
             onClick={onNueva}
@@ -187,6 +187,20 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
             ⚠️ Modo de prueba — ficha de ejemplo. Configurá ANTHROPIC_API_KEY para generar fichas reales.
           </div>
         )}
+
+        {/* Botón imprimir */}
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
+          <button
+            onClick={handleImprimir}
+            disabled={imprimiendo}
+            style={{
+              fontSize: 12, fontWeight: 600, padding: "8px 20px",
+              borderRadius: 7, border: `2px solid ${C.borderFuerte}`,
+              background: C.borderFuerte, color: C.acento, cursor: "pointer"
+            }}>
+            🖨 Imprimir ficha
+          </button>
+        </div>
 
         {/* ── FICHA IMPRIMIBLE ── */}
         <div id="ficha-imprimible" style={{
@@ -355,29 +369,6 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
           </div>
 
         </div>
-
-        {/* Botón descargar */}
-        <button
-          onClick={() => window.print()}
-          style={{
-            display: "block",
-            width: "100%",
-            marginTop: 16,
-            padding: "14px",
-            background: "#00c48c",
-            color: "#0d1f1a",
-            fontSize: 15,
-            fontWeight: 700,
-            border: "none",
-            borderRadius: 10,
-            cursor: "pointer",
-            letterSpacing: "0.01em",
-          }}
-          onMouseEnter={e => e.currentTarget.style.background = "#00ad7c"}
-          onMouseLeave={e => e.currentTarget.style.background = "#00c48c"}
-        >
-          Descargar ficha como PDF
-        </button>
 
       </div>
 
