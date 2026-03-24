@@ -1,4 +1,6 @@
 {
+  "buildCommand": "vite build",
+  "outputDirectory": "dist",
   "functions": {
     "api/generate.js": {
       "memory": 256,
