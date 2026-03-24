@@ -128,7 +128,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
         position: "sticky", top: 0, zIndex: 10
       }} id="nav-ficha">
         <button onClick={onInicio} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 400, color: "#0d1f1a" }}>
-          motor<span style={{ color: C.acento }}>.</span>
+          FichaIA<span style={{ color: C.acento }}>.</span>
         </button>
         <div style={{ display: "flex", gap: 10 }}>
           <button
@@ -242,7 +242,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                 </p>
               </div>
               <span style={{ fontFamily: "Georgia, serif", fontSize: 14, color: C.texto, flexShrink: 0, marginLeft: 16 }}>
-                motor<span style={{ color: C.acento }}>.</span>
+                FichaIA<span style={{ color: C.acento }}>.</span>
               </span>
             </div>
 
@@ -364,7 +364,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
             display: "flex", justifyContent: "space-between", alignItems: "center",
             background: C.fondoHeader
           }}>
-            <span style={{ fontSize: 11, color: C.muted }}>Motor Pedagógico PBA · Diseño Curricular 2018</span>
+            <span style={{ fontSize: 11, color: C.muted }}>FichaIA · Diseño Curricular 2018</span>
             <span style={{ fontSize: 11, color: C.muted }}>{gradoDisplay} · {registro.area}</span>
           </div>
 

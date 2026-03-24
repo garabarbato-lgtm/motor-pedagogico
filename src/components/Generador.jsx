@@ -280,7 +280,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
         position: "sticky", top: 0, zIndex: 10
       }}>
         <button onClick={onVolver} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 400, color: C.texto }}>
-          motor<span style={{ color: C.acento }}>.</span>
+          FichaIA<span style={{ color: C.acento }}>.</span>
         </button>
         <span style={{ fontSize: 12, color: C.muted }}>
           {generando ? "Generando…" : `Paso ${paso} de ${totalPasos}`}

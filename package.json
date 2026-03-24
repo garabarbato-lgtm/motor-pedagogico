@@ -1,7 +1,7 @@
 {
-  "name": "motor-pedagogico-pba",
+  "name": "ficha-ia",
   "version": "1.0.0",
-  "description": "Motor pedagógico para el Diseño Curricular de la Provincia de Buenos Aires",
+  "description": "FichaIA — Recursos educativos basados en el Diseño Curricular de la Provincia de Buenos Aires",
   "type": "module",
   "scripts": {
     "dev": "vite",

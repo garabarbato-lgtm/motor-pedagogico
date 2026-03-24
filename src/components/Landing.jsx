@@ -81,7 +81,7 @@ function FichaHero() {
             </p>
           </div>
           <span style={{ fontFamily: "Georgia, serif", fontSize: 13, color: C.fichaTexto, flexShrink: 0 }}>
-            motor<span style={{ color: C.acento }}>.</span>
+            FichaIA<span style={{ color: C.acento }}>.</span>
           </span>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10, marginTop: 12 }}>
@@ -182,7 +182,7 @@ function FichaHero() {
         display: "flex", justifyContent: "space-between", alignItems: "center",
         background: C.fichaFondoHeader
       }}>
-        <span style={{ fontSize: 10, color: C.fichaMuted }}>Motor Pedagógico PBA · DC 2018</span>
+        <span style={{ fontSize: 10, color: C.fichaMuted }}>FichaIA · DC 2018</span>
         <span style={{ fontSize: 10, color: C.fichaMuted }}>5° grado · Matemática</span>
       </div>
     </div>
@@ -202,7 +202,7 @@ export default function Landing({ onEmpezar }) {
         background: C.fondo, position: "sticky", top: 0, zIndex: 10
       }}>
         <span style={{ fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 400, color: C.texto, letterSpacing: "-0.01em" }}>
-          motor<span style={{ color: C.acento }}>.</span>
+          FichaIA<span style={{ color: C.acento }}>.</span>
         </span>
         <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
           <span style={{ fontSize: 13, color: C.muted }}>Cómo funciona</span>
