@@ -19,12 +19,12 @@ const C = {
 
 // Mapeo grado display → valores reales en el JSON
 const GRADOS = [
-  { num: "1° y 2°", ciclo: "Unidad Pedagógica", valores: ["1", "2"] },
+  { num: "1°", ciclo: "Unidad Pedagógica", valores: ["1"] },
+  { num: "2°", ciclo: "Unidad Pedagógica", valores: ["2"] },
   { num: "3°", ciclo: "Primer ciclo", valores: ["3"] },
   { num: "4°", ciclo: "Segundo ciclo", valores: ["4"] },
   { num: "5°", ciclo: "Segundo ciclo", valores: ["5"] },
   { num: "6°", ciclo: "Segundo ciclo", valores: ["6"] },
-  { num: "7°", ciclo: "Segundo ciclo", valores: ["7"] },
 ];
 
 const AREAS_CONFIG = {
