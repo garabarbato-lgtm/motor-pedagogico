@@ -177,6 +177,8 @@ export default function Generador({ onFichaGenerada, onVolver }) {
   const [bloque, setBloque] = useState(null);
   const [registro, setRegistro] = useState(null);       // full JSON record selected
   const [curricular] = useState(curricularData);
+  const [incluirExplicacion, setIncluirExplicacion] = useState(false);
+  const [incluirEjemplo, setIncluirEjemplo] = useState(false);
   const [generando, setGenerando] = useState(false);
   const [mensajeLoading, setMensajeLoading] = useState(0); // 0 Generando · 1 Validando · 2 ¡Lista!
   const [error, setError] = useState(null);
@@ -239,6 +241,8 @@ export default function Generador({ onFichaGenerada, onVolver }) {
             item: registro.item_original,
           },
           tipoFicha: "ficha de trabajo",
+          incluirExplicacion,
+          incluirEjemplo,
         }),
       });
       clearTimeout(timer4s);
@@ -388,6 +392,61 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                 <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.6, margin: 0 }}>{registro.objetivo}</p>
               </div>
             )}
+            {/* Checkboxes opcionales */}
+            <div style={{ marginBottom: 20 }}>
+              <p style={{ fontSize: 11, color: C.muted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 10 }}>
+                Opciones adicionales
+              </p>
+              {[
+                {
+                  id: "explicacion",
+                  label: "Incluir explicación del tema",
+                  checked: incluirExplicacion,
+                  disabled: false,
+                  onChange: (v) => { setIncluirExplicacion(v); if (!v) setIncluirEjemplo(false); },
+                },
+                {
+                  id: "ejemplo",
+                  label: "Incluir ejemplo concreto",
+                  checked: incluirEjemplo,
+                  disabled: !incluirExplicacion,
+                  onChange: setIncluirEjemplo,
+                },
+              ].map(({ id, label, checked, disabled, onChange }) => (
+                <div
+                  key={id}
+                  onClick={() => !disabled && onChange(!checked)}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 12,
+                    padding: "12px 16px",
+                    background: C.white,
+                    border: `1px solid ${checked ? C.acento : C.border}`,
+                    borderRadius: 10,
+                    cursor: disabled ? "not-allowed" : "pointer",
+                    opacity: disabled ? 0.4 : 1,
+                    transition: "all 0.15s",
+                    marginBottom: 8,
+                    userSelect: "none",
+                  }}
+                >
+                  <div style={{
+                    width: 20, height: 20, borderRadius: 5, flexShrink: 0,
+                    border: `1.5px solid ${checked ? C.acento : C.border}`,
+                    background: checked ? C.acento : C.white,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    transition: "all 0.15s",
+                  }}>
+                    {checked && (
+                      <svg viewBox="0 0 12 10" fill="none" width="10" height="10">
+                        <polyline points="1,5 4,8 11,1" stroke={C.btn} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                  </div>
+                  <span style={{ fontSize: 14, color: C.texto, fontWeight: 500 }}>{label}</span>
+                </div>
+              ))}
+            </div>
+
             <button
               onClick={generar}
               style={{
