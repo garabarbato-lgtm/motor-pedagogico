@@ -201,7 +201,7 @@ export default function Landing({ onEmpezar }) {
         padding: "18px 40px", borderBottom: `0.5px solid ${C.border}`,
         background: C.fondo, position: "sticky", top: 0, zIndex: 10
       }}>
-        <span style={{ fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 400, color: C.texto, letterSpacing: "-0.01em" }}>
+        <span style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 700, color: C.texto, letterSpacing: "-0.01em" }}>
           FichaIA<span style={{ color: C.acento }}>.</span>
         </span>
         <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
