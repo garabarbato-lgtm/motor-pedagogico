@@ -144,7 +144,7 @@ function AreaBtn({ a, i, onClick }) {
   );
 }
 
-function OpcionBtn({ label, i, onClick }) {
+function OpcionBtn({ label, i, onClick, suave = false }) {
   const [hov, setHov] = useState(false);
   return (
     <button
@@ -154,7 +154,7 @@ function OpcionBtn({ label, i, onClick }) {
       style={{
         padding: "16px 20px", borderRadius: 10,
         border: `1.5px solid ${hov ? C.acento : C.border}`,
-        background: C.white, cursor: "pointer",
+        background: hov && suave ? C.suave : C.white, cursor: "pointer",
         textAlign: "left", display: "flex",
         alignItems: "center", justifyContent: "space-between",
         transition: "all 0.15s",
@@ -374,7 +374,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
           <PasoActivo pregunta="¿Cuál es el contenido?" sub={`Del Diseño Curricular oficial · ${gradoData?.num} · ${area}`}>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {contenidosDisponibles.map((r, i) => (
-                <OpcionBtn key={r.id} label={r.item_original} i={i} onClick={() => elegir(setRegistro, r, 5)} />
+                <OpcionBtn key={r.id} label={r.item_original} i={i} onClick={() => elegir(setRegistro, r, 5)} suave />
               ))}
             </div>
           </PasoActivo>
