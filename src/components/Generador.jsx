@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import curricularData from "../../dc_pba_base_curricular_corregida.json";
 
 const C = {
   fondo: "#f8f8f4",
@@ -175,17 +176,11 @@ export default function Generador({ onFichaGenerada, onVolver }) {
   const [areaConfig, setAreaConfig] = useState(null);
   const [bloque, setBloque] = useState(null);
   const [registro, setRegistro] = useState(null);       // full JSON record selected
-  const [curricular, setCurricular] = useState([]);
-  const [cargando, setCargando] = useState(true);
+  const [curricular] = useState(curricularData);
   const [generando, setGenerando] = useState(false);
+  const [mensajeLoading, setMensajeLoading] = useState(0); // 0 Generando · 1 Validando · 2 ¡Lista!
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetch('/dc_pba_base_curricular_corregida.json')
-      .then(r => r.json())
-      .then(data => { setCurricular(data); setCargando(false); })
-      .catch(() => { setCargando(false); setError('No se pudo cargar la base curricular.'); });
-  }, []);
 
   const areasDisponibles = useMemo(() => {
     if (!gradoData) return [];
@@ -221,12 +216,17 @@ export default function Generador({ onFichaGenerada, onVolver }) {
     if (p <= 4) setRegistro(null);
     setError(null);
     setGenerando(false);
+    setMensajeLoading(0);
   };
 
   const generar = async () => {
     if (!registro) return;
     setGenerando(true);
+    setMensajeLoading(0);
     setError(null);
+
+    const timer4s = setTimeout(() => setMensajeLoading(1), 4000);
+
     try {
       const res = await fetch('/api/generate', {
         method: 'POST',
@@ -241,11 +241,18 @@ export default function Generador({ onFichaGenerada, onVolver }) {
           tipoFicha: "ficha de trabajo",
         }),
       });
+      clearTimeout(timer4s);
       if (!res.ok) throw new Error('Error en el servidor');
       const resultado = await res.json();
-      onFichaGenerada(resultado.ficha, registro, resultado.validacion);
+      setMensajeLoading(2);
+      setTimeout(() => {
+        setGenerando(false);
+        onFichaGenerada(resultado.ficha, registro, resultado.validacion);
+      }, 1000);
     } catch (err) {
+      clearTimeout(timer4s);
       setGenerando(false);
+      setMensajeLoading(0);
       setError('No se pudo generar la ficha. Verificá tu conexión e intentá de nuevo.');
     }
   };
@@ -253,17 +260,6 @@ export default function Generador({ onFichaGenerada, onVolver }) {
   const totalPasos = 5;
   const progreso = generando ? 100 : Math.round(((paso - 1) / (totalPasos - 1)) * 100);
 
-  if (cargando) {
-    return (
-      <div style={{ background: C.fondo, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ textAlign: "center" }}>
-          <div style={{ width: 40, height: 40, margin: "0 auto 16px", border: `3px solid ${C.border}`, borderTopColor: C.acento, borderRadius: "50%", animation: "spin 0.9s linear infinite" }} />
-          <p style={{ fontSize: 14, color: C.muted }}>Cargando base curricular…</p>
-        </div>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      </div>
-    );
-  }
 
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", background: C.fondo, minHeight: "100vh" }}>
@@ -411,15 +407,72 @@ export default function Generador({ onFichaGenerada, onVolver }) {
           </PasoActivo>
         )}
 
-        {/* Generando */}
+        {/* Loading */}
         {generando && (
-          <div style={{ textAlign: "center", padding: "60px 0", animation: "fadeUp 0.3s both" }}>
-            <div style={{ width: 52, height: 52, margin: "0 auto 24px", border: `3px solid ${C.border}`, borderTopColor: C.acento, borderRadius: "50%", animation: "spin 0.9s linear infinite" }} />
-            <h2 style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 400, color: C.texto, marginBottom: 8 }}>Creando tu ficha…</h2>
-            <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.7 }}>
-              Alineando el contenido con el objetivo curricular<br />
-              y adaptando el lenguaje para {gradoData?.num}
-            </p>
+          <div style={{ padding: "48px 0", animation: "fadeUp 0.4s both" }}>
+            <div style={{
+              background: C.suave,
+              borderRadius: 16,
+              padding: "36px 32px",
+              textAlign: "center",
+              maxWidth: 400,
+              margin: "0 auto",
+            }}>
+
+              {/* Spinner */}
+              <div style={{
+                width: 48, height: 48,
+                border: "3px solid rgba(0,196,140,0.2)",
+                borderTopColor: C.acento,
+                borderRadius: "50%",
+                animation: "spin 0.9s linear infinite",
+                margin: "0 auto 24px",
+              }} />
+
+              {/* Mensaje */}
+              <p style={{
+                fontFamily: "Georgia, serif",
+                fontSize: 20, fontWeight: 400,
+                color: C.texto, marginBottom: 24,
+                letterSpacing: "-0.01em",
+                minHeight: 30,
+              }}>
+                {["Generando ficha…", "Validando contenido…", "¡Lista!"][mensajeLoading]}
+              </p>
+
+              {/* Barra de progreso */}
+              <div style={{
+                height: 4, background: "rgba(0,196,140,0.2)",
+                borderRadius: 999, overflow: "hidden", marginBottom: 20,
+              }}>
+                <div style={{
+                  height: "100%", background: C.acento, borderRadius: 999,
+                  width: mensajeLoading === 0 ? "30%" : mensajeLoading === 1 ? "75%" : "100%",
+                  transition: "width 0.8s cubic-bezier(.22,1,.36,1)",
+                }} />
+              </div>
+
+              {/* Steps */}
+              <div style={{ display: "flex", justifyContent: "center", gap: 24 }}>
+                {["Generando", "Validando", "Lista"].map((label, i) => (
+                  <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
+                    <div style={{
+                      width: 8, height: 8, borderRadius: "50%",
+                      background: i <= mensajeLoading ? C.acento : "rgba(0,196,140,0.25)",
+                      transition: "background 0.4s",
+                    }} />
+                    <span style={{
+                      fontSize: 10, fontWeight: 500,
+                      color: i <= mensajeLoading ? C.muted : "rgba(74,107,96,0.4)",
+                      transition: "color 0.4s", letterSpacing: "0.03em",
+                    }}>
+                      {label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+            </div>
           </div>
         )}
 
