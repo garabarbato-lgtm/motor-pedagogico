@@ -423,59 +423,32 @@ export default function Landing({ onEmpezar }) {
         </div>
       </section>
 
-      {/* ── PARA QUIÉN ── */}
-      <section style={{ padding: "72px 40px 80px", background: C.white }}>
-        <p style={{
-          textAlign: "center", fontSize: 11, fontWeight: 500,
-          color: C.muted, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10
-        }}>
-          ¿Para quién es?
-        </p>
+      {/* ── CTA FINAL ── */}
+      <section style={{
+        background: "#f5f5f0",
+        borderTop: "0.5px solid #ddddd8",
+        padding: "64px 40px",
+        textAlign: "center"
+      }}>
         <h2 style={{
           fontFamily: "Georgia, serif",
-          textAlign: "center", fontSize: 26, fontWeight: 400,
-          color: C.texto, marginBottom: 52, letterSpacing: "-0.015em"
+          fontSize: 28, fontWeight: 400,
+          color: C.texto, marginBottom: 32,
+          letterSpacing: "-0.015em"
         }}>
-          Para toda la comunidad educativa
+          ¿Listo para generar tu primera ficha?
         </h2>
-
-        <div style={{
-          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: 16, maxWidth: 760, margin: "0 auto"
-        }}>
-          {[
-            {
-              icon: <svg viewBox="0 0 24 24" fill="none" stroke={C.acento} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="20" height="20"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
-              nombre: "Docentes",
-              desc: "Generás recursos alineados al Diseño sin perder horas buscando o adaptando materiales."
-            },
-            {
-              icon: <svg viewBox="0 0 24 24" fill="none" stroke={C.acento} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="20" height="20"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
-              nombre: "Familias",
-              desc: "Acompañás a tus hijos con explicaciones claras y actividades del grado, sin necesitar ser docente."
-            },
-            {
-              icon: <svg viewBox="0 0 24 24" fill="none" stroke={C.acento} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="20" height="20"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>,
-              nombre: "Estudiantes",
-              desc: "Repasás cualquier tema con ejemplos concretos y ejercicios pensados para tu año."
-            },
-          ].map((item) => (
-            <div key={item.nombre} style={{
-              background: C.fondo, border: `0.5px solid ${C.border}`,
-              borderRadius: 12, padding: "28px 24px"
-            }}>
-              <div style={{
-                width: 40, height: 40, background: C.pillBg,
-                borderRadius: 8, display: "flex", alignItems: "center",
-                justifyContent: "center", marginBottom: 16
-              }}>
-                {item.icon}
-              </div>
-              <p style={{ fontSize: 15, fontWeight: 500, color: C.texto, marginBottom: 8 }}>{item.nombre}</p>
-              <p style={{ fontSize: 13, color: C.muted, lineHeight: 1.6 }}>{item.desc}</p>
-            </div>
-          ))}
-        </div>
+        <button
+          onClick={onEmpezar}
+          style={{
+            background: C.btn, color: C.btnText,
+            border: "none", borderRadius: 8,
+            fontSize: 15, fontWeight: 600,
+            padding: "14px 32px", cursor: "pointer",
+          }}
+        >
+          Generar mi primer recurso
+        </button>
       </section>
 
       {/* ── FOOTER ── */}
