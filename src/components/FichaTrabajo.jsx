@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Logo from "./Logo.jsx";
 
 // Paleta B&N safe — sostiene jerarquía por peso, borde y forma, no solo por color
 const C = {
@@ -128,8 +129,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
         background: "rgba(248,248,244,0.95)", backdropFilter: "blur(8px)",
         position: "sticky", top: 0, zIndex: 10
       }} id="nav-ficha">
-        <button onClick={onInicio} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 400, color: "#0d1f1a" }}>
-          FichaIA<span style={{ color: C.acento }}>.</span>
+        <button onClick={onInicio} style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+          <Logo size={22} />
         </button>
         <div style={{ display: "flex", gap: 10 }}>
           <button
@@ -244,9 +245,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                   </p>
                 )}
               </div>
-              <span style={{ fontFamily: "Georgia, serif", fontSize: 14, color: C.texto, flexShrink: 0, marginLeft: 16 }}>
-                FichaIA<span style={{ color: C.acento }}>.</span>
-              </span>
+              <span style={{ flexShrink: 0, marginLeft: 16 }}><Logo size={14} /></span>
             </div>
 
             {/* Datos alumno */}
@@ -507,7 +506,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
             display: "flex", justifyContent: "space-between", alignItems: "center",
             background: C.fondoHeader
           }}>
-            <span style={{ fontSize: 11, color: C.muted }}>FichaIA · Diseño Curricular 2018</span>
+            <span style={{ fontSize: 11, color: C.muted }}>tiza. · Diseño Curricular 2018</span>
             <span style={{ fontSize: 11, color: C.muted }}>{gradoDisplay} · {registro.area}</span>
           </div>
 

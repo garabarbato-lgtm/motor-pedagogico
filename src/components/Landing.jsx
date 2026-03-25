@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Logo from "./Logo.jsx";
 
 const C = {
   fondo: "#f8f8f4",
@@ -80,9 +81,7 @@ function FichaHero() {
               Objetivo: Reconocer y construir fracciones equivalentes
             </p>
           </div>
-          <span style={{ fontFamily: "Georgia, serif", fontSize: 13, color: C.fichaTexto, flexShrink: 0 }}>
-            FichaIA<span style={{ color: C.acento }}>.</span>
-          </span>
+          <span style={{ flexShrink: 0 }}><Logo size={13} /></span>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10, marginTop: 12 }}>
           {["Nombre y apellido", "Fecha", "Grado / Sección"].map(label => (
@@ -182,7 +181,7 @@ function FichaHero() {
         display: "flex", justifyContent: "space-between", alignItems: "center",
         background: C.fichaFondoHeader
       }}>
-        <span style={{ fontSize: 10, color: C.fichaMuted }}>FichaIA · DC 2018</span>
+        <span style={{ fontSize: 10, color: C.fichaMuted }}>tiza. · DC 2018</span>
         <span style={{ fontSize: 10, color: C.fichaMuted }}>5° grado · Matemática</span>
       </div>
     </div>
@@ -201,9 +200,7 @@ export default function Landing({ onEmpezar }) {
         padding: "18px 40px", borderBottom: `0.5px solid ${C.border}`,
         background: C.fondo, position: "sticky", top: 0, zIndex: 10
       }}>
-        <span style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 700, color: C.texto, letterSpacing: "-0.01em" }}>
-          FichaIA<span style={{ color: C.acento }}>.</span>
-        </span>
+        <Logo size={27} />
         <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
           <button
             onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })}

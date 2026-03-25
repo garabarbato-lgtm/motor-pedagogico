@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import curricularData from "../../dc_pba_base_curricular_corregida.json";
+import Logo from "./Logo.jsx";
 
 const C = {
   fondo: "#f8f8f4",
@@ -439,8 +440,8 @@ export default function Generador({ onFichaGenerada, onVolver }) {
         background: "rgba(248,248,244,0.95)", backdropFilter: "blur(8px)",
         position: "sticky", top: 0, zIndex: 10
       }}>
-        <button onClick={onVolver} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 400, color: C.texto }}>
-          FichaIA<span style={{ color: C.acento }}>.</span>
+        <button onClick={onVolver} style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+          <Logo size={22} />
         </button>
         <span style={{ fontSize: 12, color: C.muted }}>
           {generando ? "Generando…" : `Paso ${paso} de ${totalPasos}`}

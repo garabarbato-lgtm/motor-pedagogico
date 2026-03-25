@@ -1,7 +1,7 @@
 {
-  "name": "ficha-ia",
+  "name": "tiza",
   "version": "1.0.0",
-  "description": "FichaIA — Recursos educativos basados en el Diseño Curricular de la Provincia de Buenos Aires",
+  "description": "tiza. — Motor pedagógico basado en el DC PBA",
   "type": "module",
   "scripts": {
     "dev": "vite",
