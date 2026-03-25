@@ -105,6 +105,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
   if (!ficha || !registro) return null;
 
+  const isPDL = registro.area === "Prácticas del Lenguaje";
   const { emoji, texto: tituloTexto } = extraerEmoji(ficha.titulo);
   const { pregunta: pregExplicacion, cuerpo: cuerpoExplicacion } = separarPregunta(ficha.explicacion);
   const { pregunta: pregEjemplo, cuerpo: cuerpoEjemplo } = separarPregunta(ficha.ejemplo);
@@ -237,9 +238,11 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                     {tituloTexto}
                   </h2>
                 </div>
-                <p style={{ fontSize: 12, color: C.muted, fontStyle: "italic", margin: 0 }}>
-                  Objetivo: {registro.objetivo}
-                </p>
+                {registro.objetivo && (
+                  <p style={{ fontSize: 12, color: C.muted, fontStyle: "italic", margin: 0 }}>
+                    Objetivo: {registro.objetivo}
+                  </p>
+                )}
               </div>
               <span style={{ fontFamily: "Georgia, serif", fontSize: 14, color: C.texto, flexShrink: 0, marginLeft: 16 }}>
                 FichaIA<span style={{ color: C.acento }}>.</span>
@@ -268,91 +271,231 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
           {/* Cuerpo */}
           <div style={{ padding: "22px 24px", display: "flex", flexDirection: "column", gap: 26 }}>
 
-            {/* 1. Explicación */}
-            <div>
-              <SeccionHeader numero="1" titulo={pregExplicacion || "Leemos juntos"} icono="📖" />
-              <div style={{
-                background: C.fondoEjemplo,
-                borderRadius: 6, padding: "14px 18px",
-                border: `1px solid ${C.border}`,
-                borderLeft: `4px solid ${C.borderFuerte}`,
-              }}>
-                <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.8, margin: 0 }}>
-                  {cuerpoExplicacion || ficha.explicacion}
-                </p>
-              </div>
-            </div>
+            {isPDL ? (
 
-            {/* 2. Ejemplo */}
-            <div>
-              <SeccionHeader numero="2" titulo={pregEjemplo || "¿Cómo se ve en la vida real?"} icono="💡" />
-              <div style={{
-                background: C.fondoReflexion,
-                border: `1px solid ${C.border}`,
-                borderLeft: `4px solid ${C.borderFuerte}`,
-                borderRadius: 6, padding: "14px 18px"
-              }}>
-                <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.8, margin: 0 }}>
-                  {cuerpoEjemplo || ficha.ejemplo}
-                </p>
-              </div>
-            </div>
-
-            {/* 3. Actividad */}
-            <div>
-              <SeccionHeader numero="3" titulo={headerActividad} icono="✏️" />
-              {items.length > 0 ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
-                  {items.map(({ num, texto }) => (
-                    <div key={num} style={{
-                      display: "flex", gap: 12, alignItems: "flex-start",
-                      padding: "10px 14px",
-                      background: Number(num) % 2 === 0 ? C.fondoEjemplo : C.fondo,
-                      borderRadius: 6, border: `1px solid ${C.border}`
+              /* ── PDL: Lectura de textos ── */
+              registro.bloque === "Lectura de textos" ? (
+                <>
+                  <div>
+                    <SeccionHeader numero="1" titulo="Leemos" icono="📖" />
+                    <div style={{
+                      background: C.fondoEjemplo, borderRadius: 6,
+                      padding: "14px 18px", border: `1px solid ${C.border}`,
+                      borderLeft: `4px solid ${C.borderFuerte}`,
                     }}>
-                      <div style={{
-                        width: 24, height: 24, borderRadius: "50%",
-                        border: `2px solid ${C.borderFuerte}`,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: 11, fontWeight: 800, color: C.borderFuerte, flexShrink: 0
-                      }}>
-                        {num}
-                      </div>
-                      <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.6, margin: 0 }}>{texto}</p>
+                      <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.9, margin: 0, whiteSpace: "pre-line" }}>
+                        {ficha.texto}
+                      </p>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.8, marginBottom: 20 }}>
-                  {ficha.actividad}
-                </p>
-              )}
-              <p style={{
-                fontSize: 10, color: C.muted, fontWeight: 700,
-                textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8
-              }}>
-                Escribí tus respuestas acá
-              </p>
-              {Array.from({ length: nLineas }).map((_, i) => <LineaEscritura key={i} />)}
-            </div>
+                  </div>
+                  <div>
+                    <SeccionHeader numero="2" titulo="Respondé" icono="✍️" />
+                    {Array.isArray(ficha.preguntas) && ficha.preguntas.map((preg, idx) => (
+                      <div key={idx} style={{ marginBottom: 20 }}>
+                        <div style={{
+                          display: "flex", gap: 12, alignItems: "flex-start",
+                          padding: "10px 14px",
+                          background: (idx + 1) % 2 === 0 ? C.fondoEjemplo : C.fondo,
+                          borderRadius: 6, border: `1px solid ${C.border}`, marginBottom: 8,
+                        }}>
+                          <div style={{
+                            width: 24, height: 24, borderRadius: "50%",
+                            border: `2px solid ${C.borderFuerte}`,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            fontSize: 11, fontWeight: 800, color: C.borderFuerte, flexShrink: 0,
+                          }}>{idx + 1}</div>
+                          <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.6, margin: 0 }}>{preg}</p>
+                        </div>
+                        <LineaEscritura /><LineaEscritura /><LineaEscritura />
+                      </div>
+                    ))}
+                  </div>
+                </>
 
-            {/* 4. Reflexión (pregunta_reflexion del pipeline) */}
-            {ficha.pregunta_reflexion && (
-              <div>
-                <SeccionHeader numero="4" titulo="Reflexionamos" icono="💭" />
-                <div style={{
-                  background: C.fondoReflexion,
-                  border: `1px solid ${C.border}`,
-                  borderLeft: `4px solid ${C.borderFuerte}`,
-                  borderRadius: 6, padding: "12px 16px", marginBottom: 14
-                }}>
-                  <p style={{ fontSize: 13, color: C.texto, fontStyle: "italic", lineHeight: 1.7, margin: 0 }}>
-                    {ficha.pregunta_reflexion}
-                  </p>
+              /* ── PDL: Escritura de textos ── */
+              ) : registro.bloque === "Escritura de textos" ? (
+                <>
+                  <div>
+                    <SeccionHeader numero="1" titulo="¡A escribir!" icono="✏️" />
+                    <div style={{
+                      background: C.fondoEjemplo, borderRadius: 6,
+                      padding: "14px 18px", border: `1px solid ${C.border}`,
+                      borderLeft: `4px solid ${C.borderFuerte}`,
+                    }}>
+                      <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.8, margin: 0 }}>{ficha.consigna}</p>
+                    </div>
+                  </div>
+                  {Array.isArray(ficha.orientaciones) && ficha.orientaciones.length > 0 && (
+                    <div>
+                      <SeccionHeader numero="2" titulo="Antes de escribir, pensá…" icono="💭" />
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        {ficha.orientaciones.map((orientacion, idx) => (
+                          <div key={idx} style={{
+                            display: "flex", gap: 12, alignItems: "flex-start",
+                            padding: "10px 14px",
+                            background: (idx + 1) % 2 === 0 ? C.fondoEjemplo : C.fondo,
+                            borderRadius: 6, border: `1px solid ${C.border}`,
+                          }}>
+                            <div style={{
+                              width: 24, height: 24, borderRadius: "50%",
+                              border: `2px solid ${C.borderFuerte}`,
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              fontSize: 11, fontWeight: 800, color: C.borderFuerte, flexShrink: 0,
+                            }}>{idx + 1}</div>
+                            <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.6, margin: 0 }}>{orientacion}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <div>
+                    <SeccionHeader numero="3" titulo="Mi texto" icono="📝" />
+                    {Array.from({ length: 10 }).map((_, i) => <LineaEscritura key={i} />)}
+                  </div>
+                </>
+
+              /* ── PDL: Ortografía ── */
+              ) : (
+                <>
+                  <div>
+                    <SeccionHeader numero="1" titulo="La regla" icono="📚" />
+                    <div style={{
+                      background: C.fondoEjemplo, borderRadius: 6,
+                      padding: "14px 18px", border: `1px solid ${C.border}`,
+                      borderLeft: `4px solid ${C.borderFuerte}`, marginBottom: 12,
+                    }}>
+                      <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.8, margin: 0 }}>{ficha.explicacion}</p>
+                    </div>
+                    {ficha.ejemplo && (
+                      <div style={{
+                        background: C.fondoReflexion, borderRadius: 6,
+                        padding: "12px 16px", border: `1px solid ${C.border}`,
+                      }}>
+                        <p style={{ fontSize: 10, color: C.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Ejemplo</p>
+                        <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.7, margin: 0 }}>{ficha.ejemplo}</p>
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <SeccionHeader numero="2" titulo="Practicamos" icono="✏️" />
+                    {Array.isArray(ficha.ejercicios) && (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                        {ficha.ejercicios.map((ejercicio, idx) => (
+                          <div key={idx}>
+                            <div style={{
+                              display: "flex", gap: 12, alignItems: "flex-start",
+                              padding: "10px 14px",
+                              background: (idx + 1) % 2 === 0 ? C.fondoEjemplo : C.fondo,
+                              borderRadius: 6, border: `1px solid ${C.border}`, marginBottom: 6,
+                            }}>
+                              <div style={{
+                                width: 24, height: 24, borderRadius: "50%",
+                                border: `2px solid ${C.borderFuerte}`,
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                fontSize: 11, fontWeight: 800, color: C.borderFuerte, flexShrink: 0,
+                              }}>{idx + 1}</div>
+                              <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.6, margin: 0 }}>{ejercicio}</p>
+                            </div>
+                            <LineaEscritura /><LineaEscritura />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )
+
+            ) : (
+
+              /* ── No PDL: Matemática, Ciencias, etc. ── */
+              <>
+                {/* 1. Explicación */}
+                <div>
+                  <SeccionHeader numero="1" titulo={pregExplicacion || "Leemos juntos"} icono="📖" />
+                  <div style={{
+                    background: C.fondoEjemplo,
+                    borderRadius: 6, padding: "14px 18px",
+                    border: `1px solid ${C.border}`,
+                    borderLeft: `4px solid ${C.borderFuerte}`,
+                  }}>
+                    <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.8, margin: 0 }}>
+                      {cuerpoExplicacion || ficha.explicacion}
+                    </p>
+                  </div>
                 </div>
-                <LineaEscritura />
-                <LineaEscritura />
-              </div>
+
+                {/* 2. Ejemplo */}
+                <div>
+                  <SeccionHeader numero="2" titulo={pregEjemplo || "¿Cómo se ve en la vida real?"} icono="💡" />
+                  <div style={{
+                    background: C.fondoReflexion,
+                    border: `1px solid ${C.border}`,
+                    borderLeft: `4px solid ${C.borderFuerte}`,
+                    borderRadius: 6, padding: "14px 18px"
+                  }}>
+                    <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.8, margin: 0 }}>
+                      {cuerpoEjemplo || ficha.ejemplo}
+                    </p>
+                  </div>
+                </div>
+
+                {/* 3. Actividad */}
+                <div>
+                  <SeccionHeader numero="3" titulo={headerActividad} icono="✏️" />
+                  {items.length > 0 ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+                      {items.map(({ num, texto }) => (
+                        <div key={num} style={{
+                          display: "flex", gap: 12, alignItems: "flex-start",
+                          padding: "10px 14px",
+                          background: Number(num) % 2 === 0 ? C.fondoEjemplo : C.fondo,
+                          borderRadius: 6, border: `1px solid ${C.border}`
+                        }}>
+                          <div style={{
+                            width: 24, height: 24, borderRadius: "50%",
+                            border: `2px solid ${C.borderFuerte}`,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            fontSize: 11, fontWeight: 800, color: C.borderFuerte, flexShrink: 0
+                          }}>
+                            {num}
+                          </div>
+                          <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.6, margin: 0 }}>{texto}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.8, marginBottom: 20 }}>
+                      {ficha.actividad}
+                    </p>
+                  )}
+                  <p style={{
+                    fontSize: 10, color: C.muted, fontWeight: 700,
+                    textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8
+                  }}>
+                    Escribí tus respuestas acá
+                  </p>
+                  {Array.from({ length: nLineas }).map((_, i) => <LineaEscritura key={i} />)}
+                </div>
+
+                {/* 4. Reflexión */}
+                {ficha.pregunta_reflexion && (
+                  <div>
+                    <SeccionHeader numero="4" titulo="Reflexionamos" icono="💭" />
+                    <div style={{
+                      background: C.fondoReflexion,
+                      border: `1px solid ${C.border}`,
+                      borderLeft: `4px solid ${C.borderFuerte}`,
+                      borderRadius: 6, padding: "12px 16px", marginBottom: 14
+                    }}>
+                      <p style={{ fontSize: 13, color: C.texto, fontStyle: "italic", lineHeight: 1.7, margin: 0 }}>
+                        {ficha.pregunta_reflexion}
+                      </p>
+                    </div>
+                    <LineaEscritura />
+                    <LineaEscritura />
+                  </div>
+                )}
+              </>
             )}
 
           </div>
