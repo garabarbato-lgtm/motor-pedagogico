@@ -205,7 +205,12 @@ export default function Landing({ onEmpezar }) {
           FichaIA<span style={{ color: C.acento }}>.</span>
         </span>
         <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
-          <span style={{ fontSize: 13, color: C.muted }}>Cómo funciona</span>
+          <button
+            onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })}
+            style={{ fontSize: 13, color: C.muted, background: "none", border: "none", cursor: "pointer", padding: 0 }}
+          >
+            Cómo funciona
+          </button>
           <button
             onClick={onEmpezar}
             style={{
@@ -262,7 +267,7 @@ export default function Landing({ onEmpezar }) {
               }}>
               Generar mi primer recurso
             </button>
-            <span style={{ fontSize: 12, color: C.muted }}>Sin registro · Sin costo · En español</span>
+            <span style={{ fontSize: 12, color: C.muted }}>Gratuito · En español · Hecho en Argentina</span>
           </div>
         </div>
 
@@ -271,6 +276,152 @@ export default function Landing({ onEmpezar }) {
 
       {/* ── SEPARADOR ── */}
       <div style={{ borderTop: `0.5px solid ${C.border}`, maxWidth: 860, margin: "0 auto" }} />
+
+      {/* ── CÓMO FUNCIONA ── */}
+      <section id="como-funciona" style={{ background: "#f5f5f0", padding: "80px 40px" }}>
+        <div style={{ maxWidth: 860, margin: "0 auto" }}>
+
+          {/* Badge */}
+          <div style={{ textAlign: "center", marginBottom: 20 }}>
+            <span style={{
+              display: "inline-block",
+              background: "#d4f0e8", color: "#0d5c4a",
+              fontSize: 11, fontWeight: 600, letterSpacing: "0.08em",
+              textTransform: "uppercase", padding: "5px 16px", borderRadius: 20,
+            }}>
+              Basado en el Diseño Curricular · PBA
+            </span>
+          </div>
+
+          {/* Título */}
+          <h2 style={{
+            fontFamily: "Georgia, serif", textAlign: "center",
+            fontSize: "clamp(24px, 3vw, 34px)", fontWeight: 400,
+            color: "#0d1f1a", marginBottom: 12, letterSpacing: "-0.02em",
+          }}>
+            Tres pasos. Una ficha lista.
+          </h2>
+
+          {/* Subtítulo */}
+          <p style={{
+            textAlign: "center", fontSize: 15, color: "#4a5550",
+            marginBottom: 52, lineHeight: 1.6,
+          }}>
+            Sin vueltas, sin registro, sin perder tiempo.
+          </p>
+
+          {/* Conectora + cards */}
+          <div style={{ position: "relative" }}>
+            {/* Línea punteada */}
+            <div style={{
+              position: "absolute", top: 20, zIndex: 0,
+              left: "calc(16.67% + 20px)", right: "calc(16.67% + 20px)",
+              borderTop: "2px dashed #00c48c",
+            }} />
+
+            {/* Círculos numerados */}
+            <div style={{
+              display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
+              marginBottom: 20, position: "relative", zIndex: 1,
+            }}>
+              {[1, 2, 3].map(n => (
+                <div key={n} style={{ display: "flex", justifyContent: "center" }}>
+                  <div style={{
+                    width: 40, height: 40, borderRadius: "50%",
+                    background: "#00c48c", color: "#0d1f1a",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 16, fontWeight: 800,
+                    boxShadow: "0 0 0 5px #f5f5f0",
+                  }}>
+                    {n}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Cards */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+
+              {/* Card 1 */}
+              <div style={{ background: "#ffffff", border: "1px solid #ddddd8", borderRadius: 12, padding: "28px 22px" }}>
+                <div style={{
+                  width: 44, height: 44, background: "#d4f0e8", borderRadius: 10,
+                  display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16,
+                }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#00a876" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
+                    <line x1="8" y1="6" x2="21" y2="6"/>
+                    <line x1="8" y1="12" x2="21" y2="12"/>
+                    <line x1="8" y1="18" x2="21" y2="18"/>
+                    <polyline points="3 6 4 7 6 5"/>
+                    <polyline points="3 12 4 13 6 11"/>
+                    <polyline points="3 18 4 19 6 17"/>
+                  </svg>
+                </div>
+                <p style={{ fontSize: 15, fontWeight: 600, color: "#0d1f1a", marginBottom: 10 }}>Elegís el objetivo</p>
+                <p style={{ fontSize: 13, color: "#4a5550", lineHeight: 1.65 }}>
+                  Seleccionás el{" "}
+                  <strong style={{ color: "#00a876", fontWeight: 700 }}>grado, el área</strong>
+                  {" "}y el contenido del{" "}
+                  <strong style={{ color: "#00a876", fontWeight: 700 }}>Diseño Curricular</strong>
+                  {" "}que querés trabajar.
+                </p>
+              </div>
+
+              {/* Card 2 */}
+              <div style={{ background: "#ffffff", border: "1px solid #ddddd8", borderRadius: 12, padding: "28px 22px" }}>
+                <div style={{
+                  width: 44, height: 44, background: "#d4f0e8", borderRadius: 10,
+                  display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16,
+                }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#00a876" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                  </svg>
+                </div>
+                <p style={{ fontSize: 15, fontWeight: 600, color: "#0d1f1a", marginBottom: 10 }}>La IA genera la ficha</p>
+                <p style={{ fontSize: 13, color: "#4a5550", lineHeight: 1.65 }}>
+                  En{" "}
+                  <strong style={{ color: "#00a876", fontWeight: 700 }}>segundos</strong>
+                  {" "}tenés una ficha lista, basada en el{" "}
+                  <strong style={{ color: "#00a876", fontWeight: 700 }}>Diseño Curricular de la Provincia de Buenos Aires</strong>.
+                </p>
+              </div>
+
+              {/* Card 3 */}
+              <div style={{ background: "#ffffff", border: "1px solid #ddddd8", borderRadius: 12, padding: "28px 22px" }}>
+                <div style={{
+                  width: 44, height: 44, background: "#d4f0e8", borderRadius: 10,
+                  display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16,
+                }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#00a876" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                </div>
+                <p style={{ fontSize: 15, fontWeight: 600, color: "#0d1f1a", marginBottom: 10 }}>Revisás y descargás</p>
+                <p style={{ fontSize: 13, color: "#4a5550", lineHeight: 1.65 }}>
+                  Podés{" "}
+                  <strong style={{ color: "#00a876", fontWeight: 700 }}>ajustar</strong>
+                  {" "}el contenido y{" "}
+                  <strong style={{ color: "#00a876", fontWeight: 700 }}>descargar</strong>
+                  {" "}la ficha lista para imprimir o compartir.
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Tagline */}
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, marginTop: 48 }}>
+            <span style={{ fontSize: 13, color: "#4a5550", fontWeight: 500 }}>Gratuito</span>
+            <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#00c48c" }} />
+            <span style={{ fontSize: 13, color: "#4a5550", fontWeight: 500 }}>En español</span>
+            <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#00c48c" }} />
+            <span style={{ fontSize: 13, color: "#4a5550", fontWeight: 500 }}>Hecho en Argentina</span>
+          </div>
+
+        </div>
+      </section>
 
       {/* ── PARA QUIÉN ── */}
       <section style={{ padding: "72px 40px 80px", background: C.white }}>
