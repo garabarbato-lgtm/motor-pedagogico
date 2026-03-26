@@ -83,7 +83,7 @@ function LineaEscritura() {
   return (
     <div style={{
       borderBottom: `1.5px solid ${C.lineaEscritura}`,
-      height: 34, width: "100%", marginBottom: 6
+      height: 26, width: "100%", marginBottom: 4
     }} />
   );
 }
@@ -92,21 +92,21 @@ function SeccionHeader({ numero, titulo, icono }) {
   return (
     <div style={{
       display: "flex", alignItems: "center", gap: 10,
-      marginBottom: 14, paddingBottom: 10,
+      marginBottom: 10, paddingBottom: 8,
       borderBottom: `2px solid ${C.borderFuerte}`
     }}>
       <div style={{
-        width: 28, height: 28, borderRadius: "50%",
+        width: 24, height: 24, borderRadius: "50%",
         background: C.borderFuerte, color: "#ffffff",
         display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 13, fontWeight: 800, flexShrink: 0
+        fontSize: 12, fontWeight: 800, flexShrink: 0
       }}>
         {numero}
       </div>
-      <span style={{ fontSize: 14, fontWeight: 700, color: C.texto, letterSpacing: "0.01em" }}>
+      <span style={{ fontSize: 13, fontWeight: 700, color: C.texto, letterSpacing: "0.01em" }}>
         {titulo}
       </span>
-      <span style={{ fontSize: 14, marginLeft: "auto", opacity: 0.4 }}>{icono}</span>
+      <span style={{ fontSize: 13, marginLeft: "auto", opacity: 0.4 }}>{icono}</span>
     </div>
   );
 }
@@ -116,15 +116,15 @@ function RecuadroCalculo() {
     <div style={{
       border: `1.5px solid ${C.border}`,
       borderRadius: 6,
-      minHeight: 80,
-      marginTop: 6,
+      minHeight: 60,
+      marginTop: 4,
     }} />
   );
 }
 
 function LineasRespuesta({ n = 4 }) {
   return (
-    <div style={{ marginTop: 6 }}>
+    <div style={{ marginTop: 4 }}>
       {Array.from({ length: n }).map((_, i) => <LineaEscritura key={i} />)}
     </div>
   );
@@ -132,9 +132,9 @@ function LineasRespuesta({ n = 4 }) {
 
 function LineaDoble() {
   return (
-    <div style={{ marginBottom: 6 }}>
-      <div style={{ borderBottom: `1px dashed ${C.lineaEscritura}`, height: 18 }} />
-      <div style={{ borderBottom: `1.5px solid ${C.lineaEscritura}`, height: 18 }} />
+    <div style={{ marginBottom: 4 }}>
+      <div style={{ borderBottom: `1px dashed ${C.lineaEscritura}`, height: 15 }} />
+      <div style={{ borderBottom: `1.5px solid ${C.lineaEscritura}`, height: 15 }} />
     </div>
   );
 }
@@ -256,59 +256,59 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
           <div style={{
             background: C.fondoHeader,
             borderBottom: `2.5px solid ${C.borderFuerte}`,
-            padding: "18px 24px"
+            padding: "12px 20px"
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
               <div style={{ flex: 1 }}>
-                <div style={{ display: "flex", gap: 6, marginBottom: 10, flexWrap: "wrap" }}>
+                <div style={{ display: "flex", gap: 4, marginBottom: 8, flexWrap: "wrap" }}>
                   {[gradoDisplay, registro.area, registro.bloque].map(tag => (
                     <span key={tag} style={{
-                      fontSize: 10, fontWeight: 700, padding: "3px 10px",
+                      fontSize: 9, fontWeight: 700, padding: "2px 8px",
                       borderRadius: 4, border: `1.5px solid ${C.borderFuerte}`,
                       color: C.texto, background: "white",
                       letterSpacing: "0.05em", textTransform: "uppercase"
                     }}>{tag}</span>
                   ))}
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-                  <span style={{ fontSize: 26, lineHeight: 1 }}>{emoji}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                  <span style={{ fontSize: 22, lineHeight: 1 }}>{emoji}</span>
                   <h2 style={{
-                    fontSize: 20, fontWeight: 800, color: C.texto,
+                    fontSize: 17, fontWeight: 800, color: C.texto,
                     margin: 0, lineHeight: 1.2, letterSpacing: "-0.01em"
                   }}>
                     {tituloTexto}
                   </h2>
                 </div>
                 {registro.objetivo && (
-                  <p style={{ fontSize: 12, color: C.muted, fontStyle: "italic", margin: 0 }}>
+                  <p style={{ fontSize: 11, color: C.muted, fontStyle: "italic", margin: 0 }}>
                     Objetivo: {registro.objetivo}
                   </p>
                 )}
               </div>
-              <span style={{ flexShrink: 0, marginLeft: 16 }}><Logo size={14} /></span>
+              <span style={{ flexShrink: 0, marginLeft: 12 }}><Logo size={13} /></span>
             </div>
 
             {/* Datos alumno */}
             <div style={{
               display: "grid", gridTemplateColumns: "2fr 1fr 1fr",
-              gap: 16, marginTop: 18
+              gap: 12, marginTop: 10
             }}>
               {["Nombre y apellido", "Fecha", "Grado / Sección"].map(label => (
                 <div key={label}>
                   <p style={{
-                    fontSize: 10, color: C.muted, fontWeight: 700,
-                    marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.06em"
+                    fontSize: 9, color: C.muted, fontWeight: 700,
+                    marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em"
                   }}>
                     {label}
                   </p>
-                  <div style={{ borderBottom: `2px solid ${C.borderFuerte}`, height: 26 }} />
+                  <div style={{ borderBottom: `2px solid ${C.borderFuerte}`, height: 22 }} />
                 </div>
               ))}
             </div>
           </div>
 
           {/* Cuerpo */}
-          <div style={{ padding: "22px 24px", display: "flex", flexDirection: "column", gap: 28 }}>
+          <div style={{ padding: "14px 20px", display: "flex", flexDirection: "column", gap: 18 }}>
 
             {isPDL ? (
 
@@ -317,15 +317,15 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                 <>
                   <div>
                     <SeccionHeader numero="1" titulo="Leemos" icono="📖" />
-                    <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.9, margin: 0, whiteSpace: "pre-line" }}>
+                    <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.7, margin: 0, whiteSpace: "pre-line" }}>
                       {stripMarkdown(ficha.texto)}
                     </p>
                   </div>
                   <div>
                     <SeccionHeader numero="2" titulo="Respondé" icono="✍️" />
                     {Array.isArray(ficha.preguntas) && ficha.preguntas.map((preg, idx) => (
-                      <div key={idx} style={{ marginBottom: 24 }}>
-                        <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 8 }}>
+                      <div key={idx} style={{ marginBottom: 16 }}>
+                        <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 6 }}>
                           <span style={{ fontSize: 13, fontWeight: 700, color: C.texto, minWidth: 18, flexShrink: 0 }}>{idx + 1}.</span>
                           <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.6, margin: 0 }}>{stripMarkdown(preg)}</p>
                         </div>
@@ -340,16 +340,16 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                 <>
                   <div>
                     <SeccionHeader numero="1" titulo="¡A escribir!" icono="✏️" />
-                    <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.8, margin: 0 }}>{stripMarkdown(ficha.consigna)}</p>
+                    <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.65, margin: 0 }}>{stripMarkdown(ficha.consigna)}</p>
                   </div>
                   {Array.isArray(ficha.orientaciones) && ficha.orientaciones.length > 0 && (
                     <div>
                       <SeccionHeader numero="2" titulo="Antes de escribir, pensá…" icono="💭" />
-                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                         {ficha.orientaciones.map((orientacion, idx) => (
                           <div key={idx} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                            <span style={{ fontSize: 13, color: C.muted, flexShrink: 0, marginTop: 1 }}>→</span>
-                            <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.6, margin: 0 }}>{stripMarkdown(orientacion)}</p>
+                            <span style={{ fontSize: 12, color: C.muted, flexShrink: 0, marginTop: 1 }}>→</span>
+                            <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }}>{stripMarkdown(orientacion)}</p>
                           </div>
                         ))}
                       </div>
@@ -369,7 +369,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                 <>
                   <div>
                     <SeccionHeader numero="1" titulo="La regla" icono="📚" />
-                    <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.8, margin: "0 0 12px" }}>{stripMarkdown(ficha.explicacion)}</p>
+                    <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.65, margin: "0 0 8px" }}>{stripMarkdown(ficha.explicacion)}</p>
                     {ficha.ejemplo && (
                       <div style={{
                         background: C.fondoReflexion, borderRadius: 6,
@@ -385,10 +385,10 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                     {Array.isArray(ficha.ejercicios) && (
                       <div style={{ display: "flex", flexDirection: "column" }}>
                         {ficha.ejercicios.map((ejercicio, idx) => (
-                          <div key={idx} style={{ marginBottom: 20 }}>
-                            <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 8 }}>
-                              <span style={{ fontSize: 13, fontWeight: 700, color: C.texto, minWidth: 18, flexShrink: 0 }}>{idx + 1}.</span>
-                              <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.6, margin: 0 }}>{stripMarkdown(ejercicio)}</p>
+                          <div key={idx} style={{ marginBottom: 12 }}>
+                            <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 6 }}>
+                              <span style={{ fontSize: 12, fontWeight: 700, color: C.texto, minWidth: 18, flexShrink: 0 }}>{idx + 1}.</span>
+                              <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }}>{stripMarkdown(ejercicio)}</p>
                             </div>
                             <LineasRespuesta n={4} />
                           </div>
@@ -406,7 +406,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                 {/* 1. Explicación */}
                 <div>
                   <SeccionHeader numero="1" titulo={pregExplicacion || "Leemos juntos"} icono="📖" />
-                  <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.8, margin: 0 }}>
+                  <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.65, margin: 0 }}>
                     {cuerpoExplicacion || ficha.explicacion}
                   </p>
                 </div>
@@ -414,7 +414,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                 {/* 2. Ejemplo */}
                 <div>
                   <SeccionHeader numero="2" titulo={pregEjemplo || "¿Cómo se ve en la vida real?"} icono="💡" />
-                  <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.8, margin: 0 }}>
+                  <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.65, margin: 0 }}>
                     {cuerpoEjemplo || ficha.ejemplo}
                   </p>
                 </div>
@@ -425,10 +425,10 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                   {items.length > 0 ? (
                     <div style={{ display: "flex", flexDirection: "column" }}>
                       {items.map(({ num, texto }) => (
-                        <div key={num} style={{ marginBottom: 20 }}>
-                          <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 8 }}>
-                            <span style={{ fontSize: 13, fontWeight: 700, color: C.texto, minWidth: 18, flexShrink: 0 }}>{num}.</span>
-                            <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.7, margin: 0 }}>{texto}</p>
+                        <div key={num} style={{ marginBottom: 12 }}>
+                          <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 6 }}>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: C.texto, minWidth: 18, flexShrink: 0 }}>{num}.</span>
+                            <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }}>{texto}</p>
                           </div>
                           {registro.area === "Matemática"
                             ? <RecuadroCalculo />
@@ -439,7 +439,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                     </div>
                   ) : (
                     <>
-                      <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.8, marginBottom: 16 }}>
+                      <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.65, marginBottom: 10 }}>
                         {ficha.actividad}
                       </p>
                       {registro.area === "Matemática"
@@ -454,7 +454,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                 {ficha.pregunta_reflexion && (
                   <div>
                     <SeccionHeader numero="4" titulo="Reflexionamos" icono="💭" />
-                    <p style={{ fontSize: 13, color: C.texto, fontStyle: "italic", lineHeight: 1.7, marginBottom: 12 }}>
+                    <p style={{ fontSize: 12, color: C.texto, fontStyle: "italic", lineHeight: 1.6, marginBottom: 8 }}>
                       {stripMarkdown(ficha.pregunta_reflexion)}
                     </p>
                     <LineasRespuesta n={4} />
@@ -468,12 +468,12 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
           {/* Footer */}
           <div style={{
             borderTop: `2px solid ${C.borderFuerte}`,
-            padding: "10px 24px",
+            padding: "7px 20px",
             display: "flex", justifyContent: "space-between", alignItems: "center",
             background: C.fondoHeader
           }}>
-            <span style={{ fontSize: 11, color: C.muted }}>tiza. · Diseño Curricular 2018</span>
-            <span style={{ fontSize: 11, color: C.muted }}>{gradoDisplay} · {registro.area}</span>
+            <span style={{ fontSize: 10, color: C.muted }}>tiza. · Diseño Curricular 2018</span>
+            <span style={{ fontSize: 10, color: C.muted }}>{gradoDisplay} · {registro.area}</span>
           </div>
 
         </div>
@@ -483,7 +483,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
       {/* CSS impresión */}
       <style>{`
         @media print {
-          @page { size: A4 portrait; margin: 12mm; }
+          @page { size: A4 portrait; margin: 10mm; }
           #nav-ficha { display: none !important; }
           body * { visibility: hidden; }
           #ficha-imprimible, #ficha-imprimible * { visibility: visible; }
@@ -491,7 +491,6 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
             position: absolute; left: 0; top: 0;
             width: 100%; box-shadow: none !important;
             border-radius: 0 !important; border: none !important;
-            max-height: 273mm; overflow: hidden;
           }
         }
       `}</style>
