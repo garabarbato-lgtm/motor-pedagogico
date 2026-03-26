@@ -49,7 +49,9 @@ FORMATO DE RESPUESTA (JSON estricto, sin markdown):
     "segunda pregunta de comprensión",
     "tercera pregunta (opcional)"
   ]
-}`;
+}
+
+Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdown.`;
 }
 
 // ─────────────────────────────────────────────
@@ -85,7 +87,9 @@ FORMATO DE RESPUESTA (JSON estricto, sin markdown):
     "segunda orientación en forma de pregunta",
     "tercera orientación (opcional)"
   ]
-}`;
+}
+
+Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdown.`;
 }
 
 // ─────────────────────────────────────────────
@@ -125,7 +129,9 @@ FORMATO DE RESPUESTA (JSON estricto, sin markdown):
     "ejercicio 3",
     "ejercicio 4"
   ]
-}`;
+}
+
+Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdown.`;
 }
 
 // ─────────────────────────────────────────────
@@ -182,7 +188,9 @@ CRITERIOS OBLIGATORIOS:
 FORMATO DE RESPUESTA (JSON estricto, sin markdown):
 {
   ${formatoCampos}
-}`;
+}
+
+Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdown.`;
 }
 
 // ─────────────────────────────────────────────
@@ -245,7 +253,9 @@ RESPUESTA (JSON estricto, sin markdown):
   "feedback_para_regenerar": "Instrucciones específicas para mejorar la ficha (solo si no está aprobada)"
 }
 
-Si la ficha no tiene problemas, devolvé "aprobada": true, "puntaje" >= 80 y "problemas": [].`;
+Si la ficha no tiene problemas, devolvé "aprobada": true, "puntaje" >= 80 y "problemas": [].
+
+Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdown.`;
 }
 
 // ─────────────────────────────────────────────
@@ -303,7 +313,9 @@ RESPUESTA (JSON estricto, sin markdown):
   "feedback_para_regenerar": "Instrucciones específicas para mejorar la ficha (solo si no está aprobada)"
 }
 
-Si la ficha no tiene problemas, devolvé "aprobada": true, "puntaje" >= 80 y "problemas": [].`;
+Si la ficha no tiene problemas, devolvé "aprobada": true, "puntaje" >= 80 y "problemas": [].
+
+Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdown.`;
 }
 
 // ─────────────────────────────────────────────
@@ -317,8 +329,19 @@ async function callAPI(prompt, maxTokens = 1000) {
   });
 
   const text = response.content[0].text.trim();
-  const clean = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-  return JSON.parse(clean);
+  const clean = text
+    .replace(/```json\s*/gi, "")
+    .replace(/```\s*/g, "")
+    .replace(/`/g, "")
+    .trim();
+  try {
+    return JSON.parse(clean);
+  } catch {
+    // Intentar extraer JSON del texto si hay contenido extra alrededor
+    const match = clean.match(/\{[\s\S]*\}/);
+    if (match) return JSON.parse(match[0]);
+    throw new Error(`Respuesta no es JSON válido: ${clean.slice(0, 120)}`);
+  }
 }
 
 // ─────────────────────────────────────────────
