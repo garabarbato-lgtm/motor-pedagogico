@@ -39,6 +39,8 @@ Criterios:
 - Si el tipo de texto es noticia: respetar estructura periodística (título, copete, cuerpo)
 - Si el tipo de texto es obra de teatro: incluir al menos dos personajes y acotaciones
 - Si el tipo de texto es historieta: describir las viñetas con texto ya que no hay imágenes
+- Marcá con **doble asterisco** los nombres propios, datos importantes y conceptos clave del texto
+- El título debe estar en mayúscula normal (solo la primera letra de la primera palabra en mayúscula, no todo en mayúsculas)
 
 FORMATO DE RESPUESTA (JSON estricto, sin markdown):
 {
@@ -77,6 +79,8 @@ Criterios:
 - La consigna debe ser concreta y alcanzable para el grado
 - Las orientaciones deben ser preguntas simples, no instrucciones complejas
 - El lenguaje debe ser cercano y motivador para un niño
+- Marcá con **doble asterisco** los datos importantes y conceptos clave de la consigna
+- El título debe estar en mayúscula normal (solo la primera letra de la primera palabra en mayúscula)
 
 FORMATO DE RESPUESTA (JSON estricto, sin markdown):
 {
@@ -118,6 +122,8 @@ Criterios:
 - Evitar ejercicios mecánicos sin sentido (ej. "escribí 10 palabras con mb")
 - Priorizar ejercicios en contexto de oraciones o textos breves
 - Los ejercicios deben ser strings simples con el enunciado (sin numeración — el número se muestra automáticamente)
+- Marcá con **doble asterisco** las palabras clave o términos importantes en la explicación y los ejercicios
+- El título debe estar en mayúscula normal (solo la primera letra de la primera palabra en mayúscula)
 
 FORMATO DE RESPUESTA (JSON estricto, sin markdown):
 {
@@ -186,6 +192,8 @@ CRITERIOS OBLIGATORIOS:
 3. Todo el contenido debe responder al objetivo curricular específico, no al tema general
 4. La actividad debe incluir máximo 3 ejercicios o problemas para que entre en una hoja A4
 5. Los ejercicios de la actividad deben estar numerados exactamente así: "1. [enunciado]\n2. [enunciado]\n3. [enunciado]"
+6. Marcá con **doble asterisco** los números, datos importantes y conceptos clave en la explicación y los ejercicios
+7. El título debe estar en mayúscula normal (solo la primera letra de la primera palabra en mayúscula, no TODO MAYÚSCULAS)
 
 FORMATO DE RESPUESTA (JSON estricto, sin markdown):
 {
