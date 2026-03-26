@@ -38,6 +38,18 @@ function separarPregunta(texto) {
   return { pregunta: "", cuerpo: texto };
 }
 
+function stripMarkdown(str) {
+  if (!str) return str;
+  return str
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/\*(.+?)\*/g, "$1")
+    .replace(/_(.+?)_/g, "$1")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/^[•\-]\s+/gm, "")
+    .replace(/^\d+[.)]\s+/gm, "")
+    .trim();
+}
+
 function parsearActividad(texto) {
   if (!texto) return { header: "Tu turno", items: [] };
   const lineas = texto.split("\n").map(l => l.trim()).filter(Boolean);
@@ -53,15 +65,15 @@ function parsearActividad(texto) {
   for (const linea of lineas.slice(inicio)) {
     const num = linea.match(/^(\d+)[.)]\s*(.*)/);
     if (num) {
-      if (actual) items.push(actual);
+      if (actual) items.push({ ...actual, texto: stripMarkdown(actual.texto) });
       actual = { num: num[1], texto: num[2] };
     } else if (actual) {
       actual.texto += " " + linea;
     } else {
-      items.push({ num: String(items.length + 1), texto: linea });
+      items.push({ num: String(items.length + 1), texto: stripMarkdown(linea) });
     }
   }
-  if (actual) items.push(actual);
+  if (actual) items.push({ ...actual, texto: stripMarkdown(actual.texto) });
   return { header, items };
 }
 
@@ -108,8 +120,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
   const isPDL = registro.area === "Prácticas del Lenguaje";
   const { emoji, texto: tituloTexto } = extraerEmoji(ficha.titulo);
-  const { pregunta: pregExplicacion, cuerpo: cuerpoExplicacion } = separarPregunta(ficha.explicacion);
-  const { pregunta: pregEjemplo, cuerpo: cuerpoEjemplo } = separarPregunta(ficha.ejemplo);
+  const { pregunta: pregExplicacion, cuerpo: cuerpoExplicacion } = separarPregunta(stripMarkdown(ficha.explicacion));
+  const { pregunta: pregEjemplo, cuerpo: cuerpoEjemplo } = separarPregunta(stripMarkdown(ficha.ejemplo));
   const { header: headerActividad, items } = parsearActividad(ficha.actividad);
   const nLineas = Math.max(3, Math.min(items.length + 1, 7));
   const gradoDisplay = `${registro.grado}° grado`;
@@ -283,7 +295,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                       borderLeft: `4px solid ${C.borderFuerte}`,
                     }}>
                       <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.9, margin: 0, whiteSpace: "pre-line" }}>
-                        {ficha.texto}
+                        {stripMarkdown(ficha.texto)}
                       </p>
                     </div>
                   </div>
@@ -303,7 +315,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                             display: "flex", alignItems: "center", justifyContent: "center",
                             fontSize: 11, fontWeight: 800, color: C.borderFuerte, flexShrink: 0,
                           }}>{idx + 1}</div>
-                          <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.6, margin: 0 }}>{preg}</p>
+                          <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.6, margin: 0 }}>{stripMarkdown(preg)}</p>
                         </div>
                         <LineaEscritura /><LineaEscritura /><LineaEscritura />
                       </div>
@@ -321,7 +333,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                       padding: "14px 18px", border: `1px solid ${C.border}`,
                       borderLeft: `4px solid ${C.borderFuerte}`,
                     }}>
-                      <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.8, margin: 0 }}>{ficha.consigna}</p>
+                      <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.8, margin: 0 }}>{stripMarkdown(ficha.consigna)}</p>
                     </div>
                   </div>
                   {Array.isArray(ficha.orientaciones) && ficha.orientaciones.length > 0 && (
@@ -341,7 +353,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                               display: "flex", alignItems: "center", justifyContent: "center",
                               fontSize: 11, fontWeight: 800, color: C.borderFuerte, flexShrink: 0,
                             }}>{idx + 1}</div>
-                            <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.6, margin: 0 }}>{orientacion}</p>
+                            <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.6, margin: 0 }}>{stripMarkdown(orientacion)}</p>
                           </div>
                         ))}
                       </div>
@@ -363,7 +375,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                       padding: "14px 18px", border: `1px solid ${C.border}`,
                       borderLeft: `4px solid ${C.borderFuerte}`, marginBottom: 12,
                     }}>
-                      <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.8, margin: 0 }}>{ficha.explicacion}</p>
+                      <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.8, margin: 0 }}>{stripMarkdown(ficha.explicacion)}</p>
                     </div>
                     {ficha.ejemplo && (
                       <div style={{
@@ -371,7 +383,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                         padding: "12px 16px", border: `1px solid ${C.border}`,
                       }}>
                         <p style={{ fontSize: 10, color: C.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Ejemplo</p>
-                        <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.7, margin: 0 }}>{ficha.ejemplo}</p>
+                        <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.7, margin: 0 }}>{stripMarkdown(ficha.ejemplo)}</p>
                       </div>
                     )}
                   </div>
@@ -393,7 +405,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                                 display: "flex", alignItems: "center", justifyContent: "center",
                                 fontSize: 11, fontWeight: 800, color: C.borderFuerte, flexShrink: 0,
                               }}>{idx + 1}</div>
-                              <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.6, margin: 0 }}>{ejercicio}</p>
+                              <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.6, margin: 0 }}>{stripMarkdown(ejercicio)}</p>
                             </div>
                             <LineaEscritura /><LineaEscritura />
                           </div>
@@ -487,7 +499,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                       borderRadius: 6, padding: "12px 16px", marginBottom: 14
                     }}>
                       <p style={{ fontSize: 13, color: C.texto, fontStyle: "italic", lineHeight: 1.7, margin: 0 }}>
-                        {ficha.pregunta_reflexion}
+                        {stripMarkdown(ficha.pregunta_reflexion)}
                       </p>
                     </div>
                     <LineaEscritura />
@@ -517,6 +529,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
       {/* CSS impresión */}
       <style>{`
         @media print {
+          @page { size: A4 portrait; margin: 12mm; }
           #nav-ficha { display: none !important; }
           body * { visibility: hidden; }
           #ficha-imprimible, #ficha-imprimible * { visibility: visible; }
@@ -524,6 +537,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
             position: absolute; left: 0; top: 0;
             width: 100%; box-shadow: none !important;
             border-radius: 0 !important; border: none !important;
+            max-height: 273mm; overflow: hidden;
           }
         }
       `}</style>

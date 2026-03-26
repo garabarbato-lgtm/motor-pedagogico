@@ -106,7 +106,7 @@ La ficha debe tener:
 - Título con la regla
 - Explicación breve y clara de la regla (máximo 2 oraciones)
 - Un ejemplo concreto
-- Entre 4 y 6 ejercicios variados sobre esa regla
+- Entre 2 y 3 ejercicios variados sobre esa regla
 
 Criterios:
 - Los ejercicios deben ser variados: completar, corregir, clasificar, inventar
@@ -177,6 +177,7 @@ CRITERIOS OBLIGATORIOS:
 1. Lenguaje claro y adecuado para niños de primaria (evitá términos académicos complejos)
 2. La actividad debe promover comprensión real, no ejercicios mecánicos sin sentido
 3. Todo el contenido debe responder al objetivo curricular específico, no al tema general
+4. La actividad debe incluir máximo 3 ejercicios o problemas para que entre en una hoja A4
 
 FORMATO DE RESPUESTA (JSON estricto, sin markdown):
 {
