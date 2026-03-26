@@ -28,7 +28,6 @@ function stripMarkdown(str) {
     .trim();
 }
 
-// Renderiza **negrita** como <strong>, limpia otro markdown
 function renderConNegrita(str) {
   if (!str) return null;
   const limpio = str
@@ -42,8 +41,6 @@ function renderConNegrita(str) {
   );
 }
 
-// Título: parte antes de ":" en texto, parte después en acento
-// Sin ":", últimas 2-3 palabras en acento
 function renderTitulo(texto) {
   if (!texto) return null;
   const colonIdx = texto.indexOf(":");
@@ -135,7 +132,6 @@ function SeccionHeader({ numero, titulo, icono }) {
   );
 }
 
-// Recuadro unificado de respuesta para ejercicios
 function RecuadroRespuesta() {
   return (
     <div style={{
@@ -165,7 +161,6 @@ function LineaDoble() {
   );
 }
 
-// Bloque de concepto clave con acento verde izquierdo
 function ConceptoClave({ texto }) {
   if (!texto) return null;
   return (
@@ -176,7 +171,7 @@ function ConceptoClave({ texto }) {
       padding: "8px 12px",
       marginBottom: 8,
     }}>
-      <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0, fontWeight: 500 }}>
+      <p className="concepto-clave-texto" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0, fontWeight: 500 }}>
         {renderConNegrita(texto)}
       </p>
     </div>
@@ -192,7 +187,6 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
   const isPDL = registro.area === "Prácticas del Lenguaje";
   const tituloTexto = ficha.titulo || "";
-  // Emojis: usar ficha.emojis si existe, sino fallback neutro
   const emojis = Array.isArray(ficha.emojis) && ficha.emojis.length ? ficha.emojis : ["📝"];
   const emojiLeft = emojis[0];
   const emojiRight = emojis[1] || emojis[0];
@@ -207,7 +201,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   };
 
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", background: C.fondoApp, minHeight: "100vh" }}>
+    <div className="contenedor-pagina" style={{ fontFamily: "system-ui, sans-serif", background: C.fondoApp, minHeight: "100vh" }}>
 
       {/* Nav */}
       <nav style={{
@@ -243,11 +237,11 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
       </nav>
 
       {/* Contenedor */}
-      <div style={{ maxWidth: 680, margin: "0 auto", padding: "28px 16px 60px" }}>
+      <div className="contenedor-wrapper" style={{ maxWidth: 680, margin: "0 auto", padding: "28px 16px 60px" }}>
 
         {/* Badge de validación pedagógica */}
         {validacion?.observaciones?.length > 0 && (
-          <div style={{
+          <div className="validacion-badge" style={{
             background: "#fffbeb",
             border: "1px solid #f59e0b",
             borderRadius: 8, padding: "12px 16px", marginBottom: 16,
@@ -267,7 +261,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
         {/* Banner mock */}
         {ficha._mock && (
-          <div style={{
+          <div className="mock-banner" style={{
             background: "#fffbeb", border: "1px solid #f6ad55",
             borderRadius: 8, padding: "8px 14px", marginBottom: 16,
             fontSize: 12, color: "#92400e"
@@ -277,7 +271,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
         )}
 
         {/* Botón imprimir */}
-        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }} className="btn-imprimir">
+        <div className="btn-imprimir" style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
           <button
             onClick={handleImprimir}
             disabled={imprimiendo}
@@ -337,13 +331,10 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
             </div>
 
             {/* Datos alumno */}
-            <div style={{
-              display: "grid", gridTemplateColumns: "2fr 1fr 1fr",
-              gap: 10,
-            }}>
+            <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
               {["Nombre y apellido", "Fecha", "Grado / Sección"].map(label => (
                 <div key={label}>
-                  <p style={{
+                  <p className="dato-label" style={{
                     fontSize: 9, color: C.muted, fontWeight: 700,
                     marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em"
                   }}>
@@ -356,27 +347,27 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
           </div>
 
           {/* Cuerpo */}
-          <div style={{ padding: "10px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
+          <div className="cuerpo-ficha" style={{ padding: "10px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
 
             {isPDL ? (
 
               /* ── PDL: Lectura de textos ── */
               registro.bloque === "Lectura de textos" ? (
                 <>
-                  <div>
+                  <div className="seccion">
                     <SeccionHeader numero="1" titulo="Leemos" icono="📖" />
-                    <p style={{ fontSize: 11, color: C.texto, lineHeight: 1.65, margin: 0, whiteSpace: "pre-line" }}>
+                    <p className="explicacion" style={{ fontSize: 11, color: C.texto, lineHeight: 1.65, margin: 0, whiteSpace: "pre-line" }}>
                       {renderConNegrita(ficha.texto)}
                     </p>
                   </div>
-                  <div>
+                  <div className="seccion">
                     <SeccionHeader numero="2" titulo="Respondé" icono="✍️" />
                     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                       {Array.isArray(ficha.preguntas) && ficha.preguntas.map((preg, idx) => (
                         <div key={idx}>
                           <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
                             <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
-                            <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }}>{renderConNegrita(preg)}</p>
+                            <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }}>{renderConNegrita(preg)}</p>
                           </div>
                           <LineasRespuesta n={4} />
                         </div>
@@ -388,24 +379,24 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
               /* ── PDL: Escritura de textos ── */
               ) : registro.bloque === "Escritura de textos" ? (
                 <>
-                  <div>
+                  <div className="seccion">
                     <SeccionHeader numero="1" titulo="¡A escribir!" icono="✏️" />
-                    <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }}>{renderConNegrita(ficha.consigna)}</p>
+                    <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }}>{renderConNegrita(ficha.consigna)}</p>
                   </div>
                   {Array.isArray(ficha.orientaciones) && ficha.orientaciones.length > 0 && (
-                    <div>
+                    <div className="seccion">
                       <SeccionHeader numero="2" titulo="Antes de escribir, pensá…" icono="💭" />
                       <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                         {ficha.orientaciones.map((orientacion, idx) => (
                           <div key={idx} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
                             <span style={{ fontSize: 12, color: C.muted, flexShrink: 0, marginTop: 1 }}>→</span>
-                            <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }}>{renderConNegrita(orientacion)}</p>
+                            <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }}>{renderConNegrita(orientacion)}</p>
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
-                  <div>
+                  <div className="seccion">
                     <SeccionHeader numero="3" titulo="Mi texto" icono="📝" />
                     {gradoEsUno
                       ? Array.from({ length: 8 }).map((_, i) => <LineaDoble key={i} />)
@@ -417,21 +408,21 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
               /* ── PDL: Ortografía ── */
               ) : (
                 <>
-                  <div>
+                  <div className="seccion">
                     <SeccionHeader numero="1" titulo="La regla" icono="📚" />
                     <ConceptoClave texto={ficha.concepto_clave} />
-                    <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: "0 0 6px" }}>{renderConNegrita(ficha.explicacion)}</p>
+                    <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: "0 0 6px" }}>{renderConNegrita(ficha.explicacion)}</p>
                     {ficha.ejemplo && (
                       <div style={{
                         background: "#f7f7f0", borderRadius: 6,
                         padding: "8px 12px", border: `1px solid ${C.border}`,
                       }}>
                         <p style={{ fontSize: 10, color: C.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Ejemplo</p>
-                        <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }}>{renderConNegrita(ficha.ejemplo)}</p>
+                        <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }}>{renderConNegrita(ficha.ejemplo)}</p>
                       </div>
                     )}
                   </div>
-                  <div>
+                  <div className="seccion">
                     <SeccionHeader numero="2" titulo="Practicamos" icono="✏️" />
                     {Array.isArray(ficha.ejercicios) && (
                       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -439,7 +430,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                           <div key={idx}>
                             <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
                               <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
-                              <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }}>{renderConNegrita(ejercicio)}</p>
+                              <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }}>{renderConNegrita(ejercicio)}</p>
                             </div>
                             <RecuadroRespuesta />
                           </div>
@@ -455,16 +446,16 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
               /* ── No PDL: Matemática, Ciencias, etc. ── */
               <>
                 {/* 1. Explicación */}
-                <div>
+                <div className="seccion">
                   <SeccionHeader numero="1" titulo={pregExplicacion || "Leemos juntos"} icono="📖" />
                   <ConceptoClave texto={ficha.concepto_clave} />
-                  <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }}>
+                  <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }}>
                     {renderConNegrita(ficha.explicacion)}
                   </p>
                 </div>
 
                 {/* 2. Actividad */}
-                <div>
+                <div className="seccion">
                   <SeccionHeader numero="2" titulo={headerActividad} icono="✏️" />
                   {items.length > 0 ? (
                     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -472,7 +463,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                         <div key={num}>
                           <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
                             <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{num}.</span>
-                            <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }}>{renderConNegrita(texto)}</p>
+                            <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }}>{renderConNegrita(texto)}</p>
                           </div>
                           <RecuadroRespuesta />
                         </div>
@@ -480,7 +471,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                     </div>
                   ) : (
                     <>
-                      <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, marginBottom: 8 }}>
+                      <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, marginBottom: 8 }}>
                         {renderConNegrita(ficha.actividad)}
                       </p>
                       <RecuadroRespuesta />
@@ -490,9 +481,9 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
                 {/* 3. Reflexión */}
                 {ficha.pregunta_reflexion && (
-                  <div>
+                  <div className="seccion">
                     <SeccionHeader numero="3" titulo="Reflexionamos" icono="💭" />
-                    <p style={{ fontSize: 12, color: C.texto, fontStyle: "italic", lineHeight: 1.55, marginBottom: 6 }}>
+                    <p className="reflexion-texto" style={{ fontSize: 12, color: C.texto, fontStyle: "italic", lineHeight: 1.55, marginBottom: 6 }}>
                       {renderConNegrita(ficha.pregunta_reflexion)}
                     </p>
                     <LineasRespuesta n={2} />
@@ -521,19 +512,59 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
       {/* CSS impresión */}
       <style>{`
         @media print {
-          @page { size: A4 portrait; margin: 15mm; }
-          body { margin: 0; }
-          #nav-ficha, .btn-imprimir { display: none !important; }
-          body * { visibility: hidden; }
-          #ficha-imprimible, #ficha-imprimible * { visibility: visible; }
-          .ficha {
-            position: absolute; left: 0; top: 0;
+          * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          @page { size: A4 portrait; margin: 0; }
+
+          html, body {
+            margin: 0;
+            padding: 0;
             width: 210mm;
+          }
+
+          #nav-ficha,
+          .btn-imprimir,
+          .validacion-badge,
+          .mock-banner { display: none !important; }
+
+          .contenedor-pagina {
+            background: white !important;
+            min-height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+
+          .contenedor-wrapper {
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+
+          .ficha {
+            width: 210mm;
+            max-width: 210mm;
+            margin: 0;
+            padding: 15mm;
             border: none !important;
             border-radius: 0 !important;
             box-shadow: none !important;
+            min-height: 297mm;
+            display: flex;
+            flex-direction: column;
+            overflow: visible !important;
             font-family: 'Lexend Deca', sans-serif !important;
           }
+
+          .cuerpo-ficha { flex: 1 !important; }
+
+          /* Solo el texto de contenido en 13px — NO los títulos ni títulos de sección */
+          .explicacion,
+          .ejercicio-enunciado,
+          .reflexion-texto,
+          .concepto-clave,
+          .dato-label { font-size: 13px !important; }
+
+          /* El contenido se distribuye ocupando toda la hoja */
+          .seccion:last-of-type { flex: 1; }
         }
       `}</style>
     </div>
