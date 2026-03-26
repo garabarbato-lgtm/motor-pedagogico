@@ -117,6 +117,7 @@ Criterios:
 - El vocabulario de los ejercicios debe ser conocido para el grado
 - Evitar ejercicios mecánicos sin sentido (ej. "escribí 10 palabras con mb")
 - Priorizar ejercicios en contexto de oraciones o textos breves
+- Los ejercicios deben ser strings simples con el enunciado (sin numeración — el número se muestra automáticamente)
 
 FORMATO DE RESPUESTA (JSON estricto, sin markdown):
 {
@@ -184,6 +185,7 @@ CRITERIOS OBLIGATORIOS:
 2. La actividad debe promover comprensión real, no ejercicios mecánicos sin sentido
 3. Todo el contenido debe responder al objetivo curricular específico, no al tema general
 4. La actividad debe incluir máximo 3 ejercicios o problemas para que entre en una hoja A4
+5. Los ejercicios de la actividad deben estar numerados exactamente así: "1. [enunciado]\n2. [enunciado]\n3. [enunciado]"
 
 FORMATO DE RESPUESTA (JSON estricto, sin markdown):
 {

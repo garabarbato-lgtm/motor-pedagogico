@@ -250,6 +250,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
           border: `2.5px solid ${C.borderFuerte}`,
           borderRadius: 10,
           overflow: "hidden",
+          fontFamily: "'Lexend Deca', sans-serif",
         }}>
 
           {/* Encabezado */}
@@ -383,10 +384,15 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                   <div>
                     <SeccionHeader numero="2" titulo="Practicamos" icono="✏️" />
                     {Array.isArray(ficha.ejercicios) && (
-                      <div style={{ display: "flex", flexDirection: "column" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                         {ficha.ejercicios.map((ejercicio, idx) => (
-                          <div key={idx} style={{ marginBottom: 12 }}>
-                            <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 6 }}>
+                          <div key={idx} style={{
+                            background: "#ffffff",
+                            border: "0.5px solid #ddddd8",
+                            borderRadius: 8,
+                            padding: 16,
+                          }}>
+                            <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 8 }}>
                               <span style={{ fontSize: 12, fontWeight: 700, color: C.texto, minWidth: 18, flexShrink: 0 }}>{idx + 1}.</span>
                               <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }}>{stripMarkdown(ejercicio)}</p>
                             </div>
@@ -411,22 +417,19 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                   </p>
                 </div>
 
-                {/* 2. Ejemplo */}
+                {/* 2. Actividad */}
                 <div>
-                  <SeccionHeader numero="2" titulo={pregEjemplo || "¿Cómo se ve en la vida real?"} icono="💡" />
-                  <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.65, margin: 0 }}>
-                    {cuerpoEjemplo || ficha.ejemplo}
-                  </p>
-                </div>
-
-                {/* 3. Actividad */}
-                <div>
-                  <SeccionHeader numero="3" titulo={headerActividad} icono="✏️" />
+                  <SeccionHeader numero="2" titulo={headerActividad} icono="✏️" />
                   {items.length > 0 ? (
-                    <div style={{ display: "flex", flexDirection: "column" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                       {items.map(({ num, texto }) => (
-                        <div key={num} style={{ marginBottom: 12 }}>
-                          <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 6 }}>
+                        <div key={num} style={{
+                          background: "#ffffff",
+                          border: "0.5px solid #ddddd8",
+                          borderRadius: 8,
+                          padding: 16,
+                        }}>
+                          <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 8 }}>
                             <span style={{ fontSize: 12, fontWeight: 700, color: C.texto, minWidth: 18, flexShrink: 0 }}>{num}.</span>
                             <p style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }}>{texto}</p>
                           </div>
@@ -450,10 +453,10 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                   )}
                 </div>
 
-                {/* 4. Reflexión */}
+                {/* 3. Reflexión */}
                 {ficha.pregunta_reflexion && (
                   <div>
-                    <SeccionHeader numero="4" titulo="Reflexionamos" icono="💭" />
+                    <SeccionHeader numero="3" titulo="Reflexionamos" icono="💭" />
                     <p style={{ fontSize: 12, color: C.texto, fontStyle: "italic", lineHeight: 1.6, marginBottom: 8 }}>
                       {stripMarkdown(ficha.pregunta_reflexion)}
                     </p>
