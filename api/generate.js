@@ -39,6 +39,7 @@ Criterios:
 - Si el tipo de texto es noticia: respetar estructura periodística (título, copete, cuerpo)
 - Si el tipo de texto es obra de teatro: incluir al menos dos personajes y acotaciones
 - Si el tipo de texto es historieta: describir las viñetas con texto ya que no hay imágenes
+- Si un ejercicio requiere completar una tabla o columnas, NO generar la tabla en HTML ni markdown. En cambio, describir la tabla en el enunciado con texto (por ejemplo: "Hacé una tabla con dos columnas: Animales con columna vertebral | Animales sin columna vertebral") y dejar el recuadro de respuesta vacío para que el alumno la dibuje.
 - Marcá con **doble asterisco** los nombres propios, datos importantes y conceptos clave del texto
 - El título debe tener dos partes separadas por dos puntos cuando sea posible. Mayúscula solo en la primera letra.
 - Elegí 1 o 2 emojis relevantes al tipo de texto para decorar el título.
@@ -126,6 +127,7 @@ Criterios:
 - Evitar ejercicios mecánicos sin sentido (ej. "escribí 10 palabras con mb")
 - Priorizar ejercicios en contexto de oraciones o textos breves
 - Los ejercicios deben ser strings simples con el enunciado (sin numeración — el número se muestra automáticamente)
+- Si un ejercicio requiere completar una tabla o columnas, NO generar la tabla en HTML ni markdown. En cambio, describir la tabla en el enunciado con texto (por ejemplo: "Hacé una tabla con dos columnas: Palabras con mb | Palabras con mp") y dejar el recuadro de respuesta vacío para que el alumno la dibuje.
 - Marcá con **doble asterisco** las palabras clave o términos importantes en la explicación y los ejercicios
 - El título debe tener dos partes separadas por dos puntos. Mayúscula solo en la primera letra.
 - Elegí 1 o 2 emojis relevantes a la regla ortográfica.
@@ -206,6 +208,7 @@ CRITERIOS OBLIGATORIOS:
 7. El título debe tener DOS PARTES separadas por dos puntos cuando sea posible. Ejemplo: "El entero y sus partes: dividiendo pizzas y tortas". Usá mayúscula solo en la primera letra de la primera palabra.
 8. En los enunciados de los ejercicios, incluí un emoji al INICIO solo si hay un objeto cotidiano concreto (comida, animales, juguetes, deportes, objetos escolares). Formato: "🍫 Mi papá compró...". Si el ejercicio es abstracto, NO uses emoji.
 9. Elegí 1 o 2 emojis relevantes al tema del contenido para decorar el título de la ficha.
+10. Si un ejercicio requiere que el alumno complete una tabla o columnas, NO generar la tabla en HTML ni markdown. En cambio, describir la tabla en el enunciado con texto (por ejemplo: "Hacé una tabla con dos columnas: Materia | Cantidad de horas") y dejar el recuadro de respuesta vacío para que el alumno la dibuje.
 
 FORMATO DE RESPUESTA (JSON estricto, sin markdown):
 {

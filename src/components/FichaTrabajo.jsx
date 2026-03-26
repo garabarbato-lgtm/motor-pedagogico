@@ -513,12 +513,12 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
       <style>{`
         @media print {
           * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          @page { size: A4 portrait; margin: 0; }
+          @page { size: A4; margin: 10mm; }
 
           html, body {
             margin: 0;
             padding: 0;
-            width: 210mm;
+            width: 190mm;
           }
 
           #nav-ficha,
@@ -540,14 +540,14 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
           }
 
           .ficha {
-            width: 210mm;
-            max-width: 210mm;
+            width: 190mm;
+            max-width: 190mm;
             margin: 0;
-            padding: 15mm;
+            padding: 0;
             border: none !important;
             border-radius: 0 !important;
             box-shadow: none !important;
-            min-height: 297mm;
+            min-height: 277mm;
             display: flex;
             flex-direction: column;
             overflow: visible !important;
