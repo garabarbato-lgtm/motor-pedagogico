@@ -40,10 +40,12 @@ Criterios:
 - Si el tipo de texto es obra de teatro: incluir al menos dos personajes y acotaciones
 - Si el tipo de texto es historieta: describir las viñetas con texto ya que no hay imágenes
 - Marcá con **doble asterisco** los nombres propios, datos importantes y conceptos clave del texto
-- El título debe estar en mayúscula normal (solo la primera letra de la primera palabra en mayúscula, no todo en mayúsculas)
+- El título debe tener dos partes separadas por dos puntos cuando sea posible. Mayúscula solo en la primera letra.
+- Elegí 1 o 2 emojis relevantes al tipo de texto para decorar el título.
 
 FORMATO DE RESPUESTA (JSON estricto, sin markdown):
 {
+  "emojis": ["emoji1"],
   "titulo": "título atractivo para el alumno",
   "texto": "el texto completo generado",
   "preguntas": [
@@ -80,10 +82,12 @@ Criterios:
 - Las orientaciones deben ser preguntas simples, no instrucciones complejas
 - El lenguaje debe ser cercano y motivador para un niño
 - Marcá con **doble asterisco** los datos importantes y conceptos clave de la consigna
-- El título debe estar en mayúscula normal (solo la primera letra de la primera palabra en mayúscula)
+- El título debe tener dos partes separadas por dos puntos cuando sea posible. Mayúscula solo en la primera letra.
+- Elegí 1 o 2 emojis relevantes al tipo de texto a producir.
 
 FORMATO DE RESPUESTA (JSON estricto, sin markdown):
 {
+  "emojis": ["emoji1"],
   "titulo": "título atractivo para el alumno",
   "consigna": "la consigna motivadora (máximo 3 oraciones)",
   "orientaciones": [
@@ -123,18 +127,21 @@ Criterios:
 - Priorizar ejercicios en contexto de oraciones o textos breves
 - Los ejercicios deben ser strings simples con el enunciado (sin numeración — el número se muestra automáticamente)
 - Marcá con **doble asterisco** las palabras clave o términos importantes en la explicación y los ejercicios
-- El título debe estar en mayúscula normal (solo la primera letra de la primera palabra en mayúscula)
+- El título debe tener dos partes separadas por dos puntos. Mayúscula solo en la primera letra.
+- Elegí 1 o 2 emojis relevantes a la regla ortográfica.
+- En los enunciados de ejercicios, incluí un emoji al inicio SOLO si hay un objeto cotidiano concreto. Si el ejercicio es abstracto, NO uses emoji.
 
 FORMATO DE RESPUESTA (JSON estricto, sin markdown):
 {
+  "emojis": ["emoji1"],
   "titulo": "título con la regla ortográfica",
+  "concepto_clave": "la regla ortográfica en una oración clara",
   "explicacion": "explicación breve de la regla (máximo 2 oraciones)",
   "ejemplo": "un ejemplo concreto de la regla",
   "ejercicios": [
     "ejercicio 1",
     "ejercicio 2",
-    "ejercicio 3",
-    "ejercicio 4"
+    "ejercicio 3"
   ]
 }
 
@@ -158,15 +165,18 @@ function buildGeneratorPrompt(contenido, tipoFicha, incluirExplicacion, incluirE
     : "";
 
   const estructuraElementos = [
-    "- Título atractivo para el alumno",
+    "- Título con dos partes separadas por dos puntos",
+    "- 1 o 2 emojis relevantes al tema",
+    incluirExplicacion ? "- Concepto clave: una oración que define el concepto principal" : null,
     incluirExplicacion ? "- Explicación breve del concepto, en lenguaje claro para el grado" : null,
     incluirEjemplo ? "- Ejemplo concreto cercano a la experiencia del alumno" : null,
-    `- Actividad de tipo ${tipoFicha}`,
+    `- Actividad de tipo ${tipoFicha} (máximo 3 ejercicios)`,
     "- Pregunta de reflexión final",
   ].filter(Boolean).join("\n");
 
   const formatoCampos = [
     '"titulo": "..."',
+    incluirExplicacion ? '"concepto_clave": "definición del concepto en una oración"' : null,
     incluirExplicacion ? '"explicacion": "..."' : null,
     incluirEjemplo ? '"ejemplo": "..."' : null,
     '"actividad": "..."',
@@ -190,13 +200,16 @@ CRITERIOS OBLIGATORIOS:
 1. Lenguaje claro y adecuado para niños de primaria (evitá términos académicos complejos)
 2. La actividad debe promover comprensión real, no ejercicios mecánicos sin sentido
 3. Todo el contenido debe responder al objetivo curricular específico, no al tema general
-4. La actividad debe incluir máximo 3 ejercicios o problemas para que entre en una hoja A4
+4. La actividad debe incluir MÁXIMO 3 ejercicios para que entre en una hoja A4
 5. Los ejercicios de la actividad deben estar numerados exactamente así: "1. [enunciado]\n2. [enunciado]\n3. [enunciado]"
 6. Marcá con **doble asterisco** los números, datos importantes y conceptos clave en la explicación y los ejercicios
-7. El título debe estar en mayúscula normal (solo la primera letra de la primera palabra en mayúscula, no TODO MAYÚSCULAS)
+7. El título debe tener DOS PARTES separadas por dos puntos cuando sea posible. Ejemplo: "El entero y sus partes: dividiendo pizzas y tortas". Usá mayúscula solo en la primera letra de la primera palabra.
+8. En los enunciados de los ejercicios, incluí un emoji al INICIO solo si hay un objeto cotidiano concreto (comida, animales, juguetes, deportes, objetos escolares). Formato: "🍫 Mi papá compró...". Si el ejercicio es abstracto, NO uses emoji.
+9. Elegí 1 o 2 emojis relevantes al tema del contenido para decorar el título de la ficha.
 
 FORMATO DE RESPUESTA (JSON estricto, sin markdown):
 {
+  "emojis": ["emoji1"],
   ${formatoCampos}
 }
 
