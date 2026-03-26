@@ -69,7 +69,7 @@ function parsearActividad(texto) {
       actual = { num: num[1], texto: num[2] };
     } else if (actual) {
       actual.texto += " " + linea;
-    } else {
+    } else if (items.length > 0) {
       items.push({ num: String(items.length + 1), texto: stripMarkdown(linea) });
     }
   }
