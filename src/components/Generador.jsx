@@ -297,6 +297,8 @@ export default function Generador({ onFichaGenerada, onVolver }) {
   const [generando, setGenerando] = useState(false);
   const [mensajeLoading, setMensajeLoading] = useState(0); // 0 Generando · 1 Validando · 2 ¡Lista!
   const [error, setError] = useState(null);
+  const [msgIdx, setMsgIdx] = useState(0);
+  const [msgVisible, setMsgVisible] = useState(true);
 
   // Estado PDL
   const [isPDL, setIsPDL] = useState(false);
@@ -330,6 +332,36 @@ export default function Generador({ onFichaGenerada, onVolver }) {
       .sort((a, b) => a.item_original.localeCompare(b.item_original));
   }, [curricular, gradoData, area, bloque, isPDL]);
 
+  const getMensaje = (idx) => {
+    const msgs = [
+      "Consultando el Diseño Curricular...",
+      `Buscando el contenido de ${gradoNum}° grado`,
+      "Armando la explicación...",
+      "Adaptando el lenguaje para primaria",
+      "Creando los ejercicios...",
+      "Pensando en actividades significativas",
+      "Validando el contenido...",
+      "Revisando que sea adecuado para el grado",
+      "Casi lista tu ficha...",
+      "Últimos retoques",
+    ];
+    return msgs[idx % msgs.length];
+  };
+
+  useEffect(() => {
+    if (!generando) { setMsgIdx(0); setMsgVisible(true); return; }
+    setMsgIdx(0);
+    setMsgVisible(true);
+    const interval = setInterval(() => {
+      setMsgVisible(false);
+      setTimeout(() => {
+        setMsgIdx(prev => (prev + 1) % 10);
+        setMsgVisible(true);
+      }, 300);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [generando]);
+
   const elegir = (setter, val, sig) => { setter(val); setTimeout(() => setPaso(sig), 160); };
 
   const volver = (p) => {
@@ -350,6 +382,37 @@ export default function Generador({ onFichaGenerada, onVolver }) {
     setError(null);
   };
 
+  const generarConPayload = async (payload, registroParaFicha, isRetry) => {
+    const timer4s = setTimeout(() => setMensajeLoading(1), 4000);
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      clearTimeout(timer4s);
+      if (!res.ok) throw new Error('Error en el servidor');
+      const resultado = await res.json();
+
+      if (!isRetry && resultado.validacion?.observaciones?.length > 0) {
+        // Primera versión con errores → regenerar silenciosamente
+        setMensajeLoading(0);
+        await generarConPayload(payload, registroParaFicha, true);
+      } else {
+        setMensajeLoading(2);
+        setTimeout(() => {
+          setGenerando(false);
+          onFichaGenerada(resultado.ficha, registroParaFicha, null);
+        }, 1000);
+      }
+    } catch (err) {
+      clearTimeout(timer4s);
+      setGenerando(false);
+      setMensajeLoading(0);
+      setError('No se pudo generar la ficha. Verificá tu conexión e intentá de nuevo.');
+    }
+  };
+
   const generar = async () => {
     if (isPDL) {
       if (!bloque || !pdlTipoTexto) return;
@@ -361,8 +424,6 @@ export default function Generador({ onFichaGenerada, onVolver }) {
     setGenerando(true);
     setMensajeLoading(0);
     setError(null);
-
-    const timer4s = setTimeout(() => setMensajeLoading(1), 4000);
 
     const payload = isPDL
       ? {
@@ -387,39 +448,19 @@ export default function Generador({ onFichaGenerada, onVolver }) {
           incluirEjemplo,
         };
 
-    try {
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      clearTimeout(timer4s);
-      if (!res.ok) throw new Error('Error en el servidor');
-      const resultado = await res.json();
-      setMensajeLoading(2);
+    const registroParaFicha = isPDL
+      ? {
+          grado: gradoNum,
+          area: "Prácticas del Lenguaje",
+          bloque: bloque,
+          item_original: bloque === "Lectura de textos"
+            ? `${pdlTipoTexto} — ${pdlPractica}`
+            : pdlTipoTexto,
+          objetivo: null,
+        }
+      : registro;
 
-      const registroParaFicha = isPDL
-        ? {
-            grado: gradoNum,
-            area: "Prácticas del Lenguaje",
-            bloque: bloque,
-            item_original: bloque === "Lectura de textos"
-              ? `${pdlTipoTexto} — ${pdlPractica}`
-              : pdlTipoTexto,
-            objetivo: null,
-          }
-        : registro;
-
-      setTimeout(() => {
-        setGenerando(false);
-        onFichaGenerada(resultado.ficha, registroParaFicha, resultado.validacion);
-      }, 1000);
-    } catch (err) {
-      clearTimeout(timer4s);
-      setGenerando(false);
-      setMensajeLoading(0);
-      setError('No se pudo generar la ficha. Verificá tu conexión e intentá de nuevo.');
-    }
+    await generarConPayload(payload, registroParaFicha, false);
   };
 
   const totalPasos = 5;
@@ -431,6 +472,10 @@ export default function Generador({ onFichaGenerada, onVolver }) {
       <style>{`
         @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
         @keyframes spin { to { transform:rotate(360deg); } }
+        @keyframes pulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(0,196,140,0.5); }
+          50% { box-shadow: 0 0 0 7px rgba(0,196,140,0); }
+        }
       `}</style>
 
       {/* Nav */}
@@ -738,31 +783,37 @@ export default function Generador({ onFichaGenerada, onVolver }) {
               margin: "0 auto",
             }}>
 
-              {/* Spinner */}
-              <div style={{
-                width: 48, height: 48,
-                border: "3px solid rgba(0,196,140,0.2)",
-                borderTopColor: C.acento,
-                borderRadius: "50%",
-                animation: "spin 0.9s linear infinite",
-                margin: "0 auto 24px",
-              }} />
+              {/* Spinner con ícono */}
+              <div style={{ position: "relative", width: 64, height: 64, margin: "0 auto 28px" }}>
+                <div style={{
+                  position: "absolute", inset: 0,
+                  border: "4px solid rgba(0,196,140,0.2)",
+                  borderTopColor: C.acento,
+                  borderRadius: "50%",
+                  animation: "spin 1.8s linear infinite",
+                }} />
+                <span style={{
+                  position: "absolute", inset: 0,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 22,
+                }}>✏️</span>
+              </div>
 
-              {/* Mensaje */}
+              {/* Mensaje con fade */}
               <p style={{
-                fontFamily: "Georgia, serif",
-                fontSize: 20, fontWeight: 400,
-                color: C.texto, marginBottom: 24,
-                letterSpacing: "-0.01em",
-                minHeight: 30,
+                fontSize: 17, fontWeight: 700,
+                color: C.texto, marginBottom: 20,
+                minHeight: 28,
+                opacity: msgVisible ? 1 : 0,
+                transition: "opacity 0.3s ease",
               }}>
-                {["Generando ficha…", "Validando contenido…", "¡Lista!"][mensajeLoading]}
+                {getMensaje(msgIdx)}
               </p>
 
               {/* Barra de progreso */}
               <div style={{
                 height: 4, background: "rgba(0,196,140,0.2)",
-                borderRadius: 999, overflow: "hidden", marginBottom: 20,
+                borderRadius: 999, overflow: "hidden", marginBottom: 28,
               }}>
                 <div style={{
                   height: "100%", background: C.acento, borderRadius: 999,
@@ -772,23 +823,35 @@ export default function Generador({ onFichaGenerada, onVolver }) {
               </div>
 
               {/* Steps */}
-              <div style={{ display: "flex", justifyContent: "center", gap: 24 }}>
-                {["Generando", "Validando", "Lista"].map((label, i) => (
-                  <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
-                    <div style={{
-                      width: 8, height: 8, borderRadius: "50%",
-                      background: i <= mensajeLoading ? C.acento : "rgba(0,196,140,0.25)",
-                      transition: "background 0.4s",
-                    }} />
-                    <span style={{
-                      fontSize: 10, fontWeight: 500,
-                      color: i <= mensajeLoading ? C.muted : "rgba(74,107,96,0.4)",
-                      transition: "color 0.4s", letterSpacing: "0.03em",
-                    }}>
-                      {label}
-                    </span>
-                  </div>
-                ))}
+              <div style={{ display: "flex", justifyContent: "center", gap: 32 }}>
+                {["Generando", "Validando", "Lista"].map((label, i) => {
+                  const completado = i < mensajeLoading;
+                  const activo = i === mensajeLoading;
+                  return (
+                    <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                      <div style={{
+                        width: 28, height: 28, borderRadius: "50%",
+                        background: completado ? C.acento : "white",
+                        border: `2px solid ${completado || activo ? C.acento : "rgba(0,196,140,0.3)"}`,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        animation: activo ? "pulse 1.5s ease-in-out infinite" : "none",
+                        transition: "all 0.4s",
+                      }}>
+                        {completado
+                          ? <span style={{ color: "white", fontWeight: 800, fontSize: 13 }}>✓</span>
+                          : <span style={{ opacity: activo ? 0.5 : 0.2, fontSize: 7 }}>●</span>
+                        }
+                      </div>
+                      <span style={{
+                        fontSize: 10, fontWeight: 500,
+                        color: completado || activo ? C.muted : "rgba(74,107,96,0.35)",
+                        transition: "color 0.4s", letterSpacing: "0.03em",
+                      }}>
+                        {label}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
 
             </div>

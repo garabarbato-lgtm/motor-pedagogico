@@ -56,132 +56,117 @@ function FichaHero() {
       borderRadius: 10,
       overflow: "hidden",
       boxShadow: "0 8px 40px rgba(0,30,20,0.10)",
+      fontFamily: "'Lexend Deca', system-ui, sans-serif",
     }}>
+
+      {/* Encabezado */}
       <div style={{
         background: C.fichaFondoHeader,
         borderBottom: `2.5px solid ${C.fichaBorderFuerte}`,
-        padding: "14px 18px"
+        padding: "10px 16px"
       }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-          <div style={{ flex: 1 }}>
-            <div style={{ display: "flex", gap: 5, marginBottom: 8, flexWrap: "wrap" }}>
-              {["5° grado", "Matemática", "Números racionales"].map(tag => (
-                <span key={tag} style={{
-                  fontSize: 9, fontWeight: 700, padding: "2px 8px",
-                  borderRadius: 3, border: `1.5px solid ${C.fichaBorderFuerte}`,
-                  color: C.fichaTexto, background: "white",
-                  letterSpacing: "0.05em", textTransform: "uppercase"
-                }}>{tag}</span>
-              ))}
-            </div>
-            <h3 style={{ fontSize: 15, fontWeight: 800, color: C.fichaTexto, margin: 0, lineHeight: 1.2 }}>
-              Fracciones equivalentes
-            </h3>
-            <p style={{ fontSize: 11, color: C.fichaMuted, marginTop: 3, fontStyle: "italic" }}>
-              Objetivo: Reconocer y construir fracciones equivalentes
-            </p>
+        {/* Tags + logo */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+          <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+            {["5° grado", "Matemática", "Números racionales"].map(tag => (
+              <span key={tag} style={{
+                fontSize: 9, fontWeight: 700, padding: "2px 8px",
+                borderRadius: 4, border: `1.5px solid ${C.fichaBorderFuerte}`,
+                color: C.fichaTexto, background: "white",
+                letterSpacing: "0.05em", textTransform: "uppercase"
+              }}>{tag}</span>
+            ))}
           </div>
-          <span style={{ flexShrink: 0 }}><Logo size={13} /></span>
+          <span style={{ flexShrink: 0, marginLeft: 12 }}><Logo size={13} /></span>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10, marginTop: 12 }}>
+
+        {/* Título centrado con emojis */}
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "center",
+          gap: 10, marginBottom: 10
+        }}>
+          <span style={{ fontSize: 20, lineHeight: 1, flexShrink: 0 }}>🔢</span>
+          <h3 style={{ fontSize: 15, fontWeight: 800, margin: 0, lineHeight: 1.25, textAlign: "center" }}>
+            <span style={{ color: C.fichaTexto }}>Fracciones</span>
+            {" "}
+            <span style={{ color: C.acento }}>equivalentes</span>
+          </h3>
+          <span style={{ fontSize: 20, lineHeight: 1, flexShrink: 0 }}>🔢</span>
+        </div>
+
+        {/* Datos alumno */}
+        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
           {["Nombre y apellido", "Fecha", "Grado / Sección"].map(label => (
             <div key={label}>
-              <p style={{ fontSize: 9, color: C.fichaMuted, fontWeight: 700, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</p>
-              <div style={{ borderBottom: `2px solid ${C.fichaBorderFuerte}`, height: 22 }} />
+              <p style={{ fontSize: 9, color: C.fichaMuted, fontWeight: 700, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</p>
+              <div style={{ borderBottom: `2px solid ${C.fichaBorderFuerte}`, height: 20 }} />
             </div>
           ))}
         </div>
       </div>
 
-      <div style={{ padding: "16px 18px", display: "flex", flexDirection: "column", gap: 18 }}>
+      {/* Cuerpo */}
+      <div style={{ padding: "10px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
+
+        {/* Sección 1 */}
         <div>
           <SeccionHeader numero="1" titulo="Leemos juntos" icono="📖" />
+          {/* Concepto clave con borde verde */}
           <div style={{
-            background: C.fichaFondoEjemplo, borderRadius: 5,
-            padding: "10px 14px", border: `1px solid ${C.fichaBorder}`,
-            borderLeft: `4px solid ${C.fichaBorderFuerte}`,
+            background: "#eafaf4",
+            borderLeft: "3px solid #00c48c",
+            borderRadius: "0 6px 6px 0",
+            padding: "8px 12px",
+            marginBottom: 8,
           }}>
-            <p style={{ fontSize: 12, color: C.fichaTexto, lineHeight: 1.75, margin: 0 }}>
-              Dos fracciones son <strong>equivalentes</strong> cuando representan la misma parte de un entero, aunque tengan números distintos.
+            <p style={{ fontSize: 12, color: C.fichaTexto, lineHeight: 1.5, margin: 0, fontWeight: 500 }}>
+              Dos fracciones son <strong>equivalentes</strong> cuando representan la misma parte del entero, aunque tengan números distintos.
             </p>
           </div>
-          <div style={{
-            display: "flex", alignItems: "center", justifyContent: "center",
-            gap: 16, marginTop: 10, padding: "10px",
-            border: `1.5px dashed ${C.fichaBorder}`, borderRadius: 6
-          }}>
-            {["1/2", "2/4", "4/8"].map((f, i) => (
-              <div key={f} style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                {i > 0 && <span style={{ fontSize: 14, color: C.fichaMuted }}>=</span>}
-                <span style={{
-                  fontSize: 20, fontWeight: 800, color: C.fichaTexto,
-                  textDecoration: i > 0 ? "underline" : "none",
-                  textDecorationColor: C.acento, textUnderlineOffset: 3
-                }}>{f}</span>
-              </div>
-            ))}
-          </div>
+          <p style={{ fontSize: 12, color: C.fichaTexto, lineHeight: 1.6, margin: 0 }}>
+            Para encontrar fracciones equivalentes, multiplicamos o dividimos el numerador y el denominador por el mismo número.
+          </p>
         </div>
 
+        {/* Sección 2 */}
         <div>
           <SeccionHeader numero="2" titulo="Tu turno" icono="✏️" />
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {[
-              { base: "1/3", a: "□/6", b: "□/9" },
-              { base: "2/5", a: "4/□", b: "□/15" },
-            ].map((fila, i) => (
-              <div key={i} style={{
-                display: "flex", alignItems: "center", gap: 10,
-                padding: "10px 12px",
-                background: i % 2 === 0 ? C.white : C.fichaFondoEjemplo,
-                borderRadius: 5, border: `1px solid ${C.fichaBorder}`
-              }}>
-                <span style={{ fontSize: 15, fontWeight: 800, color: C.fichaTexto, minWidth: 36 }}>{fila.base}</span>
-                <span style={{ color: C.fichaMuted, fontSize: 14 }}>=</span>
-                <div style={{
-                  border: `2px solid ${C.fichaBorderFuerte}`, borderRadius: 4,
-                  width: 52, height: 32, background: "white",
-                  display: "flex", alignItems: "center", justifyContent: "center"
-                }}>
-                  <span style={{ fontSize: 11, color: C.fichaBorder }}>{fila.a}</span>
+              "Completá las fracciones equivalentes: 1/2 = □/4 = □/8",
+              "¿Son equivalentes 2/3 y 4/6? Explicá cómo lo sabés.",
+            ].map((enunciado, idx) => (
+              <div key={idx}>
+                <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
+                  <p style={{ fontSize: 12, color: C.fichaTexto, lineHeight: 1.5, margin: 0 }}>{enunciado}</p>
                 </div>
-                <span style={{ color: C.fichaMuted, fontSize: 14 }}>=</span>
-                <div style={{
-                  border: `2px solid ${C.fichaBorderFuerte}`, borderRadius: 4,
-                  width: 52, height: 32, background: "white",
-                  display: "flex", alignItems: "center", justifyContent: "center"
-                }}>
-                  <span style={{ fontSize: 11, color: C.fichaBorder }}>{fila.b}</span>
-                </div>
+                <div style={{ height: 48, border: "0.5px solid #ddddd8", borderRadius: 6 }} />
               </div>
             ))}
           </div>
         </div>
 
+        {/* Sección 3 */}
         <div>
           <SeccionHeader numero="3" titulo="Reflexionamos" icono="💭" />
-          <div style={{
-            background: C.fichaFondoReflexion,
-            border: `1px solid ${C.fichaBorder}`,
-            borderLeft: `4px solid ${C.fichaBorderFuerte}`,
-            borderRadius: 5, padding: "10px 13px", marginBottom: 12
-          }}>
-            <p style={{ fontSize: 12, color: C.fichaTexto, fontStyle: "italic", margin: 0, lineHeight: 1.65 }}>
-              ¿Podés pensar en un ejemplo de tu vida cotidiana donde uses fracciones equivalentes?
-            </p>
-          </div>
+          <p style={{ fontSize: 12, color: C.fichaTexto, fontStyle: "italic", lineHeight: 1.55, marginBottom: 6 }}>
+            ¿Podés pensar en un ejemplo de la vida cotidiana donde uses fracciones equivalentes?
+          </p>
           <LineaEscritura />
           <LineaEscritura />
         </div>
+
       </div>
 
+      {/* Footer */}
       <div style={{
         borderTop: `2px solid ${C.fichaBorderFuerte}`,
-        padding: "8px 18px",
+        padding: "6px 16px",
         display: "flex", justifyContent: "space-between", alignItems: "center",
         background: C.fichaFondoHeader
       }}>
-        <span style={{ fontSize: 10, color: C.fichaMuted }}>tiza. · DC 2018</span>
+        <span style={{ fontSize: 10, color: C.fichaMuted }}>tiza. · Diseño Curricular 2018</span>
         <span style={{ fontSize: 10, color: C.fichaMuted }}>5° grado · Matemática</span>
       </div>
     </div>
