@@ -47,13 +47,49 @@ function renderHTMLConNegrita(str) {
   return { __html: html };
 }
 
-function htmlATexto(html) {
+function htmlATextoPlano(html) {
+  if (!html) return '';
   return html
     .replace(/<\/p>/gi, '\n')
     .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<table[\s\S]*?<\/table>/gi, '[tabla]')
     .replace(/<[^>]+>/g, '')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
+}
+
+function textoAHtml(texto) {
+  return texto
+    .split('\n')
+    .filter(l => l.trim())
+    .map(l => `<p>${l}</p>`)
+    .join('')
+    .replace(/_{2,}/g, '<span style="font-family:Arial;letter-spacing:1px;">_______</span>');
+}
+
+function initFieldData(ficha) {
+  const planos = {};
+  const tablas = {};
+
+  function procesarCampo(key, html) {
+    if (!html) return;
+    const tableMatch = html.match(/<table[\s\S]*?<\/table>/i);
+    if (tableMatch) {
+      tablas[key] = tableMatch[0];
+      planos[key] = htmlATextoPlano(html.slice(0, html.indexOf(tableMatch[0])));
+    } else {
+      planos[key] = htmlATextoPlano(html);
+    }
+  }
+
+  for (const k of ['titulo', 'explicacion', 'concepto_clave', 'texto', 'consigna', 'pregunta_reflexion', 'actividad']) {
+    procesarCampo(k, ficha[k] || '');
+  }
+  (ficha.preguntas || []).forEach((v, i) => procesarCampo(`pregunta_${i}`, v || ''));
+  (ficha.ejercicios || []).forEach((v, i) => procesarCampo(`ejercicio_${i}`, v || ''));
+  parsearActividad(ficha.actividad).items.forEach((item, i) => procesarCampo(`item_${i}`, item.texto || ''));
+
+  return { planos, tablas };
 }
 
 function renderTitulo(texto) {
@@ -183,8 +219,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   const [fichaLocal, setFichaLocal] = useState(() => ({ ...ficha }));
   const [itemsLocal, setItemsLocal] = useState(() => parsearActividad(ficha.actividad).items);
   const [editandoCampo, setEditandoCampo] = useState(null);
-  const [draft, setDraft] = useState("");
-  const [draftTable, setDraftTable] = useState(null);
+  const [planosLocal, setPlanosLocal] = useState(() => initFieldData(ficha).planos);
+  const [tablasLocal] = useState(() => initFieldData(ficha).tablas);
   const [posiciones, setPosiciones] = useState({});
   const refFicha = useRef(null);
   const sectionRefs = useRef({});
@@ -228,20 +264,6 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
   // ── Gestión de edición ──
 
-  const getValue = (key) => {
-    if (key === "titulo") return fichaLocal.titulo || "";
-    if (key === "explicacion") return fichaLocal.explicacion || "";
-    if (key === "concepto_clave") return fichaLocal.concepto_clave || "";
-    if (key === "texto") return fichaLocal.texto || "";
-    if (key === "consigna") return fichaLocal.consigna || "";
-    if (key === "pregunta_reflexion") return fichaLocal.pregunta_reflexion || "";
-    if (key.startsWith("pregunta_")) return (fichaLocal.preguntas || [])[+key.slice(9)] || "";
-    if (key.startsWith("ejercicio_")) return (fichaLocal.ejercicios || [])[+key.slice(10)] || "";
-    if (key.startsWith("item_")) return (itemsLocal[+key.slice(5)] || {}).texto || "";
-    if (key === "actividad") return fichaLocal.actividad || "";
-    return "";
-  };
-
   const saveValue = (key, val) => {
     const simples = ["titulo", "explicacion", "concepto_clave", "texto", "consigna", "pregunta_reflexion", "actividad"];
     if (simples.includes(key)) { setFichaLocal(f => ({ ...f, [key]: val })); return; }
@@ -261,36 +283,23 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     }
   };
 
-  const saveFromRef = (key) => {
+  const saveCampo = (key) => {
     if (!key || !textareaRef.current) return;
-    const texto = textareaRef.current.value;
-    const htmlFinal = texto.replace(/\n/g, '<br>');
-    saveValue(key, htmlFinal);
+    const textoNuevo = textareaRef.current.value;
+    let htmlNuevo = textoAHtml(textoNuevo);
+    if (tablasLocal[key]) htmlNuevo += tablasLocal[key];
+    saveValue(key, htmlNuevo);
+    setPlanosLocal(prev => ({ ...prev, [key]: textoNuevo }));
   };
 
   const startEdit = (key) => {
-    if (editandoCampo) saveFromRef(editandoCampo);
-    const raw = getValue(key);
-    if (/<[a-z][\s\S]*>/i.test(raw)) {
-      const tableIdx = raw.indexOf('<table');
-      if (tableIdx !== -1) {
-        setDraftTable(raw.slice(tableIdx));
-        setDraft(htmlATexto(raw.slice(0, tableIdx)));
-      } else {
-        setDraftTable(null);
-        setDraft(htmlATexto(raw));
-      }
-    } else {
-      setDraftTable(null);
-      setDraft(raw);
-    }
+    if (editandoCampo) saveCampo(editandoCampo);
     setEditandoCampo(key);
   };
 
   const confirmEdit = () => {
-    saveFromRef(editandoCampo);
+    saveCampo(editandoCampo);
     setEditandoCampo(null);
-    setDraftTable(null);
   };
 
   // ── Textarea reutilizable ──
@@ -302,23 +311,27 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     padding: "6px 8px", resize: "vertical", background: "#fff",
   };
 
-  const renderTextarea = (minRows = 2) => (
-    <>
-      <textarea
-        ref={textareaRef}
-        autoFocus
-        defaultValue={draft}
-        rows={Math.max(minRows, (draft || "").split("\n").length + 1)}
-        style={estiloTextarea}
-      />
-      {draftTable && (
-        <div
-          dangerouslySetInnerHTML={{ __html: draftTable }}
-          style={{ marginTop: 8, opacity: 0.55, pointerEvents: "none", fontSize: "inherit" }}
+  const renderTextarea = (minRows = 2) => {
+    const textoInicial = planosLocal[editandoCampo] || '';
+    const tabla = tablasLocal[editandoCampo];
+    return (
+      <>
+        <textarea
+          ref={textareaRef}
+          autoFocus
+          defaultValue={textoInicial}
+          rows={Math.max(minRows, textoInicial.split('\n').length + 1)}
+          style={estiloTextarea}
         />
-      )}
-    </>
-  );
+        {tabla && (
+          <div
+            dangerouslySetInnerHTML={{ __html: tabla }}
+            style={{ marginTop: 8, opacity: 0.55, pointerEvents: "none", fontSize: "inherit" }}
+          />
+        )}
+      </>
+    );
+  };
 
   // ── Acciones ──
 
