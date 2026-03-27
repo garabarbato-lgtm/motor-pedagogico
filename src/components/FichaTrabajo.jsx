@@ -47,6 +47,12 @@ function renderHTMLConNegrita(str) {
   return { __html: html };
 }
 
+function stripHtml(html) {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  return tmp.textContent || tmp.innerText || '';
+}
+
 function renderTitulo(texto) {
   if (!texto) return null;
   const colonIdx = texto.indexOf(":");
@@ -175,6 +181,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   const [itemsLocal, setItemsLocal] = useState(() => parsearActividad(ficha.actividad).items);
   const [editandoCampo, setEditandoCampo] = useState(null);
   const [draft, setDraft] = useState("");
+  const [draftTable, setDraftTable] = useState(null);
   const [posiciones, setPosiciones] = useState({});
   const refFicha = useRef(null);
   const sectionRefs = useRef({});
@@ -252,13 +259,27 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
   const startEdit = (key) => {
     if (editandoCampo) saveValue(editandoCampo, draft);
-    setDraft(getValue(key));
+    const raw = getValue(key);
+    if (/<[a-z][\s\S]*>/i.test(raw)) {
+      const tableIdx = raw.indexOf('<table');
+      if (tableIdx !== -1) {
+        setDraftTable(raw.slice(tableIdx));
+        setDraft(stripHtml(raw.slice(0, tableIdx)));
+      } else {
+        setDraftTable(null);
+        setDraft(stripHtml(raw));
+      }
+    } else {
+      setDraftTable(null);
+      setDraft(raw);
+    }
     setEditandoCampo(key);
   };
 
   const confirmEdit = () => {
     if (editandoCampo) saveValue(editandoCampo, draft);
     setEditandoCampo(null);
+    setDraftTable(null);
   };
 
   // ── Textarea reutilizable ──
@@ -271,13 +292,21 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   };
 
   const Textarea = ({ minRows = 2 }) => (
-    <textarea
-      autoFocus
-      value={draft}
-      onChange={e => setDraft(e.target.value)}
-      rows={Math.max(minRows, (draft || "").split("\n").length + 1)}
-      style={estiloTextarea}
-    />
+    <>
+      <textarea
+        autoFocus
+        value={draft}
+        onChange={e => setDraft(e.target.value)}
+        rows={Math.max(minRows, (draft || "").split("\n").length + 1)}
+        style={estiloTextarea}
+      />
+      {draftTable && (
+        <div
+          dangerouslySetInnerHTML={{ __html: draftTable }}
+          style={{ marginTop: 8, opacity: 0.55, pointerEvents: "none", fontSize: "inherit" }}
+        />
+      )}
+    </>
   );
 
   // ── Acciones ──
