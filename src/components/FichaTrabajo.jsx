@@ -22,7 +22,7 @@ const C = {
 // (tabla HTML o espacios en blanco con guiones/span)
 function tieneRespuestaEmbebida(texto) {
   if (!texto) return false;
-  return texto.includes("<table") || texto.includes("_____") || texto.includes("_______");
+  return texto.includes("<table") || /_{2,}/.test(texto);
 }
 
 function stripMarkdown(str) {
@@ -40,7 +40,7 @@ function stripMarkdown(str) {
 function renderHTMLConNegrita(str) {
   if (!str) return { __html: "" };
   const html = str
-    .replace(/_(.+?)_/g, "$1")
+    .replace(/_{1,}/g, '<span style="font-family:Arial;letter-spacing:1px;">_______</span>')
     .replace(/^#{1,6}\s+/gm, "")
     .replace(/^[•\-]\s+/gm, "")
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
@@ -227,11 +227,12 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     if (key.startsWith("pregunta_")) return (fichaLocal.preguntas || [])[+key.slice(9)] || "";
     if (key.startsWith("ejercicio_")) return (fichaLocal.ejercicios || [])[+key.slice(10)] || "";
     if (key.startsWith("item_")) return (itemsLocal[+key.slice(5)] || {}).texto || "";
+    if (key === "actividad") return fichaLocal.actividad || "";
     return "";
   };
 
   const saveValue = (key, val) => {
-    const simples = ["titulo", "explicacion", "concepto_clave", "texto", "consigna", "pregunta_reflexion"];
+    const simples = ["titulo", "explicacion", "concepto_clave", "texto", "consigna", "pregunta_reflexion", "actividad"];
     if (simples.includes(key)) { setFichaLocal(f => ({ ...f, [key]: val })); return; }
     if (key.startsWith("pregunta_")) {
       const i = +key.slice(9);
@@ -635,7 +636,12 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                       </div>
                     ) : (
                       <>
-                        <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, marginBottom: 8 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.actividad)} />
+                        <div ref={setRef("actividad")}>
+                          {editandoCampo === "actividad"
+                            ? <Textarea minRows={3} />
+                            : <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, marginBottom: 8 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.actividad)} />
+                          }
+                        </div>
                         {!tieneRespuestaEmbebida(fichaLocal.actividad) && <RecuadroRespuesta />}
                       </>
                     )}
