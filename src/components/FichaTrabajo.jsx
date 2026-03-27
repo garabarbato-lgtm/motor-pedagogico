@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import Logo from "./Logo.jsx";
@@ -28,19 +28,6 @@ function stripMarkdown(str) {
     .replace(/^[•\-]\s+/gm, "")
     .replace(/^\d+[.)]\s+/gm, "")
     .trim();
-}
-
-function renderConNegrita(str) {
-  if (!str) return null;
-  const limpio = str
-    .replace(/_(.+?)_/g, "$1")
-    .replace(/^#{1,6}\s+/gm, "")
-    .replace(/^[•\-]\s+/gm, "");
-  const partes = limpio.split(/\*\*(.+?)\*\*/g);
-  if (partes.length === 1) return limpio;
-  return partes.map((parte, i) =>
-    i % 2 === 1 ? <strong key={i}>{parte}</strong> : parte
-  );
 }
 
 function renderHTMLConNegrita(str) {
@@ -173,85 +160,17 @@ function LineaDoble() {
   );
 }
 
-// ── Edición inline ──
-
-function EditableText({ value, onSave, children, flex }) {
-  const [editando, setEditando] = useState(false);
-  const [draft, setDraft] = useState(value);
-
-  if (editando) {
-    return (
-      <div style={{ width: "100%", flex: flex || undefined }}>
-        <textarea
-          autoFocus
-          value={draft}
-          onChange={e => setDraft(e.target.value)}
-          rows={Math.max(2, (draft || "").split("\n").length + 1)}
-          style={{
-            width: "100%", boxSizing: "border-box",
-            fontFamily: "inherit", fontSize: "inherit", lineHeight: "inherit",
-            color: C.texto, border: `1.5px solid ${C.acento}`, borderRadius: 4,
-            padding: "6px 8px", resize: "vertical", background: "#fff",
-          }}
-        />
-        <button
-          onClick={() => { onSave(draft); setEditando(false); }}
-          style={{
-            marginTop: 6, background: C.acento, color: "#fff",
-            border: "none", borderRadius: 5, padding: "5px 14px",
-            fontSize: 12, fontWeight: 600, cursor: "pointer",
-          }}>
-          Listo
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="editable-wrapper" style={{ position: "relative", flex: flex || undefined }}>
-      {children}
-      <button
-        className="edit-icon-btn"
-        onClick={() => { setDraft(value); setEditando(true); }}
-        title="Editar"
-        style={{
-          position: "absolute", top: 0, right: -48,
-          background: C.acento, color: "#fff",
-          border: "none", borderRadius: 5, cursor: "pointer",
-          fontSize: 12, fontWeight: 600,
-          padding: "3px 9px", lineHeight: 1.4,
-          opacity: 0, transition: "opacity 0.15s",
-          whiteSpace: "nowrap", zIndex: 5,
-        }}>
-        ✏ Editar
-      </button>
-    </div>
-  );
-}
-
-function ConceptoClave({ texto, onSave }) {
-  if (!texto) return null;
-  return (
-    <div style={{
-      background: "#eafaf4",
-      borderLeft: "3px solid #00c48c",
-      borderRadius: "0 6px 6px 0",
-      padding: "8px 12px",
-      marginBottom: 8,
-    }}>
-      <EditableText value={texto} onSave={onSave}>
-        <p className="concepto-clave-texto" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0, fontWeight: 500 }} dangerouslySetInnerHTML={renderHTMLConNegrita(texto)} />
-      </EditableText>
-    </div>
-  );
-}
-
 // ── Componente principal ──
 
 export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onInicio }) {
   const [imprimiendo, setImprimiendo] = useState(false);
   const [fichaLocal, setFichaLocal] = useState(() => ({ ...ficha }));
   const [itemsLocal, setItemsLocal] = useState(() => parsearActividad(ficha.actividad).items);
+  const [editandoCampo, setEditandoCampo] = useState(null);
+  const [draft, setDraft] = useState("");
+  const [posiciones, setPosiciones] = useState({});
+  const refFicha = useRef(null);
+  const sectionRefs = useRef({});
 
   if (!ficha || !registro) return null;
 
@@ -265,21 +184,95 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   const gradoEsUno = registro.grado === "1";
   const gradoDisplay = `${registro.grado}° grado`;
 
-  const set = (campo) => (val) => setFichaLocal(f => ({ ...f, [campo]: val }));
+  // ── Posicionamiento de íconos ──
 
-  const setArrayItem = (campo, idx) => (val) =>
-    setFichaLocal(f => {
-      const arr = [...(f[campo] || [])];
-      arr[idx] = val;
-      return { ...f, [campo]: arr };
-    });
+  useEffect(() => {
+    if (!refFicha.current) return;
+    const compute = () => {
+      const fichaEl = refFicha.current;
+      if (!fichaEl) return;
+      const fichaRect = fichaEl.getBoundingClientRect();
+      const nuevas = {};
+      for (const [key, el] of Object.entries(sectionRefs.current)) {
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          nuevas[key] = rect.top - fichaRect.top;
+        }
+      }
+      setPosiciones(nuevas);
+    };
+    const id = requestAnimationFrame(compute);
+    window.addEventListener("resize", compute);
+    return () => { cancelAnimationFrame(id); window.removeEventListener("resize", compute); };
+  }, [fichaLocal, itemsLocal, editandoCampo]);
 
-  const setItem = (idx) => (val) =>
-    setItemsLocal(prev => {
-      const arr = [...prev];
-      arr[idx] = { ...arr[idx], texto: val };
-      return arr;
-    });
+  const setRef = (key) => (el) => { sectionRefs.current[key] = el; };
+
+  // ── Gestión de edición ──
+
+  const getValue = (key) => {
+    if (key === "titulo") return fichaLocal.titulo || "";
+    if (key === "explicacion") return fichaLocal.explicacion || "";
+    if (key === "concepto_clave") return fichaLocal.concepto_clave || "";
+    if (key === "texto") return fichaLocal.texto || "";
+    if (key === "consigna") return fichaLocal.consigna || "";
+    if (key === "pregunta_reflexion") return fichaLocal.pregunta_reflexion || "";
+    if (key.startsWith("pregunta_")) return (fichaLocal.preguntas || [])[+key.slice(9)] || "";
+    if (key.startsWith("ejercicio_")) return (fichaLocal.ejercicios || [])[+key.slice(10)] || "";
+    if (key.startsWith("item_")) return (itemsLocal[+key.slice(5)] || {}).texto || "";
+    return "";
+  };
+
+  const saveValue = (key, val) => {
+    const simples = ["titulo", "explicacion", "concepto_clave", "texto", "consigna", "pregunta_reflexion"];
+    if (simples.includes(key)) { setFichaLocal(f => ({ ...f, [key]: val })); return; }
+    if (key.startsWith("pregunta_")) {
+      const i = +key.slice(9);
+      setFichaLocal(f => { const a = [...(f.preguntas || [])]; a[i] = val; return { ...f, preguntas: a }; });
+      return;
+    }
+    if (key.startsWith("ejercicio_")) {
+      const i = +key.slice(10);
+      setFichaLocal(f => { const a = [...(f.ejercicios || [])]; a[i] = val; return { ...f, ejercicios: a }; });
+      return;
+    }
+    if (key.startsWith("item_")) {
+      const i = +key.slice(5);
+      setItemsLocal(prev => { const a = [...prev]; a[i] = { ...a[i], texto: val }; return a; });
+    }
+  };
+
+  const startEdit = (key) => {
+    if (editandoCampo) saveValue(editandoCampo, draft);
+    setDraft(getValue(key));
+    setEditandoCampo(key);
+  };
+
+  const confirmEdit = () => {
+    if (editandoCampo) saveValue(editandoCampo, draft);
+    setEditandoCampo(null);
+  };
+
+  // ── Textarea reutilizable ──
+
+  const estiloTextarea = {
+    width: "100%", boxSizing: "border-box",
+    fontFamily: "inherit", fontSize: "inherit", lineHeight: "inherit",
+    color: C.texto, border: `1.5px solid ${C.acento}`, borderRadius: 4,
+    padding: "6px 8px", resize: "vertical", background: "#fff",
+  };
+
+  const Textarea = ({ minRows = 2 }) => (
+    <textarea
+      autoFocus
+      value={draft}
+      onChange={e => setDraft(e.target.value)}
+      rows={Math.max(minRows, (draft || "").split("\n").length + 1)}
+      style={estiloTextarea}
+    />
+  );
+
+  // ── Acciones ──
 
   const handleImprimir = () => {
     setImprimiendo(true);
@@ -296,6 +289,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     pdf.addImage(imgData, "JPEG", 10, 10, 190, 0);
     pdf.save(filename);
   };
+
+  // ── Render ──
 
   return (
     <div className="contenedor-pagina" style={{ fontFamily: "system-ui, sans-serif", background: C.fondoApp, minHeight: "100vh" }}>
@@ -343,13 +338,12 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
       </nav>
 
       {/* Contenedor */}
-      <div className="contenedor-wrapper" style={{ maxWidth: 680, margin: "0 auto", padding: "28px 16px 60px" }}>
+      <div className="contenedor-wrapper" style={{ maxWidth: 760, margin: "0 auto", padding: "28px 16px 60px" }}>
 
         {/* Badge de validación pedagógica */}
         {validacion?.observaciones?.length > 0 && (
           <div className="validacion-badge" style={{
-            background: "#fffbeb",
-            border: "1px solid #f59e0b",
+            background: "#fffbeb", border: "1px solid #f59e0b",
             borderRadius: 8, padding: "12px 16px", marginBottom: 16,
           }}>
             <p style={{ fontSize: 13, fontWeight: 700, color: "#92400e", marginBottom: 8 }}>
@@ -376,281 +370,371 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
           </div>
         )}
 
-        {/* Botones imprimir / descargar PDF */}
-        <div className="btn-imprimir" style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginBottom: 16 }}>
-          <button
-            onClick={handleImprimir}
-            disabled={imprimiendo}
-            style={{
-              fontSize: 12, fontWeight: 600, padding: "8px 20px",
-              borderRadius: 7, border: `2px solid ${C.borderFuerte}`,
-              background: C.borderFuerte, color: C.acento, cursor: "pointer"
-            }}>
-            🖨 Imprimir ficha
-          </button>
-          <button
-            onClick={handleDescargarPDF}
-            style={{
-              fontSize: 12, fontWeight: 600, padding: "8px 20px",
-              borderRadius: 7, border: `2px solid ${C.acento}`,
-              background: C.acento, color: "#ffffff", cursor: "pointer"
-            }}>
-            ⬇ Descargar PDF
-          </button>
-        </div>
-
-        {/* ── FICHA IMPRIMIBLE ── */}
-        <div id="ficha-imprimible" className="ficha" style={{
-          background: C.fondo,
-          border: `2.5px solid ${C.borderFuerte}`,
-          borderRadius: 10,
-          fontFamily: "'Lexend Deca', sans-serif",
-        }}>
-
-          {/* Encabezado */}
-          <div style={{
-            background: C.fondoHeader,
-            borderBottom: `2.5px solid ${C.borderFuerte}`,
-            borderRadius: "8px 8px 0 0",
-            padding: "10px 16px"
-          }}>
-            {/* Tags (sin logo) */}
-            <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 8 }}>
-              {[gradoDisplay, registro.area, registro.bloque].map(tag => (
-                <span key={tag} style={{
-                  fontSize: 9, fontWeight: 700, padding: "2px 8px",
-                  borderRadius: 4, border: `1.5px solid ${C.borderFuerte}`,
-                  color: C.texto, background: "white",
-                  letterSpacing: "0.05em", textTransform: "uppercase"
-                }}>{tag}</span>
-              ))}
-            </div>
-
-            {/* Título centrado con emojis simétricos — editable */}
-            <div style={{
-              display: "flex", alignItems: "center", justifyContent: "center",
-              gap: 10, marginBottom: 10
-            }}>
-              <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojiLeft}</span>
-              <EditableText value={fichaLocal.titulo} onSave={set("titulo")} flex="1">
-                <h2 style={{
-                  fontSize: 15, fontWeight: 800,
-                  margin: 0, lineHeight: 1.25, letterSpacing: "-0.01em",
-                  textAlign: "center",
-                }}>
-                  {renderTitulo(tituloTexto)}
-                </h2>
-              </EditableText>
-              <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojiRight}</span>
-            </div>
-
-            {/* Datos alumno */}
-            <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
-              {["Nombre y apellido", "Fecha", "Grado / Sección"].map(label => (
-                <div key={label}>
-                  <p className="dato-label" style={{
-                    fontSize: 9, color: C.muted, fontWeight: 700,
-                    marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em"
-                  }}>
-                    {label}
-                  </p>
-                  <div style={{ borderBottom: `2px solid ${C.borderFuerte}`, height: 20 }} />
-                </div>
-              ))}
-            </div>
+        {/* Botones — se ocultan mientras hay edición activa */}
+        {!editandoCampo && (
+          <div className="btn-imprimir" style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginBottom: 16 }}>
+            <button
+              onClick={handleImprimir}
+              disabled={imprimiendo}
+              style={{
+                fontSize: 12, fontWeight: 600, padding: "8px 20px",
+                borderRadius: 7, border: `2px solid ${C.borderFuerte}`,
+                background: C.borderFuerte, color: C.acento, cursor: "pointer"
+              }}>
+              🖨 Imprimir ficha
+            </button>
+            <button
+              onClick={handleDescargarPDF}
+              style={{
+                fontSize: 12, fontWeight: 600, padding: "8px 20px",
+                borderRadius: 7, border: `2px solid ${C.acento}`,
+                background: C.acento, color: "#ffffff", cursor: "pointer"
+              }}>
+              ⬇ Descargar PDF
+            </button>
           </div>
+        )}
 
-          {/* Cuerpo */}
-          <div className="cuerpo-ficha" style={{ padding: "10px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
+        {/* ── FICHA + BARRA LATERAL ── */}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 0 }}>
 
-            {isPDL ? (
+          {/* Ficha imprimible */}
+          <div ref={refFicha} id="ficha-imprimible" className="ficha" style={{
+            flex: 1,
+            background: C.fondo,
+            border: `2.5px solid ${C.borderFuerte}`,
+            borderRadius: 10,
+            minHeight: "297mm",
+            fontFamily: "'Lexend Deca', sans-serif",
+          }}>
 
-              /* ── PDL: Lectura de textos ── */
-              registro.bloque === "Lectura de textos" ? (
-                <>
-                  <div className="seccion">
-                    <SeccionHeader numero="1" titulo="Leemos" icono="📖" />
-                    <EditableText value={fichaLocal.texto} onSave={set("texto")}>
-                      <p className="explicacion" style={{ fontSize: 11, color: C.texto, lineHeight: 1.65, margin: 0, whiteSpace: "pre-line" }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.texto)} />
-                    </EditableText>
+            {/* Encabezado */}
+            <div style={{
+              background: C.fondoHeader,
+              borderBottom: `2.5px solid ${C.borderFuerte}`,
+              borderRadius: "8px 8px 0 0",
+              padding: "10px 16px"
+            }}>
+              {/* Tags */}
+              <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 8 }}>
+                {[gradoDisplay, registro.area, registro.bloque].map(tag => (
+                  <span key={tag} style={{
+                    fontSize: 9, fontWeight: 700, padding: "2px 8px",
+                    borderRadius: 4, border: `1.5px solid ${C.borderFuerte}`,
+                    color: C.texto, background: "white",
+                    letterSpacing: "0.05em", textTransform: "uppercase"
+                  }}>{tag}</span>
+                ))}
+              </div>
+
+              {/* Título editable */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 10 }}>
+                <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojiLeft}</span>
+                <div ref={setRef("titulo")} style={{ flex: 1 }}>
+                  {editandoCampo === "titulo"
+                    ? <Textarea minRows={1} />
+                    : (
+                      <h2 style={{ fontSize: 15, fontWeight: 800, margin: 0, lineHeight: 1.25, letterSpacing: "-0.01em", textAlign: "center" }}>
+                        {renderTitulo(tituloTexto)}
+                      </h2>
+                    )
+                  }
+                </div>
+                <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojiRight}</span>
+              </div>
+
+              {/* Datos alumno */}
+              <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
+                {["Nombre y apellido", "Fecha", "Grado / Sección"].map(label => (
+                  <div key={label}>
+                    <p className="dato-label" style={{
+                      fontSize: 9, color: C.muted, fontWeight: 700,
+                      marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em"
+                    }}>
+                      {label}
+                    </p>
+                    <div style={{ borderBottom: `2px solid ${C.borderFuerte}`, height: 20 }} />
                   </div>
-                  <div className="seccion">
-                    <SeccionHeader numero="2" titulo="Respondé" icono="✍️" />
-                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                      {Array.isArray(fichaLocal.preguntas) && fichaLocal.preguntas.map((preg, idx) => (
-                        <div key={idx}>
-                          <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
-                            <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
-                            <EditableText value={preg} onSave={setArrayItem("preguntas", idx)}>
-                              <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(preg)} />
-                            </EditableText>
-                          </div>
-                          <LineasRespuesta n={4} />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </>
+                ))}
+              </div>
+            </div>
 
-              /* ── PDL: Escritura de textos ── */
-              ) : registro.bloque === "Escritura de textos" ? (
-                <>
-                  <div className="seccion">
-                    <SeccionHeader numero="1" titulo="¡A escribir!" icono="✏️" />
-                    <EditableText value={fichaLocal.consigna} onSave={set("consigna")}>
-                      <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.consigna)} />
-                    </EditableText>
-                  </div>
-                  {Array.isArray(fichaLocal.orientaciones) && fichaLocal.orientaciones.length > 0 && (
+            {/* Cuerpo */}
+            <div className="cuerpo-ficha" style={{ padding: "10px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
+
+              {isPDL ? (
+
+                /* ── PDL: Lectura ── */
+                registro.bloque === "Lectura de textos" ? (
+                  <>
                     <div className="seccion">
-                      <SeccionHeader numero="2" titulo="Antes de escribir, pensá…" icono="💭" />
-                      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        {fichaLocal.orientaciones.map((orientacion, idx) => (
-                          <div key={idx} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                            <span style={{ fontSize: 12, color: C.muted, flexShrink: 0, marginTop: 1 }}>→</span>
-                            <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(orientacion)} />
+                      <SeccionHeader numero="1" titulo="Leemos" icono="📖" />
+                      <div ref={setRef("texto")}>
+                        {editandoCampo === "texto"
+                          ? <Textarea minRows={6} />
+                          : <p className="explicacion" style={{ fontSize: 11, color: C.texto, lineHeight: 1.65, margin: 0, whiteSpace: "pre-line" }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.texto)} />
+                        }
+                      </div>
+                    </div>
+                    <div className="seccion">
+                      <SeccionHeader numero="2" titulo="Respondé" icono="✍️" />
+                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                        {Array.isArray(fichaLocal.preguntas) && fichaLocal.preguntas.map((preg, idx) => (
+                          <div key={idx}>
+                            <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
+                              <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
+                              <div ref={setRef(`pregunta_${idx}`)} style={{ flex: 1 }}>
+                                {editandoCampo === `pregunta_${idx}`
+                                  ? <Textarea minRows={2} />
+                                  : <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(preg)} />
+                                }
+                              </div>
+                            </div>
+                            <LineasRespuesta n={4} />
                           </div>
                         ))}
                       </div>
                     </div>
-                  )}
-                  <div className="seccion">
-                    <SeccionHeader numero="3" titulo="Mi texto" icono="📝" />
-                    {gradoEsUno
-                      ? Array.from({ length: 8 }).map((_, i) => <LineaDoble key={i} />)
-                      : Array.from({ length: 8 }).map((_, i) => <LineaEscritura key={i} />)
-                    }
-                  </div>
-                </>
+                  </>
 
-              /* ── PDL: Ortografía ── */
-              ) : (
-                <>
-                  <div className="seccion">
-                    <SeccionHeader numero="1" titulo="La regla" icono="📚" />
-                    <ConceptoClave texto={fichaLocal.concepto_clave} onSave={set("concepto_clave")} />
-                    <EditableText value={fichaLocal.explicacion} onSave={set("explicacion")}>
-                      <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: "0 0 6px" }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.explicacion)} />
-                    </EditableText>
-                    {fichaLocal.ejemplo && (
-                      <div style={{
-                        background: "#f7f7f0", borderRadius: 6,
-                        padding: "8px 12px", border: `1px solid ${C.border}`,
-                      }}>
-                        <p style={{ fontSize: 10, color: C.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Ejemplo</p>
-                        <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.ejemplo)} />
+                /* ── PDL: Escritura ── */
+                ) : registro.bloque === "Escritura de textos" ? (
+                  <>
+                    <div className="seccion">
+                      <SeccionHeader numero="1" titulo="¡A escribir!" icono="✏️" />
+                      <div ref={setRef("consigna")}>
+                        {editandoCampo === "consigna"
+                          ? <Textarea minRows={3} />
+                          : <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.consigna)} />
+                        }
+                      </div>
+                    </div>
+                    {Array.isArray(fichaLocal.orientaciones) && fichaLocal.orientaciones.length > 0 && (
+                      <div className="seccion">
+                        <SeccionHeader numero="2" titulo="Antes de escribir, pensá…" icono="💭" />
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                          {fichaLocal.orientaciones.map((orientacion, idx) => (
+                            <div key={idx} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                              <span style={{ fontSize: 12, color: C.muted, flexShrink: 0, marginTop: 1 }}>→</span>
+                              <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(orientacion)} />
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
-                  </div>
+                    <div className="seccion">
+                      <SeccionHeader numero="3" titulo="Mi texto" icono="📝" />
+                      {gradoEsUno
+                        ? Array.from({ length: 8 }).map((_, i) => <LineaDoble key={i} />)
+                        : Array.from({ length: 8 }).map((_, i) => <LineaEscritura key={i} />)
+                      }
+                    </div>
+                  </>
+
+                /* ── PDL: Ortografía ── */
+                ) : (
+                  <>
+                    <div className="seccion">
+                      <SeccionHeader numero="1" titulo="La regla" icono="📚" />
+                      {fichaLocal.concepto_clave && (
+                        <div style={{ background: "#eafaf4", borderLeft: "3px solid #00c48c", borderRadius: "0 6px 6px 0", padding: "8px 12px", marginBottom: 8 }}>
+                          <div ref={setRef("concepto_clave")}>
+                            {editandoCampo === "concepto_clave"
+                              ? <Textarea minRows={2} />
+                              : <p className="concepto-clave-texto" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0, fontWeight: 500 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.concepto_clave)} />
+                            }
+                          </div>
+                        </div>
+                      )}
+                      <div ref={setRef("explicacion")}>
+                        {editandoCampo === "explicacion"
+                          ? <Textarea minRows={3} />
+                          : <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: "0 0 6px" }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.explicacion)} />
+                        }
+                      </div>
+                      {fichaLocal.ejemplo && (
+                        <div style={{ background: "#f7f7f0", borderRadius: 6, padding: "8px 12px", border: `1px solid ${C.border}` }}>
+                          <p style={{ fontSize: 10, color: C.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Ejemplo</p>
+                          <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.ejemplo)} />
+                        </div>
+                      )}
+                    </div>
+                    <div className="seccion">
+                      <SeccionHeader numero="2" titulo="Practicamos" icono="✏️" />
+                      {Array.isArray(fichaLocal.ejercicios) && (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                          {fichaLocal.ejercicios.map((ejercicio, idx) => (
+                            <div key={idx}>
+                              <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
+                                <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
+                                <div ref={setRef(`ejercicio_${idx}`)} style={{ flex: 1 }}>
+                                  {editandoCampo === `ejercicio_${idx}`
+                                    ? <Textarea minRows={2} />
+                                    : <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio)} />
+                                  }
+                                </div>
+                              </div>
+                              <RecuadroRespuesta />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )
+
+              ) : (
+
+                /* ── No PDL: Matemática, Ciencias, etc. ── */
+                <>
                   <div className="seccion">
-                    <SeccionHeader numero="2" titulo="Practicamos" icono="✏️" />
-                    {Array.isArray(fichaLocal.ejercicios) && (
+                    <SeccionHeader numero="1" titulo={pregExplicacion || "Leemos juntos"} icono="📖" />
+                    {fichaLocal.concepto_clave && (
+                      <div style={{ background: "#eafaf4", borderLeft: "3px solid #00c48c", borderRadius: "0 6px 6px 0", padding: "8px 12px", marginBottom: 8 }}>
+                        <div ref={setRef("concepto_clave")}>
+                          {editandoCampo === "concepto_clave"
+                            ? <Textarea minRows={2} />
+                            : <p className="concepto-clave-texto" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0, fontWeight: 500 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.concepto_clave)} />
+                          }
+                        </div>
+                      </div>
+                    )}
+                    <div ref={setRef("explicacion")}>
+                      {editandoCampo === "explicacion"
+                        ? <Textarea minRows={3} />
+                        : <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.explicacion)} />
+                      }
+                    </div>
+                  </div>
+
+                  <div className="seccion">
+                    <SeccionHeader numero="2" titulo={headerActividad} icono="✏️" />
+                    {itemsLocal.length > 0 ? (
                       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                        {fichaLocal.ejercicios.map((ejercicio, idx) => (
-                          <div key={idx}>
+                        {itemsLocal.map(({ num, texto }, idx) => (
+                          <div key={num}>
                             <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
-                              <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
-                              <EditableText value={ejercicio} onSave={setArrayItem("ejercicios", idx)}>
-                                <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio)} />
-                              </EditableText>
+                              <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{num}.</span>
+                              <div ref={setRef(`item_${idx}`)} style={{ flex: 1 }}>
+                                {editandoCampo === `item_${idx}`
+                                  ? <Textarea minRows={2} />
+                                  : <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(texto)} />
+                                }
+                              </div>
                             </div>
                             <RecuadroRespuesta />
                           </div>
                         ))}
                       </div>
+                    ) : (
+                      <>
+                        <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, marginBottom: 8 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.actividad)} />
+                        <RecuadroRespuesta />
+                      </>
                     )}
                   </div>
-                </>
-              )
 
-            ) : (
-
-              /* ── No PDL: Matemática, Ciencias, etc. ── */
-              <>
-                {/* 1. Explicación */}
-                <div className="seccion">
-                  <SeccionHeader numero="1" titulo={pregExplicacion || "Leemos juntos"} icono="📖" />
-                  <ConceptoClave texto={fichaLocal.concepto_clave} onSave={set("concepto_clave")} />
-                  <EditableText value={fichaLocal.explicacion} onSave={set("explicacion")}>
-                    <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.explicacion)} />
-                  </EditableText>
-                </div>
-
-                {/* 2. Actividad */}
-                <div className="seccion">
-                  <SeccionHeader numero="2" titulo={headerActividad} icono="✏️" />
-                  {itemsLocal.length > 0 ? (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                      {itemsLocal.map(({ num, texto }, idx) => (
-                        <div key={num}>
-                          <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
-                            <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{num}.</span>
-                            <EditableText value={texto} onSave={setItem(idx)}>
-                              <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(texto)} />
-                            </EditableText>
-                          </div>
-                          <RecuadroRespuesta />
-                        </div>
-                      ))}
+                  {fichaLocal.pregunta_reflexion && (
+                    <div className="seccion">
+                      <SeccionHeader numero="3" titulo="Reflexionamos" icono="💭" />
+                      <div ref={setRef("pregunta_reflexion")}>
+                        {editandoCampo === "pregunta_reflexion"
+                          ? <Textarea minRows={2} />
+                          : <p className="reflexion-texto" style={{ fontSize: 12, color: C.texto, fontStyle: "italic", lineHeight: 1.55, marginBottom: 6 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.pregunta_reflexion)} />
+                        }
+                      </div>
+                      <LineasRespuesta n={2} />
                     </div>
-                  ) : (
-                    <>
-                      <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, marginBottom: 8 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.actividad)} />
-                      <RecuadroRespuesta />
-                    </>
                   )}
-                </div>
+                </>
+              )}
 
-                {/* 3. Reflexión */}
-                {fichaLocal.pregunta_reflexion && (
-                  <div className="seccion">
-                    <SeccionHeader numero="3" titulo="Reflexionamos" icono="💭" />
-                    <EditableText value={fichaLocal.pregunta_reflexion} onSave={set("pregunta_reflexion")}>
-                      <p className="reflexion-texto" style={{ fontSize: 12, color: C.texto, fontStyle: "italic", lineHeight: 1.55, marginBottom: 6 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.pregunta_reflexion)} />
-                    </EditableText>
-                    <LineasRespuesta n={2} />
-                  </div>
-                )}
-              </>
-            )}
+            </div>
+
+            {/* Footer */}
+            <div style={{
+              borderTop: `2px solid ${C.borderFuerte}`,
+              borderRadius: "0 0 8px 8px",
+              padding: "6px 16px",
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              background: C.fondoHeader
+            }}>
+              <span style={{ fontSize: 10, color: C.muted }}>tiza. · Diseño Curricular 2018</span>
+              <span style={{ fontSize: 10, color: C.muted }}>{gradoDisplay} · {registro.area}</span>
+            </div>
 
           </div>
 
-          {/* Footer */}
-          <div style={{
-            borderTop: `2px solid ${C.borderFuerte}`,
-            borderRadius: "0 0 8px 8px",
-            padding: "6px 16px",
-            display: "flex", justifyContent: "space-between", alignItems: "center",
-            background: C.fondoHeader
+          {/* ── Barra lateral de edición ── */}
+          <div className="sidebar-edicion" style={{
+            width: 48, flexShrink: 0, position: "relative", alignSelf: "stretch",
           }}>
-            <span style={{ fontSize: 10, color: C.muted }}>tiza. · Diseño Curricular 2018</span>
-            <span style={{ fontSize: 10, color: C.muted }}>{gradoDisplay} · {registro.area}</span>
+            {Object.entries(posiciones).map(([key, top]) => (
+              editandoCampo === key ? (
+                <button
+                  key={key}
+                  onClick={confirmEdit}
+                  style={{
+                    position: "absolute",
+                    top: Math.max(0, top),
+                    left: 8,
+                    width: 36,
+                    background: C.acento,
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: 6,
+                    padding: "5px 0",
+                    fontSize: 10,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    lineHeight: 1.3,
+                    textAlign: "center",
+                  }}
+                >
+                  Listo
+                </button>
+              ) : (
+                <button
+                  key={key}
+                  onClick={() => startEdit(key)}
+                  style={{
+                    position: "absolute",
+                    top: Math.max(0, top),
+                    left: 8,
+                    width: 36,
+                    background: "#fff",
+                    border: `1.5px solid ${C.border}`,
+                    borderRadius: 6,
+                    padding: "4px 0",
+                    fontSize: 14,
+                    cursor: "pointer",
+                    lineHeight: 1,
+                    textAlign: "center",
+                    color: C.muted,
+                  }}
+                >
+                  ✏️
+                </button>
+              )
+            ))}
           </div>
 
         </div>
-
       </div>
 
       {/* CSS */}
       <style>{`
-        .editable-wrapper:hover .edit-icon-btn { opacity: 1 !important; }
-
         @media print {
           * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           @page { size: A4; margin: 10mm; }
 
-          html, body {
-            margin: 0;
-            padding: 0;
-            width: 190mm;
-          }
+          html, body { margin: 0; padding: 0; width: 190mm; }
 
           #nav-ficha,
           .btn-imprimir,
+          .sidebar-edicion,
           .validacion-badge,
-          .mock-banner,
-          .edit-icon-btn { display: none !important; }
+          .mock-banner { display: none !important; }
 
           .contenedor-pagina {
             background: white !important;
@@ -666,30 +750,27 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
           }
 
           .ficha {
-            width: 190mm;
-            max-width: 190mm;
-            margin: 0;
-            padding: 0;
+            width: 190mm !important;
+            max-width: 190mm !important;
+            min-height: 277mm !important;
+            margin: 0 !important;
             border: none !important;
             border-radius: 0 !important;
             box-shadow: none !important;
-            min-height: 277mm;
-            display: flex;
-            flex-direction: column;
+            display: flex !important;
+            flex-direction: column !important;
             overflow: visible !important;
             font-family: 'Lexend Deca', sans-serif !important;
           }
 
           .cuerpo-ficha { flex: 1 !important; }
 
-          /* Solo el texto de contenido en 13px — NO los títulos ni títulos de sección */
           .explicacion,
           .ejercicio-enunciado,
           .reflexion-texto,
-          .concepto-clave,
+          .concepto-clave-texto,
           .dato-label { font-size: 13px !important; }
 
-          /* El contenido se distribuye ocupando toda la hoja */
           .seccion:last-of-type { flex: 1; }
         }
       `}</style>
