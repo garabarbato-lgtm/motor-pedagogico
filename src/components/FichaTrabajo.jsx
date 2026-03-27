@@ -1,5 +1,6 @@
 import { useState } from "react";
-import html2pdf from "html2pdf.js";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import Logo from "./Logo.jsx";
 
 const C = {
@@ -284,17 +285,15 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     setTimeout(() => { window.print(); setImprimiendo(false); }, 50);
   };
 
-  const handleDescargarPDF = () => {
+  const handleDescargarPDF = async () => {
     const element = document.getElementById("ficha-imprimible");
     const areaSlug = registro.area.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
     const filename = `tiza-${areaSlug}-${registro.grado}.pdf`;
-    html2pdf().set({
-      margin: 10,
-      filename,
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-    }).from(element).save();
+    const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+    const imgData = canvas.toDataURL("image/jpeg", 0.98);
+    const pdf = new jsPDF("p", "mm", "a4");
+    pdf.addImage(imgData, "JPEG", 10, 10, 190, 0);
+    pdf.save(filename);
   };
 
   return (
