@@ -123,16 +123,19 @@ La ficha debe tener:
 
 Criterios:
 - Los ejercicios deben ser variados: completar, corregir, clasificar, inventar
-- El vocabulario de los ejercicios debe ser conocido para el grado
+- El vocabulario debe ser conocido para el grado
 - Evitar ejercicios mecánicos sin sentido (ej. "escribí 10 palabras con mb")
 - Priorizar ejercicios en contexto de oraciones o textos breves
-- Los ejercicios deben ser strings simples con el enunciado (sin numeración — el número se muestra automáticamente)
-- Si un ejercicio requiere una tabla para completar, generarla como HTML directamente en el enunciado con este estilo: bordes finos (border: 0.5px solid #ddddd8), encabezados en negrita con fondo #f5f5f0, celdas vacías con height: 32px, width: 100%. La tabla ya es el espacio de respuesta — NO agregar recuadro adicional debajo.
-- Cuando un ejercicio sea de completar oraciones con espacios en blanco, usar exactamente este HTML para cada espacio: <span style='font-family:Arial;letter-spacing:2px;'>_______</span> (7 guiones con letter-spacing). Mostrar cada oración en su propia línea: <p style="margin-bottom:16px">La <span style='font-family:Arial;letter-spacing:2px;'>_______</span> bloquea la luz.</p>. Nunca juntar todas las oraciones en un solo párrafo. Nunca usar menos guiones. El espacio ya es la respuesta — NO agregar recuadro adicional debajo.
-- Marcá con **doble asterisco** las palabras clave o términos importantes en la explicación y los ejercicios
+- Marcá con **doble asterisco** las palabras clave en la explicación y los enunciados
 - El título debe tener dos partes separadas por dos puntos. Mayúscula solo en la primera letra.
 - Elegí 1 o 2 emojis relevantes a la regla ortográfica.
-- En los enunciados de ejercicios, incluí un emoji al inicio SOLO si hay un objeto cotidiano concreto. Si el ejercicio es abstracto, NO uses emoji.
+- En los enunciados, incluí un emoji al inicio SOLO si hay un objeto cotidiano concreto.
+
+TIPOS DE EJERCICIO — elegí el más adecuado para cada ejercicio:
+- "texto_libre": para corrección, escritura libre o respuestas abiertas.
+- "completar_oraciones": para completar con la forma ortográfica correcta. Cada oración en su propio elemento del array, con _______ (mínimo 5 guiones) para el espacio en blanco.
+- "tabla": para clasificar palabras. "columnas" son los encabezados, "filas" son las palabras a clasificar.
+- "verdadero_falso": para evaluar conocimiento de la regla.
 
 FORMATO DE RESPUESTA (JSON estricto, sin markdown):
 {
@@ -142,9 +145,20 @@ FORMATO DE RESPUESTA (JSON estricto, sin markdown):
   "explicacion": "explicación breve de la regla (máximo 2 oraciones)",
   "ejemplo": "un ejemplo concreto de la regla",
   "ejercicios": [
-    "ejercicio 1",
-    "ejercicio 2",
-    "ejercicio 3"
+    {
+      "tipo": "completar_oraciones",
+      "enunciado": "Completá las oraciones con mb o mp:",
+      "oraciones": [
+        "Hay que te___lar de frío.",
+        "La ___olsa del mercado pesa mucho."
+      ]
+    },
+    {
+      "tipo": "tabla",
+      "enunciado": "Clasificá estas palabras según su escritura:",
+      "columnas": ["Con mb", "Con mp"],
+      "filas": ["también", "campo", "ambiente", "trampa"]
+    }
   ]
 }
 
@@ -167,24 +181,10 @@ function buildGeneratorPrompt(contenido, tipoFicha, incluirExplicacion, incluirE
     ? `\n\nATENCIÓN: El intento anterior fue rechazado por las siguientes razones:\n${feedback}\nCorregí estos problemas en esta nueva versión.`
     : "";
 
-  const estructuraElementos = [
-    "- Título con dos partes separadas por dos puntos",
-    "- 1 o 2 emojis relevantes al tema",
-    incluirExplicacion ? "- Concepto clave: una oración que define el concepto principal" : null,
-    incluirExplicacion ? "- Explicación breve del concepto, en lenguaje claro para el grado" : null,
-    incluirEjemplo ? "- Ejemplo concreto cercano a la experiencia del alumno" : null,
-    `- Actividad de tipo ${tipoFicha} (máximo 3 ejercicios)`,
-    "- Pregunta de reflexión final",
+  const camposOpcionales = [
+    incluirExplicacion ? '  "concepto_clave": "definición del concepto en una oración",' : null,
+    incluirExplicacion ? '  "explicacion": "explicación breve en lenguaje claro para el grado",' : null,
   ].filter(Boolean).join("\n");
-
-  const formatoCampos = [
-    '"titulo": "..."',
-    incluirExplicacion ? '"concepto_clave": "definición del concepto en una oración"' : null,
-    incluirExplicacion ? '"explicacion": "..."' : null,
-    incluirEjemplo ? '"ejemplo": "..."' : null,
-    '"actividad": "..."',
-    '"pregunta_reflexion": "..."',
-  ].filter(Boolean).join(",\n  ");
 
   return `Sos un docente experto en didáctica de nivel primario de la Provincia de Buenos Aires.
 Generá un recurso educativo para estudiantes de primaria con esta información curricular:
@@ -196,29 +196,49 @@ Contenido: ${contenido.item}
 ${contenido.contexto_pedagogico ? `Contexto pedagógico adicional: ${contenido.contexto_pedagogico}` : ""}
 ${feedbackSection}
 
-ESTRUCTURA DE LA FICHA (incluí exactamente estos elementos):
-${estructuraElementos}
-
 CRITERIOS OBLIGATORIOS:
 1. Lenguaje claro y adecuado para niños de primaria (evitá términos académicos complejos)
-2. La actividad debe promover comprensión real, no ejercicios mecánicos sin sentido
-3. Todo el contenido debe responder al objetivo curricular específico, no al tema general
-4. La actividad debe incluir MÁXIMO 3 ejercicios para que entre en una hoja A4
-5. Los ejercicios de la actividad deben estar numerados exactamente así: "1. [enunciado]\n2. [enunciado]\n3. [enunciado]"
-6. Marcá con **doble asterisco** los números, datos importantes y conceptos clave en la explicación y los ejercicios
-7. El título debe tener DOS PARTES separadas por dos puntos cuando sea posible. Ejemplo: "El entero y sus partes: dividiendo pizzas y tortas". Usá mayúscula solo en la primera letra de la primera palabra.
-8. En los enunciados de los ejercicios, incluí un emoji al INICIO solo si hay un objeto cotidiano concreto (comida, animales, juguetes, deportes, objetos escolares). Formato: "🍫 Mi papá compró...". Si el ejercicio es abstracto, NO uses emoji.
-9. Elegí 1 o 2 emojis relevantes al tema del contenido para decorar el título de la ficha.
-10. Si un ejercicio requiere una tabla para completar, generarla como HTML directamente en el enunciado con este estilo: bordes finos (border: 0.5px solid #ddddd8), encabezados en negrita con fondo #f5f5f0, celdas vacías con height: 32px, width: 100%. La tabla ya es el espacio de respuesta — NO agregar recuadro ni espacio adicional debajo.
-11. Cuando un ejercicio sea de completar oraciones con espacios en blanco, usar exactamente este HTML para cada espacio: <span style='font-family:Arial;letter-spacing:2px;'>_______</span> (7 guiones con letter-spacing). Mostrar cada oración en su propia línea: <p style="margin-bottom:16px">La <span style='font-family:Arial;letter-spacing:2px;'>_______</span> bloquea la luz completamente.</p>. Nunca juntar todas las oraciones en un solo párrafo. Nunca usar menos guiones. El espacio ya es la respuesta — NO agregar recuadro adicional debajo.
-${contenido.area === "Matemática" ? `12. Cuando escribas fracciones, siempre usar formato vertical con numerador arriba y denominador abajo, usando HTML:
-<span style='display:inline-flex; flex-direction:column; align-items:center; font-size:0.9em; line-height:1.1; vertical-align:middle; margin:0 2px;'><span style='border-bottom:1px solid currentColor; padding:0 3px;'>numerador</span><span style='padding:0 3px;'>denominador</span></span>
-Nunca escribir fracciones como 1/2 o 3/4 en línea.` : ""}
+2. Máximo 3 ejercicios — elegí la cantidad pedagógicamente adecuada
+3. Los ejercicios deben promover comprensión real, no repetición mecánica
+4. Todo el contenido debe responder al objetivo curricular específico
+5. Marcá con **doble asterisco** los números, datos y conceptos clave en la explicación
+6. El título debe tener dos partes separadas por dos puntos. Usá mayúscula solo en la primera letra.
+7. En los enunciados, incluí un emoji al inicio solo si hay un objeto cotidiano concreto. Si el ejercicio es abstracto, NO uses emoji.
+8. Elegí 1 o 2 emojis relevantes al tema para el campo "emojis".
+
+TIPOS DE EJERCICIO — elegí el más adecuado para cada ejercicio:
+- "texto_libre": para problemas, análisis o respuestas abiertas. Incluye "emoji" si hay objeto concreto.
+- "completar_oraciones": para completar con conceptos clave. El array "oraciones" tiene strings con _______ (mínimo 5 guiones) donde va la respuesta. Cada oración es un elemento separado del array.
+- "tabla": para clasificar o comparar. "columnas" son los encabezados, "filas" son los rótulos de fila (las celdas de respuesta se generan vacías automáticamente).
+- "verdadero_falso": para evaluar comprensión de afirmaciones.
 
 FORMATO DE RESPUESTA (JSON estricto, sin markdown):
 {
   "emojis": ["emoji1"],
-  ${formatoCampos}
+  "titulo": "primera parte: segunda parte",
+${camposOpcionales}
+  "ejercicios": [
+    {
+      "tipo": "texto_libre",
+      "enunciado": "enunciado del ejercicio",
+      "emoji": "🍕"
+    },
+    {
+      "tipo": "completar_oraciones",
+      "enunciado": "Completá las oraciones con la palabra correcta:",
+      "oraciones": [
+        "El _______ es la fuente de energía del sistema solar.",
+        "Los planetas giran _______ el Sol."
+      ]
+    },
+    {
+      "tipo": "tabla",
+      "enunciado": "Clasificá los siguientes elementos:",
+      "columnas": ["Elemento", "Tipo"],
+      "filas": ["La Luna", "El Sol", "Una lámpara"]
+    }
+  ],
+  "reflexion": "una pregunta para que el alumno conecte con su vida cotidiana"
 }
 
 Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdown.`;
@@ -246,12 +266,14 @@ function buildPDLValidatorPrompt(fichaGenerada, contenido, tipoFicha) {
       `Orientaciones: ${Array.isArray(fichaGenerada.orientaciones) ? fichaGenerada.orientaciones.join(" | ") : fichaGenerada.orientaciones}`,
     ].join("\n");
   } else {
-    estructuraEsperada = "título, explicación de la regla, ejemplo concreto, ejercicios variados";
+    estructuraEsperada = "título, explicación de la regla, ejemplo concreto, ejercicios variados tipados";
     fichaTexto = [
       `Título: ${fichaGenerada.titulo}`,
       `Explicación: ${fichaGenerada.explicacion}`,
       `Ejemplo: ${fichaGenerada.ejemplo}`,
-      `Ejercicios: ${Array.isArray(fichaGenerada.ejercicios) ? fichaGenerada.ejercicios.join(" | ") : fichaGenerada.ejercicios}`,
+      `Ejercicios: ${Array.isArray(fichaGenerada.ejercicios)
+        ? fichaGenerada.ejercicios.map(e => typeof e === "string" ? e : `[${e.tipo}] ${e.enunciado}`).join(" | ")
+        : fichaGenerada.ejercicios}`,
     ].join("\n");
   }
 
@@ -301,16 +323,16 @@ function buildValidatorPrompt(fichaGenerada, contenido, tipoFicha, incluirExplic
   const elementosFicha = [
     `Título: ${fichaGenerada.titulo}`,
     incluirExplicacion ? `Explicación: ${fichaGenerada.explicacion}` : null,
-    incluirEjemplo ? `Ejemplo: ${fichaGenerada.ejemplo}` : null,
-    `Actividad: ${fichaGenerada.actividad}`,
-    `Pregunta de reflexión: ${fichaGenerada.pregunta_reflexion}`,
+    `Ejercicios: ${Array.isArray(fichaGenerada.ejercicios)
+      ? fichaGenerada.ejercicios.map(e => `[${e.tipo}] ${e.enunciado}`).join(" | ")
+      : fichaGenerada.ejercicios}`,
+    `Reflexión: ${fichaGenerada.reflexion}`,
   ].filter(Boolean).join("\n");
 
   const estructuraEsperada = [
     "título",
     incluirExplicacion ? "explicación" : null,
-    incluirEjemplo ? "ejemplo concreto" : null,
-    "actividad significativa",
+    "ejercicios tipados (texto_libre, completar_oraciones, tabla, verdadero_falso)",
     "pregunta de reflexión",
   ].filter(Boolean).join(", ");
 

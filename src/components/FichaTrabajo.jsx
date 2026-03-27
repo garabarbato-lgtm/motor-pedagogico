@@ -58,38 +58,35 @@ function htmlATextoPlano(html) {
     .trim();
 }
 
-function textoAHtml(texto) {
-  return texto
-    .split('\n')
-    .filter(l => l.trim())
-    .map(l => `<p>${l}</p>`)
-    .join('')
-    .replace(/_{2,}/g, '<span style="font-family:Arial;letter-spacing:1px;">_______</span>');
-}
-
 function initFieldData(ficha) {
   const planos = {};
-  const tablas = {};
 
-  function procesarCampo(key, html) {
-    if (!html) return;
-    const tableMatch = html.match(/<table[\s\S]*?<\/table>/i);
-    if (tableMatch) {
-      tablas[key] = tableMatch[0];
-      planos[key] = htmlATextoPlano(html.slice(0, html.indexOf(tableMatch[0])));
+  // Campos simples (texto plano)
+  for (const k of ['titulo', 'explicacion', 'concepto_clave', 'texto', 'consigna', 'ejemplo', 'reflexion', 'pregunta_reflexion']) {
+    if (ficha[k]) planos[k] = ficha[k];
+  }
+
+  // PDL Lectura: preguntas
+  (ficha.preguntas || []).forEach((v, i) => { planos[`pregunta_${i}`] = v || ''; });
+
+  // Ejercicios tipados (nuevo formato) o strings (PDL Ortografía viejo)
+  (ficha.ejercicios || []).forEach((ejercicio, i) => {
+    if (typeof ejercicio === 'string') {
+      planos[`ejercicio_${i}`] = htmlATextoPlano(ejercicio);
     } else {
-      planos[key] = htmlATextoPlano(html);
+      planos[`ejercicio_${i}_enunciado`] = ejercicio.enunciado || '';
+      (ejercicio.oraciones || []).forEach((o, j) => { planos[`ejercicio_${i}_oracion_${j}`] = o || ''; });
+      (ejercicio.filas || []).forEach((f, j) => { planos[`ejercicio_${i}_fila_${j}`] = f || ''; });
+      (ejercicio.afirmaciones || []).forEach((a, j) => { planos[`ejercicio_${i}_afirmacion_${j}`] = a || ''; });
     }
+  });
+
+  // Backward compat: actividad plain text
+  if (ficha.actividad) {
+    parsearActividad(ficha.actividad).items.forEach((item, i) => { planos[`item_${i}`] = item.texto || ''; });
   }
 
-  for (const k of ['titulo', 'explicacion', 'concepto_clave', 'texto', 'consigna', 'pregunta_reflexion', 'actividad']) {
-    procesarCampo(k, ficha[k] || '');
-  }
-  (ficha.preguntas || []).forEach((v, i) => procesarCampo(`pregunta_${i}`, v || ''));
-  (ficha.ejercicios || []).forEach((v, i) => procesarCampo(`ejercicio_${i}`, v || ''));
-  parsearActividad(ficha.actividad).items.forEach((item, i) => procesarCampo(`item_${i}`, item.texto || ''));
-
-  return { planos, tablas };
+  return { planos, tablas: {} };
 }
 
 function renderTitulo(texto) {
@@ -265,7 +262,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   // ── Gestión de edición ──
 
   const saveValue = (key, val) => {
-    const simples = ["titulo", "explicacion", "concepto_clave", "texto", "consigna", "pregunta_reflexion", "actividad"];
+    const simples = ["titulo", "explicacion", "concepto_clave", "texto", "consigna", "reflexion", "pregunta_reflexion", "actividad"];
     if (simples.includes(key)) { setFichaLocal(f => ({ ...f, [key]: val })); return; }
     if (key.startsWith("pregunta_")) {
       const i = +key.slice(9);
@@ -273,8 +270,22 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
       return;
     }
     if (key.startsWith("ejercicio_")) {
-      const i = +key.slice(10);
-      setFichaLocal(f => { const a = [...(f.ejercicios || [])]; a[i] = val; return { ...f, ejercicios: a }; });
+      const parts = key.split("_");
+      const i = +parts[1];
+      const sub = parts[2];
+      if (!sub) return; // key antigua sin subkey
+      if (sub === "enunciado") {
+        setFichaLocal(f => { const e = [...(f.ejercicios || [])]; e[i] = { ...e[i], enunciado: val }; return { ...f, ejercicios: e }; });
+      } else if (sub === "oracion") {
+        const j = +parts[3];
+        setFichaLocal(f => { const e = [...(f.ejercicios || [])]; const o = [...(e[i].oraciones || [])]; o[j] = val; e[i] = { ...e[i], oraciones: o }; return { ...f, ejercicios: e }; });
+      } else if (sub === "fila") {
+        const j = +parts[3];
+        setFichaLocal(f => { const e = [...(f.ejercicios || [])]; const fi = [...(e[i].filas || [])]; fi[j] = val; e[i] = { ...e[i], filas: fi }; return { ...f, ejercicios: e }; });
+      } else if (sub === "afirmacion") {
+        const j = +parts[3];
+        setFichaLocal(f => { const e = [...(f.ejercicios || [])]; const af = [...(e[i].afirmaciones || [])]; af[j] = val; e[i] = { ...e[i], afirmaciones: af }; return { ...f, ejercicios: e }; });
+      }
       return;
     }
     if (key.startsWith("item_")) {
@@ -285,11 +296,9 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
   const saveCampo = (key) => {
     if (!key || !textareaRef.current) return;
-    const textoNuevo = textareaRef.current.value;
-    let htmlNuevo = textoAHtml(textoNuevo);
-    if (tablasLocal[key]) htmlNuevo += tablasLocal[key];
-    saveValue(key, htmlNuevo);
-    setPlanosLocal(prev => ({ ...prev, [key]: textoNuevo }));
+    const val = textareaRef.current.value;
+    saveValue(key, val);
+    setPlanosLocal(prev => ({ ...prev, [key]: val }));
   };
 
   const startEdit = (key) => {
@@ -330,6 +339,122 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
           />
         )}
       </>
+    );
+  };
+
+  // ── Render de ejercicio tipado ──
+
+  const renderEjercicioItem = (ejercicio, idx) => {
+    const keyEnunciado = `ejercicio_${idx}_enunciado`;
+    const numLabel = (
+      <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
+    );
+    const enunciadoEl = (
+      <div ref={setRef(keyEnunciado)} style={{ flex: 1 }}>
+        {editandoCampo === keyEnunciado
+          ? renderTextarea(2)
+          : <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio.enunciado)} />
+        }
+      </div>
+    );
+
+    if (ejercicio.tipo === "completar_oraciones") {
+      return (
+        <div key={idx}>
+          <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 6 }}>
+            {numLabel}{enunciadoEl}
+          </div>
+          <div style={{ marginLeft: 24 }}>
+            {(ejercicio.oraciones || []).map((oracion, j) => {
+              const keyOracion = `ejercicio_${idx}_oracion_${j}`;
+              return (
+                <div key={j} ref={setRef(keyOracion)} style={{ marginBottom: 8 }}>
+                  {editandoCampo === keyOracion
+                    ? renderTextarea(1)
+                    : <div style={{ fontSize: 12, lineHeight: 1.6 }} dangerouslySetInnerHTML={renderHTMLConNegrita(oracion)} />
+                  }
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    if (ejercicio.tipo === "tabla") {
+      return (
+        <div key={idx}>
+          <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 8 }}>
+            {numLabel}{enunciadoEl}
+          </div>
+          <div style={{ marginLeft: 24 }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
+              <thead>
+                <tr>
+                  {(ejercicio.columnas || []).map((col, i) => (
+                    <th key={i} style={{ border: "0.5px solid #ddddd8", background: "#f5f5f0", padding: "4px 8px", fontWeight: 700, textAlign: "left" }}>{col}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {(ejercicio.filas || []).map((fila, i) => {
+                  const keyFila = `ejercicio_${idx}_fila_${i}`;
+                  return (
+                    <tr key={i}>
+                      <td ref={setRef(keyFila)} style={{ border: "0.5px solid #ddddd8", padding: "4px 8px", height: 32 }}>
+                        {editandoCampo === keyFila ? renderTextarea(1) : fila}
+                      </td>
+                      {(ejercicio.columnas || []).slice(1).map((_, j) => (
+                        <td key={j} style={{ border: "0.5px solid #ddddd8", height: 32 }} />
+                      ))}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+
+    if (ejercicio.tipo === "verdadero_falso") {
+      return (
+        <div key={idx}>
+          <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 8 }}>
+            {numLabel}{enunciadoEl}
+          </div>
+          <div style={{ marginLeft: 24, display: "flex", flexDirection: "column", gap: 6 }}>
+            {(ejercicio.afirmaciones || []).map((afirmacion, j) => {
+              const keyAfirm = `ejercicio_${idx}_afirmacion_${j}`;
+              return (
+                <div key={j} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div ref={setRef(keyAfirm)} style={{ flex: 1 }}>
+                    {editandoCampo === keyAfirm
+                      ? renderTextarea(1)
+                      : <span style={{ fontSize: 12, lineHeight: 1.5 }}>{afirmacion}</span>
+                    }
+                  </div>
+                  <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+                    {["V", "F"].map(l => (
+                      <span key={l} style={{ border: `1px solid ${C.border}`, padding: "2px 7px", fontSize: 11, fontWeight: 700, borderRadius: 3 }}>{l}</span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    // Default: texto_libre
+    return (
+      <div key={idx}>
+        <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
+          {numLabel}{enunciadoEl}
+        </div>
+        <RecuadroRespuesta />
+      </div>
     );
   };
 
@@ -623,21 +748,25 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                     <div className="seccion">
                       <SeccionHeader numero="2" titulo="Practicamos" icono="✏️" />
                       {Array.isArray(fichaLocal.ejercicios) && (
-                        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                          {fichaLocal.ejercicios.map((ejercicio, idx) => (
-                            <div key={idx}>
-                              <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
-                                <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
-                                <div ref={setRef(`ejercicio_${idx}`)} style={{ flex: 1 }}>
-                                  {editandoCampo === `ejercicio_${idx}`
-                                    ? renderTextarea(2)
-                                    : <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio)} />
-                                  }
+                        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                          {fichaLocal.ejercicios.map((ejercicio, idx) =>
+                            typeof ejercicio === "string"
+                              ? (
+                                <div key={idx}>
+                                  <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
+                                    <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
+                                    <div ref={setRef(`ejercicio_${idx}`)} style={{ flex: 1 }}>
+                                      {editandoCampo === `ejercicio_${idx}`
+                                        ? renderTextarea(2)
+                                        : <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio)} />
+                                      }
+                                    </div>
+                                  </div>
+                                  {!tieneRespuestaEmbebida(ejercicio) && <RecuadroRespuesta />}
                                 </div>
-                              </div>
-                              {!tieneRespuestaEmbebida(ejercicio) && <RecuadroRespuesta />}
-                            </div>
-                          ))}
+                              )
+                              : renderEjercicioItem(ejercicio, idx)
+                          )}
                         </div>
                       )}
                     </div>
@@ -669,10 +798,11 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                   </div>
 
                   <div className="seccion">
-                    <SeccionHeader numero="2" titulo={headerActividad} icono="✏️" />
-                    {itemsLocal.length > 0 ? (
-                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                        {itemsLocal.map(({ num, texto }, idx) => (
+                    <SeccionHeader numero="2" titulo="Tu turno" icono="✏️" />
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                      {Array.isArray(fichaLocal.ejercicios) && fichaLocal.ejercicios.length > 0
+                        ? fichaLocal.ejercicios.map((ejercicio, idx) => renderEjercicioItem(ejercicio, idx))
+                        : itemsLocal.map(({ num, texto }, idx) => (
                           <div key={num}>
                             <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
                               <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{num}.</span>
@@ -685,28 +815,18 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                             </div>
                             {!tieneRespuestaEmbebida(texto) && <RecuadroRespuesta />}
                           </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <>
-                        <div ref={setRef("actividad")}>
-                          {editandoCampo === "actividad"
-                            ? renderTextarea(3)
-                            : <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, marginBottom: 8 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.actividad)} />
-                          }
-                        </div>
-                        {!tieneRespuestaEmbebida(fichaLocal.actividad) && <RecuadroRespuesta />}
-                      </>
-                    )}
+                        ))
+                      }
+                    </div>
                   </div>
 
-                  {fichaLocal.pregunta_reflexion && (
+                  {(fichaLocal.reflexion || fichaLocal.pregunta_reflexion) && (
                     <div className="seccion">
                       <SeccionHeader numero="3" titulo="Reflexionamos" icono="💭" />
-                      <div ref={setRef("pregunta_reflexion")}>
-                        {editandoCampo === "pregunta_reflexion"
+                      <div ref={setRef("reflexion")}>
+                        {editandoCampo === "reflexion"
                           ? renderTextarea(2)
-                          : <div className="reflexion-texto" style={{ fontSize: 12, color: C.texto, fontStyle: "italic", lineHeight: 1.55, marginBottom: 6 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.pregunta_reflexion)} />
+                          : <div className="reflexion-texto" style={{ fontSize: 12, color: C.texto, fontStyle: "italic", lineHeight: 1.55, marginBottom: 6 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.reflexion || fichaLocal.pregunta_reflexion)} />
                         }
                       </div>
                       <LineasRespuesta n={2} />
