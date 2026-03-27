@@ -18,6 +18,13 @@ const C = {
 
 // ── Helpers ──
 
+// Detecta ejercicios que ya tienen su espacio de respuesta embebido
+// (tabla HTML o espacios en blanco _____)
+function tieneRespuestaEmbebida(texto) {
+  if (!texto) return false;
+  return texto.includes("<table") || texto.includes("_____");
+}
+
 function stripMarkdown(str) {
   if (!str) return str;
   return str
@@ -574,7 +581,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                                   }
                                 </div>
                               </div>
-                              <RecuadroRespuesta />
+                              {!tieneRespuestaEmbebida(ejercicio) && <RecuadroRespuesta />}
                             </div>
                           ))}
                         </div>
@@ -622,14 +629,14 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                                 }
                               </div>
                             </div>
-                            <RecuadroRespuesta />
+                            {!tieneRespuestaEmbebida(texto) && <RecuadroRespuesta />}
                           </div>
                         ))}
                       </div>
                     ) : (
                       <>
                         <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, marginBottom: 8 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.actividad)} />
-                        <RecuadroRespuesta />
+                        {!tieneRespuestaEmbebida(fichaLocal.actividad) && <RecuadroRespuesta />}
                       </>
                     )}
                   </div>

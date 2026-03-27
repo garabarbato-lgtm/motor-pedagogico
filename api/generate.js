@@ -127,7 +127,8 @@ Criterios:
 - Evitar ejercicios mecánicos sin sentido (ej. "escribí 10 palabras con mb")
 - Priorizar ejercicios en contexto de oraciones o textos breves
 - Los ejercicios deben ser strings simples con el enunciado (sin numeración — el número se muestra automáticamente)
-- Si un ejercicio requiere una tabla para completar, generarla en HTML dentro del recuadro de respuesta con este estilo: bordes finos (border: 0.5px solid #ddddd8), encabezados de columna en negrita con fondo #f5f5f0, celdas vacías con height: 32px para que el alumno escriba, width: 100%. La tabla va DENTRO del recuadro de respuesta, debajo del enunciado.
+- Si un ejercicio requiere una tabla para completar, generarla como HTML directamente en el enunciado con este estilo: bordes finos (border: 0.5px solid #ddddd8), encabezados en negrita con fondo #f5f5f0, celdas vacías con height: 32px, width: 100%. La tabla ya es el espacio de respuesta — NO agregar recuadro adicional debajo.
+- Cuando un ejercicio sea de completar oraciones con espacios en blanco, usar _____ (cinco guiones) para cada espacio y mostrar cada oración en su propia línea con HTML: <p style="margin-bottom:16px">La _____ bloquea la luz.</p>. Nunca juntar todas las oraciones en un solo párrafo. El espacio _____ ya es la respuesta — NO agregar recuadro adicional debajo.
 - Marcá con **doble asterisco** las palabras clave o términos importantes en la explicación y los ejercicios
 - El título debe tener dos partes separadas por dos puntos. Mayúscula solo en la primera letra.
 - Elegí 1 o 2 emojis relevantes a la regla ortográfica.
@@ -208,8 +209,9 @@ CRITERIOS OBLIGATORIOS:
 7. El título debe tener DOS PARTES separadas por dos puntos cuando sea posible. Ejemplo: "El entero y sus partes: dividiendo pizzas y tortas". Usá mayúscula solo en la primera letra de la primera palabra.
 8. En los enunciados de los ejercicios, incluí un emoji al INICIO solo si hay un objeto cotidiano concreto (comida, animales, juguetes, deportes, objetos escolares). Formato: "🍫 Mi papá compró...". Si el ejercicio es abstracto, NO uses emoji.
 9. Elegí 1 o 2 emojis relevantes al tema del contenido para decorar el título de la ficha.
-10. Si un ejercicio requiere una tabla para completar, generarla en HTML dentro del recuadro de respuesta con este estilo: bordes finos (border: 0.5px solid #ddddd8), encabezados de columna en negrita con fondo #f5f5f0, celdas vacías con height: 32px para que el alumno escriba, width: 100%. La tabla va DENTRO del recuadro de respuesta, debajo del enunciado.
-${contenido.area === "Matemática" ? `11. Cuando escribas fracciones, siempre usar formato vertical con numerador arriba y denominador abajo, usando HTML:
+10. Si un ejercicio requiere una tabla para completar, generarla como HTML directamente en el enunciado con este estilo: bordes finos (border: 0.5px solid #ddddd8), encabezados en negrita con fondo #f5f5f0, celdas vacías con height: 32px, width: 100%. La tabla ya es el espacio de respuesta — NO agregar recuadro ni espacio adicional debajo.
+11. Cuando un ejercicio sea de completar oraciones con espacios en blanco, usar _____ (cinco guiones) para cada espacio y mostrar cada oración en su propia línea con HTML: <p style="margin-bottom:16px">La _____ bloquea la luz completamente.</p>. Nunca juntar todas las oraciones en un solo párrafo. El espacio en blanco _____ ya es la respuesta — NO agregar recuadro adicional debajo.
+${contenido.area === "Matemática" ? `12. Cuando escribas fracciones, siempre usar formato vertical con numerador arriba y denominador abajo, usando HTML:
 <span style='display:inline-flex; flex-direction:column; align-items:center; font-size:0.9em; line-height:1.1; vertical-align:middle; margin:0 2px;'><span style='border-bottom:1px solid currentColor; padding:0 3px;'>numerador</span><span style='padding:0 3px;'>denominador</span></span>
 Nunca escribir fracciones como 1/2 o 3/4 en línea.` : ""}
 
