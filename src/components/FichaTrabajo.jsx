@@ -1,4 +1,5 @@
 import { useState } from "react";
+import html2pdf from "html2pdf.js";
 import Logo from "./Logo.jsx";
 
 const C = {
@@ -39,6 +40,16 @@ function renderConNegrita(str) {
   return partes.map((parte, i) =>
     i % 2 === 1 ? <strong key={i}>{parte}</strong> : parte
   );
+}
+
+function renderHTMLConNegrita(str) {
+  if (!str) return { __html: "" };
+  const html = str
+    .replace(/_(.+?)_/g, "$1")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/^[•\-]\s+/gm, "")
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  return { __html: html };
 }
 
 function renderTitulo(texto) {
@@ -200,6 +211,19 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     setTimeout(() => { window.print(); setImprimiendo(false); }, 50);
   };
 
+  const handleDescargarPDF = () => {
+    const element = document.getElementById("ficha-imprimible");
+    const areaSlug = registro.area.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    const filename = `tiza-${areaSlug}-${registro.grado}.pdf`;
+    html2pdf().set({
+      margin: 10,
+      filename,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    }).from(element).save();
+  };
+
   return (
     <div className="contenedor-pagina" style={{ fontFamily: "system-ui, sans-serif", background: C.fondoApp, minHeight: "100vh" }}>
 
@@ -223,6 +247,15 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
               background: C.borderFuerte, color: C.acento, cursor: "pointer"
             }}>
             🖨 Imprimir ficha
+          </button>
+          <button
+            onClick={handleDescargarPDF}
+            style={{
+              fontSize: 13, fontWeight: 600, padding: "8px 18px",
+              borderRadius: 7, border: `2px solid ${C.acento}`,
+              background: C.acento, color: "#ffffff", cursor: "pointer"
+            }}>
+            ⬇ Descargar PDF
           </button>
           <button
             onClick={onNueva}
@@ -270,8 +303,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
           </div>
         )}
 
-        {/* Botón imprimir */}
-        <div className="btn-imprimir" style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
+        {/* Botones imprimir / descargar PDF */}
+        <div className="btn-imprimir" style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginBottom: 16 }}>
           <button
             onClick={handleImprimir}
             disabled={imprimiendo}
@@ -281,6 +314,15 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
               background: C.borderFuerte, color: C.acento, cursor: "pointer"
             }}>
             🖨 Imprimir ficha
+          </button>
+          <button
+            onClick={handleDescargarPDF}
+            style={{
+              fontSize: 12, fontWeight: 600, padding: "8px 20px",
+              borderRadius: 7, border: `2px solid ${C.acento}`,
+              background: C.acento, color: "#ffffff", cursor: "pointer"
+            }}>
+            ⬇ Descargar PDF
           </button>
         </div>
 
@@ -367,7 +409,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                         <div key={idx}>
                           <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
                             <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
-                            <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }}>{renderConNegrita(preg)}</p>
+                            <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(preg)} />
                           </div>
                           <LineasRespuesta n={4} />
                         </div>
@@ -430,7 +472,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                           <div key={idx}>
                             <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
                               <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
-                              <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }}>{renderConNegrita(ejercicio)}</p>
+                              <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio)} />
                             </div>
                             <RecuadroRespuesta />
                           </div>
@@ -463,7 +505,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                         <div key={num}>
                           <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
                             <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{num}.</span>
-                            <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }}>{renderConNegrita(texto)}</p>
+                            <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(texto)} />
                           </div>
                           <RecuadroRespuesta />
                         </div>
