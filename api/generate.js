@@ -350,12 +350,17 @@ Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdow
 // ─────────────────────────────────────────────
 // LLAMADA A LA API (genérica)
 // ─────────────────────────────────────────────
-async function callAPI(prompt, maxTokens = 1000) {
+async function callAPI(prompt, maxTokens = 1500) {
   const response = await client.messages.create({
     model: "claude-haiku-4-5-20251001",
     max_tokens: maxTokens,
     messages: [{ role: "user", content: prompt }],
   });
+
+  // Detectar si la respuesta fue cortada por límite de tokens
+  if (response.stop_reason === "max_tokens") {
+    console.error(`[callAPI] TRUNCADO por max_tokens=${maxTokens}. Aumentar límite.`);
+  }
 
   const text = response.content[0].text.trim();
   const clean = text
@@ -363,14 +368,29 @@ async function callAPI(prompt, maxTokens = 1000) {
     .replace(/```\s*/g, "")
     .replace(/`/g, "")
     .trim();
+
+  // Intento 1: parseo directo
   try {
     return JSON.parse(clean);
-  } catch {
-    // Intentar extraer JSON del texto si hay contenido extra alrededor
-    const match = clean.match(/\{[\s\S]*\}/);
-    if (match) return JSON.parse(match[0]);
-    throw new Error(`Respuesta no es JSON válido: ${clean.slice(0, 120)}`);
+  } catch (_) {}
+
+  // Intento 2: extraer JSON con regex (por si hay texto extra alrededor)
+  const match = clean.match(/\{[\s\S]*\}/);
+  if (match) {
+    try {
+      return JSON.parse(match[0]);
+    } catch (_) {
+      // JSON encontrado pero truncado — loguear respuesta completa
+      console.error("[callAPI] JSON truncado (stop_reason:", response.stop_reason, ")");
+      console.error("[callAPI] Respuesta completa:\n", text);
+      throw new Error(`JSON truncado (stop_reason: ${response.stop_reason}). Ver logs para respuesta completa.`);
+    }
   }
+
+  // Sin JSON reconocible — loguear todo
+  console.error("[callAPI] Sin JSON reconocible (stop_reason:", response.stop_reason, ")");
+  console.error("[callAPI] Respuesta completa:\n", text);
+  throw new Error(`Respuesta sin JSON válido (stop_reason: ${response.stop_reason}): ${clean.slice(0, 300)}`);
 }
 
 // ─────────────────────────────────────────────
@@ -378,8 +398,9 @@ async function callAPI(prompt, maxTokens = 1000) {
 // ─────────────────────────────────────────────
 async function runPipeline(contenido, tipoFicha, incluirExplicacion, incluirEjemplo) {
   const isPDL = contenido.area === "Prácticas del Lenguaje";
-  // Lectura necesita más tokens porque genera texto + preguntas
-  const maxTokens = isPDL && tipoFicha === "Lectura de textos" ? 1500 : 1000;
+  // Lectura PDL genera texto completo + preguntas → más tokens
+  // Resto de generadores subidos a 1500 para soportar HTML de tablas/fracciones
+  const maxTokens = isPDL && tipoFicha === "Lectura de textos" ? 2000 : 1500;
 
   // INTENTO 1: Generar
   let ficha = await callAPI(
