@@ -237,9 +237,7 @@ function ConceptoClave({ texto, onSave }) {
       marginBottom: 8,
     }}>
       <EditableText value={texto} onSave={onSave}>
-        <p className="concepto-clave-texto" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0, fontWeight: 500 }}>
-          {renderConNegrita(texto)}
-        </p>
+        <p className="concepto-clave-texto" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0, fontWeight: 500 }} dangerouslySetInnerHTML={renderHTMLConNegrita(texto)} />
       </EditableText>
     </div>
   );
@@ -470,9 +468,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                   <div className="seccion">
                     <SeccionHeader numero="1" titulo="Leemos" icono="📖" />
                     <EditableText value={fichaLocal.texto} onSave={set("texto")}>
-                      <p className="explicacion" style={{ fontSize: 11, color: C.texto, lineHeight: 1.65, margin: 0, whiteSpace: "pre-line" }}>
-                        {renderConNegrita(fichaLocal.texto)}
-                      </p>
+                      <p className="explicacion" style={{ fontSize: 11, color: C.texto, lineHeight: 1.65, margin: 0, whiteSpace: "pre-line" }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.texto)} />
                     </EditableText>
                   </div>
                   <div className="seccion">
@@ -499,7 +495,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                   <div className="seccion">
                     <SeccionHeader numero="1" titulo="¡A escribir!" icono="✏️" />
                     <EditableText value={fichaLocal.consigna} onSave={set("consigna")}>
-                      <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }}>{renderConNegrita(fichaLocal.consigna)}</p>
+                      <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.consigna)} />
                     </EditableText>
                   </div>
                   {Array.isArray(fichaLocal.orientaciones) && fichaLocal.orientaciones.length > 0 && (
@@ -509,7 +505,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                         {fichaLocal.orientaciones.map((orientacion, idx) => (
                           <div key={idx} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
                             <span style={{ fontSize: 12, color: C.muted, flexShrink: 0, marginTop: 1 }}>→</span>
-                            <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }}>{renderConNegrita(orientacion)}</p>
+                            <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(orientacion)} />
                           </div>
                         ))}
                       </div>
@@ -531,7 +527,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                     <SeccionHeader numero="1" titulo="La regla" icono="📚" />
                     <ConceptoClave texto={fichaLocal.concepto_clave} onSave={set("concepto_clave")} />
                     <EditableText value={fichaLocal.explicacion} onSave={set("explicacion")}>
-                      <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: "0 0 6px" }}>{renderConNegrita(fichaLocal.explicacion)}</p>
+                      <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: "0 0 6px" }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.explicacion)} />
                     </EditableText>
                     {fichaLocal.ejemplo && (
                       <div style={{
@@ -539,7 +535,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                         padding: "8px 12px", border: `1px solid ${C.border}`,
                       }}>
                         <p style={{ fontSize: 10, color: C.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Ejemplo</p>
-                        <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }}>{renderConNegrita(fichaLocal.ejemplo)}</p>
+                        <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.ejemplo)} />
                       </div>
                     )}
                   </div>
@@ -573,9 +569,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                   <SeccionHeader numero="1" titulo={pregExplicacion || "Leemos juntos"} icono="📖" />
                   <ConceptoClave texto={fichaLocal.concepto_clave} onSave={set("concepto_clave")} />
                   <EditableText value={fichaLocal.explicacion} onSave={set("explicacion")}>
-                    <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }}>
-                      {renderConNegrita(fichaLocal.explicacion)}
-                    </p>
+                    <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.explicacion)} />
                   </EditableText>
                 </div>
 
@@ -598,9 +592,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                     </div>
                   ) : (
                     <>
-                      <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, marginBottom: 8 }}>
-                        {renderConNegrita(fichaLocal.actividad)}
-                      </p>
+                      <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, marginBottom: 8 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.actividad)} />
                       <RecuadroRespuesta />
                     </>
                   )}
@@ -611,9 +603,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                   <div className="seccion">
                     <SeccionHeader numero="3" titulo="Reflexionamos" icono="💭" />
                     <EditableText value={fichaLocal.pregunta_reflexion} onSave={set("pregunta_reflexion")}>
-                      <p className="reflexion-texto" style={{ fontSize: 12, color: C.texto, fontStyle: "italic", lineHeight: 1.55, marginBottom: 6 }}>
-                        {renderConNegrita(fichaLocal.pregunta_reflexion)}
-                      </p>
+                      <p className="reflexion-texto" style={{ fontSize: 12, color: C.texto, fontStyle: "italic", lineHeight: 1.55, marginBottom: 6 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.pregunta_reflexion)} />
                     </EditableText>
                     <LineasRespuesta n={2} />
                   </div>
