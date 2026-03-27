@@ -47,10 +47,13 @@ function renderHTMLConNegrita(str) {
   return { __html: html };
 }
 
-function stripHtml(html) {
-  const tmp = document.createElement('div');
-  tmp.innerHTML = html;
-  return tmp.textContent || tmp.innerText || '';
+function htmlATexto(html) {
+  return html
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
 }
 
 function renderTitulo(texto) {
@@ -185,6 +188,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   const [posiciones, setPosiciones] = useState({});
   const refFicha = useRef(null);
   const sectionRefs = useRef({});
+  const textareaRef = useRef(null);
 
   if (!ficha || !registro) return null;
 
@@ -257,17 +261,24 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     }
   };
 
+  const saveFromRef = (key) => {
+    if (!key || !textareaRef.current) return;
+    const texto = textareaRef.current.value;
+    const htmlFinal = texto.replace(/\n/g, '<br>');
+    saveValue(key, htmlFinal);
+  };
+
   const startEdit = (key) => {
-    if (editandoCampo) saveValue(editandoCampo, draft);
+    if (editandoCampo) saveFromRef(editandoCampo);
     const raw = getValue(key);
     if (/<[a-z][\s\S]*>/i.test(raw)) {
       const tableIdx = raw.indexOf('<table');
       if (tableIdx !== -1) {
         setDraftTable(raw.slice(tableIdx));
-        setDraft(stripHtml(raw.slice(0, tableIdx)));
+        setDraft(htmlATexto(raw.slice(0, tableIdx)));
       } else {
         setDraftTable(null);
-        setDraft(stripHtml(raw));
+        setDraft(htmlATexto(raw));
       }
     } else {
       setDraftTable(null);
@@ -277,7 +288,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   };
 
   const confirmEdit = () => {
-    if (editandoCampo) saveValue(editandoCampo, draft);
+    saveFromRef(editandoCampo);
     setEditandoCampo(null);
     setDraftTable(null);
   };
@@ -291,23 +302,12 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     padding: "6px 8px", resize: "vertical", background: "#fff",
   };
 
-  const handleDraftChange = (e) => {
-    const pos = e.target.selectionStart;
-    setDraft(e.target.value);
-    requestAnimationFrame(() => {
-      if (e.target) {
-        e.target.selectionStart = pos;
-        e.target.selectionEnd = pos;
-      }
-    });
-  };
-
   const renderTextarea = (minRows = 2) => (
     <>
       <textarea
+        ref={textareaRef}
         autoFocus
-        value={draft}
-        onChange={handleDraftChange}
+        defaultValue={draft}
         rows={Math.max(minRows, (draft || "").split("\n").length + 1)}
         style={estiloTextarea}
       />
