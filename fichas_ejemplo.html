@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha ejemplo — Motor Pedagógico PBA</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --terracota: #A0522D;
+    --paja: #faf6ef;
+    --negro: #1c1c1c;
+    --gris: #666;
+    --gris-claro: #e4e4e4;
+    --blanco: #ffffff;
+    --fondo: #ede9e1;
+  }
+
+  body {
+    background: var(--fondo);
+    font-family: 'DM Sans', sans-serif;
+    padding: 32px 16px 60px;
+    min-height: 100vh;
+  }
+
+  /* selector de fichas */
+  .selector {
+    max-width: 620px;
+    margin: 0 auto 28px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .selector-btn {
+    padding: 8px 16px;
+    border: 1.5px solid var(--gris-claro);
+    border-radius: 20px;
+    background: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--gris);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .selector-btn:hover { border-color: var(--terracota); color: var(--terracota); }
+  .selector-btn.active { background: var(--terracota); border-color: var(--terracota); color: white; }
+
+  .label-pagina {
+    text-align: center;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 24px;
+  }
+
+  /* ficha */
+  .ficha-wrap {
+    max-width: 620px;
+    margin: 0 auto;
+    filter: drop-shadow(0 6px 28px rgba(0,0,0,0.10));
+  }
+
+  .ficha {
+    background: var(--blanco);
+    border-radius: 6px;
+    overflow: hidden;
+    display: none;
+  }
+
+  .ficha.visible { display: block; }
+
+  /* cabecera */
+  .ficha-cabecera {
+    background: var(--paja);
+    padding: 18px 28px 16px;
+    border-bottom: 1px solid var(--gris-claro);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .area-info { display: flex; align-items: center; gap: 10px; }
+  .area-icono { font-size: 1.3rem; line-height: 1; }
+  .area-texto { display: flex; flex-direction: column; gap: 1px; }
+  .area-nombre { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--terracota); font-family: 'DM Sans', sans-serif; }
+  .area-grado { font-size: 0.65rem; color: var(--gris); font-family: 'DM Sans', sans-serif; }
+
+  .campos { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+  .campo { display: flex; align-items: center; gap: 6px; }
+  .campo span { font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase; color: #bbb; font-family: 'DM Sans', sans-serif; }
+  .campo-linea { height: 1px; background: var(--gris-claro); }
+
+  /* título */
+  .ficha-titulo-zona {
+    padding: 20px 28px 16px;
+    border-bottom: 1px solid var(--gris-claro);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .titulo-emoji { font-size: 2rem; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+
+  .titulo-texto {
+    font-family: 'Lexend', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--negro);
+    line-height: 1.3;
+  }
+
+  /* cuerpo */
+  .ficha-cuerpo { padding: 22px 28px 28px; }
+
+  .pregunta-intro {
+    font-family: 'Lexend', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--terracota);
+    margin-bottom: 7px;
+  }
+
+  .texto-cuerpo {
+    font-family: 'Lexend', sans-serif;
+    font-size: 0.87rem;
+    font-weight: 300;
+    color: var(--negro);
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+
+  .texto-cuerpo strong { font-weight: 600; }
+
+  .ejemplo-bloque {
+    background: var(--paja);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-bottom: 22px;
+  }
+
+  .bloque-label {
+    font-size: 0.58rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 6px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .bloque-label.terracota { color: var(--terracota); }
+
+  /* actividad */
+  .actividad-bloque {
+    border: 1.5px solid var(--terracota);
+    border-radius: 6px;
+    padding: 16px 20px 20px;
+    margin-bottom: 18px;
+  }
+
+  .actividad-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .actividad-icono { font-size: 1rem; }
+
+  .actividad-texto {
+    font-family: 'Lexend', sans-serif;
+    font-size: 0.87rem;
+    font-weight: 300;
+    color: var(--negro);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .actividad-texto strong { font-weight: 600; }
+
+  /* ejercicios numerados */
+  .ejercicios { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+
+  .ejercicio {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .ej-num {
+    width: 22px;
+    height: 22px;
+    border: 1.5px solid var(--terracota);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--terracota);
+    flex-shrink: 0;
+    font-family: 'DM Sans', sans-serif;
+    margin-top: 1px;
+  }
+
+  .ej-texto {
+    font-family: 'Lexend', sans-serif;
+    font-size: 0.87rem;
+    font-weight: 300;
+    color: var(--negro);
+    line-height: 1.6;
+  }
+
+  .ej-texto strong { font-weight: 600; }
+
+  /* respuesta */
+  .respuesta-zona {
+    border-top: 1px dashed var(--gris-claro);
+    padding-top: 12px;
+  }
+
+  .respuesta-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #ccc;
+    font-family: 'DM Sans', sans-serif;
+    margin-bottom: 12px;
+  }
+
+  .lineas { display: flex; flex-direction: column; gap: 18px; }
+  .linea-r { height: 1px; background: #e8e8e8; }
+
+  /* dato curioso */
+  .dato-curioso {
+    background: var(--paja);
+    border-radius: 6px;
+    padding: 12px 16px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .dato-icono { font-size: 1.1rem; flex-shrink: 0; }
+
+  .dato-texto {
+    font-family: 'Lexend', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 300;
+    color: var(--negro);
+    line-height: 1.6;
+  }
+
+  .dato-texto strong { font-weight: 500; }
+
+  /* espacio imagen */
+  .imagen-espacio {
+    border: 1.5px dashed var(--gris-claro);
+    border-radius: 6px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .imagen-espacio span {
+    font-size: 0.7rem;
+    color: #ccc;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* footer */
+  .ficha-footer {
+    padding: 12px 28px;
+    border-top: 1px solid var(--gris-claro);
+    background: var(--paja);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-dc { font-size: 0.58rem; color: #bbb; letter-spacing: 0.06em; font-family: 'DM Sans', sans-serif; }
+  .footer-brand { font-family: 'Lexend', sans-serif; font-size: 0.58rem; font-weight: 500; color: #bbb; }
+</style>
+</head>
+<body>
+
+<p class="label-pagina">Motor Pedagógico PBA · Ejemplos de fichas</p>
+
+<div class="selector">
+  <button class="selector-btn active" onclick="mostrar('mat')">📐 Matemática 3° — Ejercitación</button>
+  <button class="selector-btn" onclick="mostrar('nat')">🌿 Cs. Naturales 5° — Explicación</button>
+  <button class="selector-btn" onclick="mostrar('his')">📜 Historia 4° — Comprensión</button>
+  <button class="selector-btn" onclick="mostrar('pdl')">🔤 PDL 3° — Ortografía</button>
+</div>
+
+<div class="ficha-wrap">
+
+  <!-- FICHA 1: MATEMÁTICA 3° EJERCITACIÓN -->
+  <div class="ficha visible" id="mat">
+    <div class="ficha-cabecera">
+      <div class="area-info">
+        <span class="area-icono">✖️</span>
+        <div class="area-texto">
+          <span class="area-nombre">Matemática</span>
+          <span class="area-grado">3° grado</span>
+        </div>
+      </div>
+      <div class="campos">
+        <div class="campo"><span>Nombre</span><div class="campo-linea" style="width:100px"></div></div>
+        <div class="campo"><span>Apellido</span><div class="campo-linea" style="width:100px"></div></div>
+        <div class="campo"><span>División</span><div class="campo-linea" style="width:48px"></div></div>
+      </div>
+    </div>
+    <div class="ficha-titulo-zona">
+      <span class="titulo-emoji">✖️</span>
+      <div class="titulo-texto">¿Cuántas veces entra un número en otro?</div>
+    </div>
+    <div class="ficha-cuerpo">
+      <div class="pregunta-intro">¿Qué es la multiplicación?</div>
+      <div class="texto-cuerpo">
+        La multiplicación es una forma rápida de <strong>sumar el mismo número varias veces</strong>. En lugar de escribir 4 + 4 + 4, podés escribir <strong>3 × 4 = 12</strong>. Cuanto más grande el número, más útil se vuelve multiplicar.
+      </div>
+      <div class="actividad-bloque">
+        <div class="actividad-header">
+          <span class="actividad-icono">✏️</span>
+          <span class="bloque-label terracota">Tu turno</span>
+        </div>
+        <div class="ejercicios">
+          <div class="ejercicio">
+            <div class="ej-num">1</div>
+            <div class="ej-texto">Resolvé: 2 × 3 = __ &nbsp;&nbsp; 4 × 2 = __ &nbsp;&nbsp; 3 × 5 = __</div>
+          </div>
+          <div class="ejercicio">
+            <div class="ej-num">2</div>
+            <div class="ej-texto">En el kiosco hay <strong>3 estantes</strong> con <strong>6 chicles</strong> cada uno. ¿Cuántos chicles hay en total? Escribí la cuenta.</div>
+          </div>
+          <div class="ejercicio">
+            <div class="ej-num">3</div>
+            <div class="ej-texto">Resolvé estas multiplicaciones: 5 × 4 = __ &nbsp;&nbsp; 6 × 3 = __ &nbsp;&nbsp; 7 × 2 = __</div>
+          </div>
+          <div class="ejercicio">
+            <div class="ej-num">4</div>
+            <div class="ej-texto">En la cancha hay <strong>4 equipos</strong> de <strong>7 jugadores</strong>. ¿Cuántos jugadores hay en total? Resolvé de <strong>dos maneras distintas</strong>.</div>
+          </div>
+          <div class="ejercicio">
+            <div class="ej-num">5</div>
+            <div class="ej-texto"><strong>Integradora:</strong> "Compré 3 paquetes de galletitas. Cada paquete tiene 8 galletitas. Repartí las galletitas en partes iguales entre 4 amigos." ¿Cuántas galletitas le toca a cada uno? Explicá cómo lo resolviste.</div>
+          </div>
+        </div>
+        <div class="respuesta-zona">
+          <div class="respuesta-label">Escribí tu respuesta acá</div>
+          <div class="lineas">
+            <div class="linea-r"></div>
+            <div class="linea-r"></div>
+            <div class="linea-r"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ficha-footer">
+      <span class="footer-dc">Diseño Curricular · Provincia de Buenos Aires</span>
+      <span class="footer-brand">Motor Pedagógico PBA</span>
+    </div>
+  </div>
+
+  <!-- FICHA 2: CIENCIAS NATURALES 5° EXPLICACIÓN -->
+  <div class="ficha" id="nat">
+    <div class="ficha-cabecera">
+      <div class="area-info">
+        <span class="area-icono">🦠</span>
+        <div class="area-texto">
+          <span class="area-nombre">Ciencias Naturales</span>
+          <span class="area-grado">5° grado</span>
+        </div>
+      </div>
+      <div class="campos">
+        <div class="campo"><span>Nombre</span><div class="campo-linea" style="width:100px"></div></div>
+        <div class="campo"><span>Apellido</span><div class="campo-linea" style="width:100px"></div></div>
+        <div class="campo"><span>División</span><div class="campo-linea" style="width:48px"></div></div>
+      </div>
+    </div>
+    <div class="ficha-titulo-zona">
+      <span class="titulo-emoji">🦠</span>
+      <div class="titulo-texto">Los invisibles que nos rodean</div>
+    </div>
+    <div class="ficha-cuerpo">
+      <div class="pregunta-intro">¿Qué son los microorganismos?</div>
+      <div class="texto-cuerpo">
+        Los microorganismos son seres vivos <strong>tan pequeños que no se pueden ver a simple vista</strong> — necesitás un microscopio para observarlos. Aunque no los veas, están en todas partes: en el aire, en el agua, en la tierra y hasta dentro de tu cuerpo. Algunos te enferman, pero muchos otros son <strong>indispensables para la vida</strong>.
+      </div>
+      <div class="imagen-espacio">
+        <span>Imagen del tema</span>
+      </div>
+      <div class="ejemplo-bloque">
+        <div class="bloque-label">¿Cómo se ven en la vida real?</div>
+        <div class="texto-cuerpo" style="margin-bottom:0">
+          El yogur que comés en el desayuno existe gracias a bacterias. Esas bacterias transforman la leche y crean el yogur. También hay microorganismos en el pan — la levadura hace que la masa suba. Sin microorganismos, muchos de los alimentos que conocés no existirían.
+        </div>
+      </div>
+      <div class="dato-curioso">
+        <span class="dato-icono">💡</span>
+        <div class="dato-texto"><strong>¿Sabías que...?</strong> En tu cuerpo hay más bacterias que células propias. La mayoría viven en tu intestino y te ayudan a digerir los alimentos.</div>
+      </div>
+    </div>
+    <div class="ficha-footer">
+      <span class="footer-dc">Diseño Curricular · Provincia de Buenos Aires</span>
+      <span class="footer-brand">Motor Pedagógico PBA</span>
+    </div>
+  </div>
+
+  <!-- FICHA 3: HISTORIA 4° COMPRENSIÓN -->
+  <div class="ficha" id="his">
+    <div class="ficha-cabecera">
+      <div class="area-info">
+        <span class="area-icono">⚔️</span>
+        <div class="area-texto">
+          <span class="area-nombre">Ciencias Sociales — Historia</span>
+          <span class="area-grado">4° grado</span>
+        </div>
+      </div>
+      <div class="campos">
+        <div class="campo"><span>Nombre</span><div class="campo-linea" style="width:100px"></div></div>
+        <div class="campo"><span>Apellido</span><div class="campo-linea" style="width:100px"></div></div>
+        <div class="campo"><span>División</span><div class="campo-linea" style="width:48px"></div></div>
+      </div>
+    </div>
+    <div class="ficha-titulo-zona">
+      <span class="titulo-emoji">⚔️</span>
+      <div class="titulo-texto">Cuando Europa llegó a América</div>
+    </div>
+    <div class="ficha-cuerpo">
+      <div class="actividad-bloque">
+        <div class="actividad-header">
+          <span class="actividad-icono">✏️</span>
+          <span class="bloque-label terracota">Tu turno</span>
+        </div>
+        <div class="ejercicios">
+          <div class="ejercicio">
+            <div class="ej-num">1</div>
+            <div class="ej-texto">¿Qué buscaban los españoles cuando llegaron a América en el siglo XV?</div>
+          </div>
+          <div class="ejercicio">
+            <div class="ej-num">2</div>
+            <div class="ej-texto">¿Cuáles eran los dos grandes imperios que conquistaron los españoles? Nombralos.</div>
+          </div>
+          <div class="ejercicio">
+            <div class="ej-num">3</div>
+            <div class="ej-texto">¿Qué consecuencias tuvo la conquista para los pueblos originarios de América? Mencioná al menos dos.</div>
+          </div>
+          <div class="ejercicio">
+            <div class="ej-num">4</div>
+            <div class="ej-texto"><strong>Para pensar:</strong> Los pueblos originarios resistieron la conquista de distintas maneras. ¿Por qué creés que era tan difícil resistir? Usá lo que aprendiste para explicarlo.</div>
+          </div>
+        </div>
+        <div class="respuesta-zona">
+          <div class="respuesta-label">Escribí tus respuestas acá</div>
+          <div class="lineas">
+            <div class="linea-r"></div>
+            <div class="linea-r"></div>
+            <div class="linea-r"></div>
+            <div class="linea-r"></div>
+            <div class="linea-r"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ficha-footer">
+      <span class="footer-dc">Diseño Curricular · Provincia de Buenos Aires</span>
+      <span class="footer-brand">Motor Pedagógico PBA</span>
+    </div>
+  </div>
+
+  <!-- FICHA 4: PDL 3° ORTOGRAFÍA -->
+  <div class="ficha" id="pdl">
+    <div class="ficha-cabecera">
+      <div class="area-info">
+        <span class="area-icono">🔤</span>
+        <div class="area-texto">
+          <span class="area-nombre">Prácticas del Lenguaje</span>
+          <span class="area-grado">3° grado</span>
+        </div>
+      </div>
+      <div class="campos">
+        <div class="campo"><span>Nombre</span><div class="campo-linea" style="width:100px"></div></div>
+        <div class="campo"><span>Apellido</span><div class="campo-linea" style="width:100px"></div></div>
+        <div class="campo"><span>División</span><div class="campo-linea" style="width:48px"></div></div>
+      </div>
+    </div>
+    <div class="ficha-titulo-zona">
+      <span class="titulo-emoji">🔤</span>
+      <div class="titulo-texto">¿Cómo se escribe bien?</div>
+    </div>
+    <div class="ficha-cuerpo">
+      <div class="pregunta-intro">¿Qué es la sílaba tónica?</div>
+      <div class="texto-cuerpo">
+        En cada palabra hay una sílaba que se pronuncia <strong>con más fuerza</strong> que las otras — esa es la sílaba tónica. Por ejemplo: en "ca-SA" la fuerza está en SA. Reconocerla es el primer paso para aprender a poner la tilde correctamente.
+      </div>
+      <div class="actividad-bloque">
+        <div class="actividad-header">
+          <span class="actividad-icono">✏️</span>
+          <span class="bloque-label terracota">Tu turno</span>
+        </div>
+        <div class="ejercicios">
+          <div class="ejercicio">
+            <div class="ej-num">1</div>
+            <div class="ej-texto"><strong>Repaso:</strong> Escribí M o F según sea masculino o femenino: el árbol __ / la flor __ / el puente __ / la ciudad __</div>
+          </div>
+          <div class="ejercicio">
+            <div class="ej-num">2</div>
+            <div class="ej-texto">Separá en sílabas y rodeá la sílaba tónica: <strong>camino</strong> — <strong>lápiz</strong> — <strong>árbol</strong> — <strong>pelota</strong></div>
+          </div>
+          <div class="ejercicio">
+            <div class="ej-num">3</div>
+            <div class="ej-texto">Completá con <strong>g</strong> o <strong>j</strong>: __irafa / na__ar / via__e / __aula / re__alar</div>
+          </div>
+          <div class="ejercicio">
+            <div class="ej-num">4</div>
+            <div class="ej-texto">Completá con <strong>c</strong> o <strong>s</strong>: __irco / pa__ear / __erdo / cla__e / __apato</div>
+          </div>
+          <div class="ejercicio">
+            <div class="ej-num">5</div>
+            <div class="ej-texto"><strong>Integradora:</strong> Leé esta oración y corregí los errores: <em>"El jirafa camino hasía el rio con su familia"</em>. Reescribila correctamente y explicá qué corregiste.</div>
+          </div>
+        </div>
+        <div class="respuesta-zona">
+          <div class="respuesta-label">Escribí tus respuestas acá</div>
+          <div class="lineas">
+            <div class="linea-r"></div>
+            <div class="linea-r"></div>
+            <div class="linea-r"></div>
+            <div class="linea-r"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ficha-footer">
+      <span class="footer-dc">Diseño Curricular · Provincia de Buenos Aires</span>
+      <span class="footer-brand">Motor Pedagógico PBA</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function mostrar(id) {
+    document.querySelectorAll('.ficha').forEach(f => f.classList.remove('visible'));
+    document.querySelectorAll('.selector-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('visible');
+    event.target.classList.add('active');
+  }
+</script>
+
+</body>
+</html>
