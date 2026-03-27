@@ -115,47 +115,36 @@ Generá una ficha de ortografía para ${contenido.grado}° grado.
 Regla ortográfica: ${contenido.tipoTexto}
 ${feedbackSection}
 
-La ficha debe tener:
-- Título con la regla
-- Explicación breve y clara de la regla (máximo 2 oraciones)
-- Un ejemplo concreto
-- Entre 2 y 3 ejercicios variados sobre esa regla
-
-Criterios:
-- Los ejercicios deben ser variados: completar, corregir, clasificar, inventar
-- El vocabulario debe ser conocido para el grado
-- Evitar ejercicios mecánicos sin sentido (ej. "escribí 10 palabras con mb")
-- Priorizar ejercicios en contexto de oraciones o textos breves
+CRITERIOS:
+- Explicación breve y clara (máximo 2 oraciones) + ejemplo concreto
+- 2 o 3 ejercicios variados: completar, corregir, clasificar (sin ejercicios mecánicos sin sentido)
+- Vocabulario conocido para el grado, en contexto de oraciones o textos breves
 - Marcá con **doble asterisco** las palabras clave en la explicación y los enunciados
-- El título debe tener dos partes separadas por dos puntos. Mayúscula solo en la primera letra.
-- Elegí 1 o 2 emojis relevantes a la regla ortográfica.
-- En los enunciados, incluí un emoji al inicio SOLO si hay un objeto cotidiano concreto.
+- Título: dos partes separadas por dos puntos, mayúscula solo en la primera letra
+- Elegí 1 o 2 emojis relevantes a la regla para "emojis"
 
-TIPOS DE EJERCICIO — elegí el más adecuado para cada ejercicio:
-- "texto_libre": para corrección, escritura libre o respuestas abiertas.
-- "completar_oraciones": para completar con la forma ortográfica correcta. Cada oración en su propio elemento del array, con _______ (mínimo 5 guiones) para el espacio en blanco.
-- "tabla": para clasificar palabras. "columnas" son los encabezados, "filas" son las palabras a clasificar.
-- "verdadero_falso": para evaluar conocimiento de la regla.
+TIPOS DE EJERCICIO:
+- "texto_libre": corrección, escritura libre o respuestas abiertas
+- "completar_oraciones": array "oraciones" con strings con _______ (5+ guiones) en el espacio
+- "tabla": "columnas" = encabezados, "filas" = palabras a clasificar
+- "verdadero_falso": array "afirmaciones" para evaluar con V/F
 
-FORMATO DE RESPUESTA (JSON estricto, sin markdown):
+FORMATO (JSON estricto, sin markdown):
 {
   "emojis": ["emoji1"],
-  "titulo": "título con la regla ortográfica",
-  "concepto_clave": "la regla ortográfica en una oración clara",
-  "explicacion": "explicación breve de la regla (máximo 2 oraciones)",
-  "ejemplo": "un ejemplo concreto de la regla",
+  "titulo": "título: con la regla",
+  "concepto_clave": "la regla en una oración clara",
+  "explicacion": "explicación breve (máximo 2 oraciones)",
+  "ejemplo": "ejemplo concreto",
   "ejercicios": [
     {
       "tipo": "completar_oraciones",
-      "enunciado": "Completá las oraciones con mb o mp:",
-      "oraciones": [
-        "Hay que te___lar de frío.",
-        "La ___olsa del mercado pesa mucho."
-      ]
+      "enunciado": "Completá con mb o mp:",
+      "oraciones": ["Hay que te___lar de frío.", "La ___olsa pesa mucho."]
     },
     {
       "tipo": "tabla",
-      "enunciado": "Clasificá estas palabras según su escritura:",
+      "enunciado": "Clasificá estas palabras:",
       "columnas": ["Con mb", "Con mp"],
       "filas": ["también", "campo", "ambiente", "trampa"]
     }
@@ -186,59 +175,47 @@ function buildGeneratorPrompt(contenido, tipoFicha, incluirExplicacion, incluirE
     incluirExplicacion ? '  "explicacion": "explicación breve en lenguaje claro para el grado",' : null,
   ].filter(Boolean).join("\n");
 
-  return `Sos un docente experto en didáctica de nivel primario de la Provincia de Buenos Aires.
-Generá un recurso educativo para estudiantes de primaria con esta información curricular:
+  return `Sos un docente experto en nivel primario de la Provincia de Buenos Aires.
+Generá un recurso educativo para:
 
 Grado: ${contenido.grado}°
 Área: ${contenido.area}
 Bloque: ${contenido.bloque}
 Contenido: ${contenido.item}
-${contenido.contexto_pedagogico ? `Contexto pedagógico adicional: ${contenido.contexto_pedagogico}` : ""}
+${contenido.contexto_pedagogico ? `Contexto adicional: ${contenido.contexto_pedagogico}` : ""}
 ${feedbackSection}
 
-CRITERIOS OBLIGATORIOS:
-1. Lenguaje claro y adecuado para niños de primaria (evitá términos académicos complejos)
-2. Máximo 3 ejercicios — elegí la cantidad pedagógicamente adecuada
-3. Los ejercicios deben promover comprensión real, no repetición mecánica
-4. Todo el contenido debe responder al objetivo curricular específico
-5. Marcá con **doble asterisco** los números, datos y conceptos clave en la explicación
-6. El título debe tener dos partes separadas por dos puntos. Usá mayúscula solo en la primera letra.
-7. En los enunciados, incluí un emoji al inicio solo si hay un objeto cotidiano concreto. Si el ejercicio es abstracto, NO uses emoji.
-8. Elegí 1 o 2 emojis relevantes al tema para el campo "emojis".
+CRITERIOS:
+1. Lenguaje claro para niños de primaria — sin términos académicos
+2. 2 o 3 ejercicios que promuevan comprensión real, no repetición mecánica
+3. Marcá con **doble asterisco** números, datos y conceptos clave en la explicación
+4. Título: dos partes separadas por dos puntos, mayúscula solo en la primera letra
+5. Elegí 1 o 2 emojis relevantes al tema para "emojis"
 
-TIPOS DE EJERCICIO — elegí el más adecuado para cada ejercicio:
-- "texto_libre": para problemas, análisis o respuestas abiertas. Incluye "emoji" si hay objeto concreto.
-- "completar_oraciones": para completar con conceptos clave. El array "oraciones" tiene strings con _______ (mínimo 5 guiones) donde va la respuesta. Cada oración es un elemento separado del array.
-- "tabla": para clasificar o comparar. "columnas" son los encabezados, "filas" son los rótulos de fila (las celdas de respuesta se generan vacías automáticamente).
-- "verdadero_falso": para evaluar comprensión de afirmaciones.
+TIPOS DE EJERCICIO:
+- "texto_libre": problemas o respuestas abiertas. Puede incluir "emoji" si hay objeto cotidiano concreto.
+- "completar_oraciones": array "oraciones" con strings con _______ (5+ guiones) donde va la respuesta
+- "tabla": "columnas" = encabezados, "filas" = rótulos de fila (celdas vacías automáticas para responder)
+- "verdadero_falso": array "afirmaciones" para evaluar con V/F
 
-FORMATO DE RESPUESTA (JSON estricto, sin markdown):
+FORMATO (JSON estricto, sin markdown):
 {
   "emojis": ["emoji1"],
   "titulo": "primera parte: segunda parte",
 ${camposOpcionales}
   "ejercicios": [
     {
-      "tipo": "texto_libre",
-      "enunciado": "enunciado del ejercicio",
-      "emoji": "🍕"
-    },
-    {
       "tipo": "completar_oraciones",
-      "enunciado": "Completá las oraciones con la palabra correcta:",
-      "oraciones": [
-        "El _______ es la fuente de energía del sistema solar.",
-        "Los planetas giran _______ el Sol."
-      ]
+      "enunciado": "Completá con la palabra correcta:",
+      "oraciones": ["El _______ es la fuente de energía.", "La Tierra gira _______ el Sol."]
     },
     {
-      "tipo": "tabla",
-      "enunciado": "Clasificá los siguientes elementos:",
-      "columnas": ["Elemento", "Tipo"],
-      "filas": ["La Luna", "El Sol", "Una lámpara"]
+      "tipo": "verdadero_falso",
+      "enunciado": "Marcá V o F:",
+      "afirmaciones": ["La Luna es una estrella.", "El Sol está en el centro del sistema solar."]
     }
   ],
-  "reflexion": "una pregunta para que el alumno conecte con su vida cotidiana"
+  "reflexion": "pregunta para conectar con la vida cotidiana del alumno"
 }
 
 Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdown.`;

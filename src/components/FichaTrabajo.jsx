@@ -219,6 +219,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   const [planosLocal, setPlanosLocal] = useState(() => initFieldData(ficha).planos);
   const [tablasLocal] = useState(() => initFieldData(ficha).tablas);
   const [posiciones, setPosiciones] = useState({});
+  const [editDraft, setEditDraft] = useState(null);
   const refFicha = useRef(null);
   const sectionRefs = useRef({});
   const textareaRef = useRef(null);
@@ -294,6 +295,18 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     }
   };
 
+  const isEjercicioKey = (k) => k && k.startsWith("ejercicio_") && k.split("_").length === 2;
+
+  const saveEjercicioDraft = (key) => {
+    if (!editDraft || typeof editDraft !== 'object') return;
+    const idx = +key.split("_")[1];
+    setFichaLocal(f => {
+      const e = [...(f.ejercicios || [])];
+      e[idx] = { ...editDraft };
+      return { ...f, ejercicios: e };
+    });
+  };
+
   const saveCampo = (key) => {
     if (!key || !textareaRef.current) return;
     const val = textareaRef.current.value;
@@ -302,13 +315,27 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   };
 
   const startEdit = (key) => {
-    if (editandoCampo) saveCampo(editandoCampo);
+    if (editandoCampo) {
+      if (isEjercicioKey(editandoCampo) && editDraft) saveEjercicioDraft(editandoCampo);
+      else saveCampo(editandoCampo);
+    }
+    if (isEjercicioKey(key)) {
+      const idx = +key.split("_")[1];
+      const ejercicio = (fichaLocal.ejercicios || [])[idx];
+      if (ejercicio && typeof ejercicio === "object") {
+        setEditDraft({ ...ejercicio });
+      }
+    } else {
+      setEditDraft(null);
+    }
     setEditandoCampo(key);
   };
 
   const confirmEdit = () => {
-    saveCampo(editandoCampo);
+    if (isEjercicioKey(editandoCampo) && editDraft) saveEjercicioDraft(editandoCampo);
+    else saveCampo(editandoCampo);
     setEditandoCampo(null);
+    setEditDraft(null);
   };
 
   // ── Textarea reutilizable ──
@@ -345,37 +372,90 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   // ── Render de ejercicio tipado ──
 
   const renderEjercicioItem = (ejercicio, idx) => {
-    const keyEnunciado = `ejercicio_${idx}_enunciado`;
+    const keyEjercicio = `ejercicio_${idx}`;
+    const editando = editandoCampo === keyEjercicio && editDraft;
     const numLabel = (
       <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
     );
+
+    // ── Modo edición: editor multi-campo controlado ──
+    if (editando) {
+      return (
+        <div key={idx} ref={setRef(keyEjercicio)}>
+          <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+            {numLabel}
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+              <textarea
+                autoFocus
+                style={estiloTextarea}
+                value={editDraft.enunciado || ''}
+                onChange={e => setEditDraft(d => ({ ...d, enunciado: e.target.value }))}
+                rows={2}
+              />
+              {editDraft.tipo === "completar_oraciones" && (editDraft.oraciones || []).map((o, j) => (
+                <textarea
+                  key={j}
+                  style={estiloTextarea}
+                  value={o}
+                  onChange={e => setEditDraft(d => {
+                    const oraciones = [...(d.oraciones || [])];
+                    oraciones[j] = e.target.value;
+                    return { ...d, oraciones };
+                  })}
+                  rows={1}
+                />
+              ))}
+              {editDraft.tipo === "tabla" && (editDraft.filas || []).map((f, j) => (
+                <textarea
+                  key={j}
+                  style={estiloTextarea}
+                  value={f}
+                  onChange={e => setEditDraft(d => {
+                    const filas = [...(d.filas || [])];
+                    filas[j] = e.target.value;
+                    return { ...d, filas };
+                  })}
+                  rows={1}
+                />
+              ))}
+              {editDraft.tipo === "verdadero_falso" && (editDraft.afirmaciones || []).map((a, j) => (
+                <textarea
+                  key={j}
+                  style={estiloTextarea}
+                  value={a}
+                  onChange={e => setEditDraft(d => {
+                    const afirmaciones = [...(d.afirmaciones || [])];
+                    afirmaciones[j] = e.target.value;
+                    return { ...d, afirmaciones };
+                  })}
+                  rows={1}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── Modo display ──
     const enunciadoEl = (
-      <div ref={setRef(keyEnunciado)} style={{ flex: 1 }}>
-        {editandoCampo === keyEnunciado
-          ? renderTextarea(2)
-          : <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio.enunciado)} />
-        }
+      <div style={{ flex: 1 }}>
+        <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio.enunciado)} />
       </div>
     );
 
     if (ejercicio.tipo === "completar_oraciones") {
       return (
-        <div key={idx}>
+        <div key={idx} ref={setRef(keyEjercicio)}>
           <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 6 }}>
             {numLabel}{enunciadoEl}
           </div>
           <div style={{ marginLeft: 24 }}>
-            {(ejercicio.oraciones || []).map((oracion, j) => {
-              const keyOracion = `ejercicio_${idx}_oracion_${j}`;
-              return (
-                <div key={j} ref={setRef(keyOracion)} style={{ marginBottom: 8 }}>
-                  {editandoCampo === keyOracion
-                    ? renderTextarea(1)
-                    : <div style={{ fontSize: 12, lineHeight: 1.6 }} dangerouslySetInnerHTML={renderHTMLConNegrita(oracion)} />
-                  }
-                </div>
-              );
-            })}
+            {(ejercicio.oraciones || []).map((oracion, j) => (
+              <div key={j} style={{ marginBottom: 8 }}>
+                <div style={{ fontSize: 12, lineHeight: 1.6 }} dangerouslySetInnerHTML={renderHTMLConNegrita(oracion)} />
+              </div>
+            ))}
           </div>
         </div>
       );
@@ -383,7 +463,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
     if (ejercicio.tipo === "tabla") {
       return (
-        <div key={idx}>
+        <div key={idx} ref={setRef(keyEjercicio)}>
           <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 8 }}>
             {numLabel}{enunciadoEl}
           </div>
@@ -397,19 +477,14 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                 </tr>
               </thead>
               <tbody>
-                {(ejercicio.filas || []).map((fila, i) => {
-                  const keyFila = `ejercicio_${idx}_fila_${i}`;
-                  return (
-                    <tr key={i}>
-                      <td ref={setRef(keyFila)} style={{ border: "0.5px solid #ddddd8", padding: "4px 8px", height: 32 }}>
-                        {editandoCampo === keyFila ? renderTextarea(1) : fila}
-                      </td>
-                      {(ejercicio.columnas || []).slice(1).map((_, j) => (
-                        <td key={j} style={{ border: "0.5px solid #ddddd8", height: 32 }} />
-                      ))}
-                    </tr>
-                  );
-                })}
+                {(ejercicio.filas || []).map((fila, i) => (
+                  <tr key={i}>
+                    <td style={{ border: "0.5px solid #ddddd8", padding: "4px 8px", height: 32 }}>{fila}</td>
+                    {(ejercicio.columnas || []).slice(1).map((_, j) => (
+                      <td key={j} style={{ border: "0.5px solid #ddddd8", height: 32 }} />
+                    ))}
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -419,29 +494,21 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
     if (ejercicio.tipo === "verdadero_falso") {
       return (
-        <div key={idx}>
+        <div key={idx} ref={setRef(keyEjercicio)}>
           <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 8 }}>
             {numLabel}{enunciadoEl}
           </div>
           <div style={{ marginLeft: 24, display: "flex", flexDirection: "column", gap: 6 }}>
-            {(ejercicio.afirmaciones || []).map((afirmacion, j) => {
-              const keyAfirm = `ejercicio_${idx}_afirmacion_${j}`;
-              return (
-                <div key={j} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <div ref={setRef(keyAfirm)} style={{ flex: 1 }}>
-                    {editandoCampo === keyAfirm
-                      ? renderTextarea(1)
-                      : <span style={{ fontSize: 12, lineHeight: 1.5 }}>{afirmacion}</span>
-                    }
-                  </div>
-                  <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
-                    {["V", "F"].map(l => (
-                      <span key={l} style={{ border: `1px solid ${C.border}`, padding: "2px 7px", fontSize: 11, fontWeight: 700, borderRadius: 3 }}>{l}</span>
-                    ))}
-                  </div>
+            {(ejercicio.afirmaciones || []).map((afirmacion, j) => (
+              <div key={j} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontSize: 12, lineHeight: 1.5, flex: 1 }}>{afirmacion}</span>
+                <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+                  {["V", "F"].map(l => (
+                    <span key={l} style={{ border: `1px solid ${C.border}`, padding: "2px 7px", fontSize: 11, fontWeight: 700, borderRadius: 3 }}>{l}</span>
+                  ))}
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </div>
       );
@@ -449,7 +516,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
     // Default: texto_libre
     return (
-      <div key={idx}>
+      <div key={idx} ref={setRef(keyEjercicio)}>
         <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
           {numLabel}{enunciadoEl}
         </div>
