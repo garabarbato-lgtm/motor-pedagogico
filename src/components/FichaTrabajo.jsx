@@ -172,7 +172,60 @@ function LineaDoble() {
   );
 }
 
-function ConceptoClave({ texto }) {
+// ── Edición inline ──
+
+function EditableText({ value, onSave, children, flex }) {
+  const [editando, setEditando] = useState(false);
+  const [draft, setDraft] = useState(value);
+
+  if (editando) {
+    return (
+      <div style={{ width: "100%", flex: flex || undefined }}>
+        <textarea
+          autoFocus
+          value={draft}
+          onChange={e => setDraft(e.target.value)}
+          rows={Math.max(2, (draft || "").split("\n").length + 1)}
+          style={{
+            width: "100%", boxSizing: "border-box",
+            fontFamily: "inherit", fontSize: "inherit", lineHeight: "inherit",
+            color: C.texto, border: `1.5px solid ${C.acento}`, borderRadius: 4,
+            padding: "6px 8px", resize: "vertical", background: "#fff",
+          }}
+        />
+        <button
+          onClick={() => { onSave(draft); setEditando(false); }}
+          style={{
+            marginTop: 6, background: C.acento, color: "#fff",
+            border: "none", borderRadius: 5, padding: "5px 14px",
+            fontSize: 12, fontWeight: 600, cursor: "pointer",
+          }}>
+          Listo
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="editable-wrapper" style={{ position: "relative", flex: flex || undefined }}>
+      {children}
+      <button
+        className="edit-icon-btn"
+        onClick={() => { setDraft(value); setEditando(true); }}
+        title="Editar"
+        style={{
+          position: "absolute", top: 0, right: 0,
+          background: "none", border: "none", cursor: "pointer",
+          fontSize: 11, opacity: 0, padding: "2px 4px", lineHeight: 1,
+          transition: "opacity 0.15s",
+        }}>
+        ✏️
+      </button>
+    </div>
+  );
+}
+
+function ConceptoClave({ texto, onSave }) {
   if (!texto) return null;
   return (
     <div style={{
@@ -182,9 +235,11 @@ function ConceptoClave({ texto }) {
       padding: "8px 12px",
       marginBottom: 8,
     }}>
-      <p className="concepto-clave-texto" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0, fontWeight: 500 }}>
-        {renderConNegrita(texto)}
-      </p>
+      <EditableText value={texto} onSave={onSave}>
+        <p className="concepto-clave-texto" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0, fontWeight: 500 }}>
+          {renderConNegrita(texto)}
+        </p>
+      </EditableText>
     </div>
   );
 }
@@ -193,18 +248,36 @@ function ConceptoClave({ texto }) {
 
 export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onInicio }) {
   const [imprimiendo, setImprimiendo] = useState(false);
+  const [fichaLocal, setFichaLocal] = useState(() => ({ ...ficha }));
+  const [itemsLocal, setItemsLocal] = useState(() => parsearActividad(ficha.actividad).items);
 
   if (!ficha || !registro) return null;
 
   const isPDL = registro.area === "Prácticas del Lenguaje";
-  const tituloTexto = ficha.titulo || "";
+  const tituloTexto = fichaLocal.titulo || "";
   const emojis = Array.isArray(ficha.emojis) && ficha.emojis.length ? ficha.emojis : ["📝"];
   const emojiLeft = emojis[0];
   const emojiRight = emojis[1] || emojis[0];
-  const { pregunta: pregExplicacion } = separarPregunta(stripMarkdown(ficha.explicacion));
-  const { header: headerActividad, items } = parsearActividad(ficha.actividad);
+  const { pregunta: pregExplicacion } = separarPregunta(stripMarkdown(fichaLocal.explicacion));
+  const { header: headerActividad } = parsearActividad(ficha.actividad);
   const gradoEsUno = registro.grado === "1";
   const gradoDisplay = `${registro.grado}° grado`;
+
+  const set = (campo) => (val) => setFichaLocal(f => ({ ...f, [campo]: val }));
+
+  const setArrayItem = (campo, idx) => (val) =>
+    setFichaLocal(f => {
+      const arr = [...(f[campo] || [])];
+      arr[idx] = val;
+      return { ...f, [campo]: arr };
+    });
+
+  const setItem = (idx) => (val) =>
+    setItemsLocal(prev => {
+      const arr = [...prev];
+      arr[idx] = { ...arr[idx], texto: val };
+      return arr;
+    });
 
   const handleImprimir = () => {
     setImprimiendo(true);
@@ -341,34 +414,33 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
             borderBottom: `2.5px solid ${C.borderFuerte}`,
             padding: "10px 16px"
           }}>
-            {/* Tags + logo */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-              <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-                {[gradoDisplay, registro.area, registro.bloque].map(tag => (
-                  <span key={tag} style={{
-                    fontSize: 9, fontWeight: 700, padding: "2px 8px",
-                    borderRadius: 4, border: `1.5px solid ${C.borderFuerte}`,
-                    color: C.texto, background: "white",
-                    letterSpacing: "0.05em", textTransform: "uppercase"
-                  }}>{tag}</span>
-                ))}
-              </div>
-              <span style={{ flexShrink: 0, marginLeft: 12 }}><Logo size={13} /></span>
+            {/* Tags (sin logo) */}
+            <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 8 }}>
+              {[gradoDisplay, registro.area, registro.bloque].map(tag => (
+                <span key={tag} style={{
+                  fontSize: 9, fontWeight: 700, padding: "2px 8px",
+                  borderRadius: 4, border: `1.5px solid ${C.borderFuerte}`,
+                  color: C.texto, background: "white",
+                  letterSpacing: "0.05em", textTransform: "uppercase"
+                }}>{tag}</span>
+              ))}
             </div>
 
-            {/* Título centrado con emojis simétricos */}
+            {/* Título centrado con emojis simétricos — editable */}
             <div style={{
               display: "flex", alignItems: "center", justifyContent: "center",
               gap: 10, marginBottom: 10
             }}>
               <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojiLeft}</span>
-              <h2 style={{
-                fontSize: 15, fontWeight: 800,
-                margin: 0, lineHeight: 1.25, letterSpacing: "-0.01em",
-                textAlign: "center",
-              }}>
-                {renderTitulo(tituloTexto)}
-              </h2>
+              <EditableText value={fichaLocal.titulo} onSave={set("titulo")} flex="1">
+                <h2 style={{
+                  fontSize: 15, fontWeight: 800,
+                  margin: 0, lineHeight: 1.25, letterSpacing: "-0.01em",
+                  textAlign: "center",
+                }}>
+                  {renderTitulo(tituloTexto)}
+                </h2>
+              </EditableText>
               <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojiRight}</span>
             </div>
 
@@ -398,18 +470,22 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                 <>
                   <div className="seccion">
                     <SeccionHeader numero="1" titulo="Leemos" icono="📖" />
-                    <p className="explicacion" style={{ fontSize: 11, color: C.texto, lineHeight: 1.65, margin: 0, whiteSpace: "pre-line" }}>
-                      {renderConNegrita(ficha.texto)}
-                    </p>
+                    <EditableText value={fichaLocal.texto} onSave={set("texto")}>
+                      <p className="explicacion" style={{ fontSize: 11, color: C.texto, lineHeight: 1.65, margin: 0, whiteSpace: "pre-line" }}>
+                        {renderConNegrita(fichaLocal.texto)}
+                      </p>
+                    </EditableText>
                   </div>
                   <div className="seccion">
                     <SeccionHeader numero="2" titulo="Respondé" icono="✍️" />
                     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                      {Array.isArray(ficha.preguntas) && ficha.preguntas.map((preg, idx) => (
+                      {Array.isArray(fichaLocal.preguntas) && fichaLocal.preguntas.map((preg, idx) => (
                         <div key={idx}>
                           <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
                             <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
-                            <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(preg)} />
+                            <EditableText value={preg} onSave={setArrayItem("preguntas", idx)}>
+                              <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(preg)} />
+                            </EditableText>
                           </div>
                           <LineasRespuesta n={4} />
                         </div>
@@ -423,13 +499,15 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                 <>
                   <div className="seccion">
                     <SeccionHeader numero="1" titulo="¡A escribir!" icono="✏️" />
-                    <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }}>{renderConNegrita(ficha.consigna)}</p>
+                    <EditableText value={fichaLocal.consigna} onSave={set("consigna")}>
+                      <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }}>{renderConNegrita(fichaLocal.consigna)}</p>
+                    </EditableText>
                   </div>
-                  {Array.isArray(ficha.orientaciones) && ficha.orientaciones.length > 0 && (
+                  {Array.isArray(fichaLocal.orientaciones) && fichaLocal.orientaciones.length > 0 && (
                     <div className="seccion">
                       <SeccionHeader numero="2" titulo="Antes de escribir, pensá…" icono="💭" />
                       <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        {ficha.orientaciones.map((orientacion, idx) => (
+                        {fichaLocal.orientaciones.map((orientacion, idx) => (
                           <div key={idx} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
                             <span style={{ fontSize: 12, color: C.muted, flexShrink: 0, marginTop: 1 }}>→</span>
                             <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }}>{renderConNegrita(orientacion)}</p>
@@ -452,27 +530,31 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                 <>
                   <div className="seccion">
                     <SeccionHeader numero="1" titulo="La regla" icono="📚" />
-                    <ConceptoClave texto={ficha.concepto_clave} />
-                    <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: "0 0 6px" }}>{renderConNegrita(ficha.explicacion)}</p>
-                    {ficha.ejemplo && (
+                    <ConceptoClave texto={fichaLocal.concepto_clave} onSave={set("concepto_clave")} />
+                    <EditableText value={fichaLocal.explicacion} onSave={set("explicacion")}>
+                      <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: "0 0 6px" }}>{renderConNegrita(fichaLocal.explicacion)}</p>
+                    </EditableText>
+                    {fichaLocal.ejemplo && (
                       <div style={{
                         background: "#f7f7f0", borderRadius: 6,
                         padding: "8px 12px", border: `1px solid ${C.border}`,
                       }}>
                         <p style={{ fontSize: 10, color: C.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Ejemplo</p>
-                        <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }}>{renderConNegrita(ficha.ejemplo)}</p>
+                        <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }}>{renderConNegrita(fichaLocal.ejemplo)}</p>
                       </div>
                     )}
                   </div>
                   <div className="seccion">
                     <SeccionHeader numero="2" titulo="Practicamos" icono="✏️" />
-                    {Array.isArray(ficha.ejercicios) && (
+                    {Array.isArray(fichaLocal.ejercicios) && (
                       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                        {ficha.ejercicios.map((ejercicio, idx) => (
+                        {fichaLocal.ejercicios.map((ejercicio, idx) => (
                           <div key={idx}>
                             <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
                               <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
-                              <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio)} />
+                              <EditableText value={ejercicio} onSave={setArrayItem("ejercicios", idx)}>
+                                <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio)} />
+                              </EditableText>
                             </div>
                             <RecuadroRespuesta />
                           </div>
@@ -490,22 +572,26 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                 {/* 1. Explicación */}
                 <div className="seccion">
                   <SeccionHeader numero="1" titulo={pregExplicacion || "Leemos juntos"} icono="📖" />
-                  <ConceptoClave texto={ficha.concepto_clave} />
-                  <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }}>
-                    {renderConNegrita(ficha.explicacion)}
-                  </p>
+                  <ConceptoClave texto={fichaLocal.concepto_clave} onSave={set("concepto_clave")} />
+                  <EditableText value={fichaLocal.explicacion} onSave={set("explicacion")}>
+                    <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }}>
+                      {renderConNegrita(fichaLocal.explicacion)}
+                    </p>
+                  </EditableText>
                 </div>
 
                 {/* 2. Actividad */}
                 <div className="seccion">
                   <SeccionHeader numero="2" titulo={headerActividad} icono="✏️" />
-                  {items.length > 0 ? (
+                  {itemsLocal.length > 0 ? (
                     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                      {items.map(({ num, texto }) => (
+                      {itemsLocal.map(({ num, texto }, idx) => (
                         <div key={num}>
                           <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
                             <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{num}.</span>
-                            <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(texto)} />
+                            <EditableText value={texto} onSave={setItem(idx)}>
+                              <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(texto)} />
+                            </EditableText>
                           </div>
                           <RecuadroRespuesta />
                         </div>
@@ -514,7 +600,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                   ) : (
                     <>
                       <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, marginBottom: 8 }}>
-                        {renderConNegrita(ficha.actividad)}
+                        {renderConNegrita(fichaLocal.actividad)}
                       </p>
                       <RecuadroRespuesta />
                     </>
@@ -522,12 +608,14 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                 </div>
 
                 {/* 3. Reflexión */}
-                {ficha.pregunta_reflexion && (
+                {fichaLocal.pregunta_reflexion && (
                   <div className="seccion">
                     <SeccionHeader numero="3" titulo="Reflexionamos" icono="💭" />
-                    <p className="reflexion-texto" style={{ fontSize: 12, color: C.texto, fontStyle: "italic", lineHeight: 1.55, marginBottom: 6 }}>
-                      {renderConNegrita(ficha.pregunta_reflexion)}
-                    </p>
+                    <EditableText value={fichaLocal.pregunta_reflexion} onSave={set("pregunta_reflexion")}>
+                      <p className="reflexion-texto" style={{ fontSize: 12, color: C.texto, fontStyle: "italic", lineHeight: 1.55, marginBottom: 6 }}>
+                        {renderConNegrita(fichaLocal.pregunta_reflexion)}
+                      </p>
+                    </EditableText>
                     <LineasRespuesta n={2} />
                   </div>
                 )}
@@ -551,8 +639,10 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
       </div>
 
-      {/* CSS impresión */}
+      {/* CSS */}
       <style>{`
+        .editable-wrapper:hover .edit-icon-btn { opacity: 1 !important; }
+
         @media print {
           * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           @page { size: A4; margin: 10mm; }
@@ -566,7 +656,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
           #nav-ficha,
           .btn-imprimir,
           .validacion-badge,
-          .mock-banner { display: none !important; }
+          .mock-banner,
+          .edit-icon-btn { display: none !important; }
 
           .contenedor-pagina {
             background: white !important;
