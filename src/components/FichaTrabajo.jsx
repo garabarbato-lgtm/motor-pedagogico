@@ -37,9 +37,16 @@ function stripMarkdown(str) {
     .trim();
 }
 
+function formatearFracciones(texto) {
+  if (!texto) return texto;
+  return texto.replace(/<frac>(\d+)\/(\d+)<\/frac>/g, (_, num, den) =>
+    `<span style="display:inline-flex;flex-direction:column;align-items:center;font-size:0.9em;line-height:1.1;vertical-align:middle;margin:0 4px;"><span style="border-bottom:1.5px solid currentColor;padding:0 4px;">${num}</span><span style="padding:0 4px;">${den}</span></span>`
+  );
+}
+
 function renderHTMLConNegrita(str) {
   if (!str) return { __html: "" };
-  const html = str
+  const html = formatearFracciones(str)
     .replace(/_{1,}/g, '<span style="font-family:Arial;letter-spacing:1px;">_______</span>')
     .replace(/^#{1,6}\s+/gm, "")
     .replace(/^[•\-]\s+/gm, "")
@@ -405,19 +412,23 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                   rows={1}
                 />
               ))}
-              {editDraft.tipo === "tabla" && (editDraft.filas || []).map((f, j) => (
-                <textarea
-                  key={j}
-                  style={estiloTextarea}
-                  value={f}
-                  onChange={e => setEditDraft(d => {
-                    const filas = [...(d.filas || [])];
-                    filas[j] = e.target.value;
-                    return { ...d, filas };
-                  })}
-                  rows={1}
-                />
-              ))}
+              {editDraft.tipo === "tabla" && (editDraft.filas || []).map((f, j) => {
+                const rowStr = Array.isArray(f) ? f.join(' | ') : (f || '');
+                return (
+                  <textarea
+                    key={j}
+                    style={estiloTextarea}
+                    value={rowStr}
+                    onChange={e => setEditDraft(d => {
+                      const filas = [...(d.filas || [])];
+                      filas[j] = e.target.value.split(' | ');
+                      return { ...d, filas };
+                    })}
+                    rows={1}
+                    placeholder={`Fila ${j + 1} — columnas separadas por " | "`}
+                  />
+                );
+              })}
               {editDraft.tipo === "verdadero_falso" && (editDraft.afirmaciones || []).map((a, j) => (
                 <textarea
                   key={j}
@@ -477,14 +488,18 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                 </tr>
               </thead>
               <tbody>
-                {(ejercicio.filas || []).map((fila, i) => (
-                  <tr key={i}>
-                    <td style={{ border: "0.5px solid #ddddd8", padding: "4px 8px", height: 32 }}>{fila}</td>
-                    {(ejercicio.columnas || []).slice(1).map((_, j) => (
-                      <td key={j} style={{ border: "0.5px solid #ddddd8", height: 32 }} />
-                    ))}
-                  </tr>
-                ))}
+                {(ejercicio.filas || []).map((fila, i) => {
+                  const celdas = Array.isArray(fila) ? fila : [fila];
+                  return (
+                    <tr key={i}>
+                      {(ejercicio.columnas || []).map((_, j) => (
+                        <td key={j} style={{ border: "0.5px solid #ddddd8", padding: "4px 8px", height: 32 }}>
+                          {celdas[j] || ''}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

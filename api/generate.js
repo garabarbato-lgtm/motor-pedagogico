@@ -126,7 +126,7 @@ CRITERIOS:
 TIPOS DE EJERCICIO:
 - "texto_libre": corrección, escritura libre o respuestas abiertas
 - "completar_oraciones": array "oraciones" con strings con _______ (5+ guiones) en el espacio
-- "tabla": "columnas" = encabezados, "filas" = palabras a clasificar
+- "tabla": "columnas" = encabezados. "filas" = array de arrays donde cada sub-array tiene un valor por columna (string vacío "" para celda vacía). NUNCA concatenar varias columnas en un solo string.
 - "verdadero_falso": array "afirmaciones" para evaluar con V/F
 
 FORMATO (JSON estricto, sin markdown):
@@ -146,7 +146,7 @@ FORMATO (JSON estricto, sin markdown):
       "tipo": "tabla",
       "enunciado": "Clasificá estas palabras:",
       "columnas": ["Con mb", "Con mp"],
-      "filas": ["también", "campo", "ambiente", "trampa"]
+      "filas": [["también", ""], ["", "campo"], ["ambiente", ""], ["", "trampa"]]
     }
   ]
 }
@@ -195,9 +195,10 @@ CRITERIOS:
 TIPOS DE EJERCICIO:
 - "texto_libre": problemas o respuestas abiertas. Puede incluir "emoji" si hay objeto cotidiano concreto.
 - "completar_oraciones": array "oraciones" con strings con _______ (5+ guiones) donde va la respuesta
-- "tabla": "columnas" = encabezados, "filas" = rótulos de fila (celdas vacías automáticas para responder)
+- "tabla": "columnas" = encabezados. "filas" = array de arrays donde cada sub-array tiene un valor por columna (string vacío "" para celda que el alumno completa). NUNCA concatenar varias columnas en un solo string.
 - "verdadero_falso": array "afirmaciones" para evaluar con V/F
-
+${contenido.area === "Matemática" ? `
+FRACCIONES: Cuando escribas fracciones en cualquier campo del JSON (enunciado, oraciones, explicacion), usá siempre el formato: <frac>numerador/denominador</frac>. Ejemplo: <frac>1/2</frac>, <frac>3/4</frac>` : ""}
 FORMATO (JSON estricto, sin markdown):
 {
   "emojis": ["emoji1"],
@@ -210,9 +211,10 @@ ${camposOpcionales}
       "oraciones": ["El _______ es la fuente de energía.", "La Tierra gira _______ el Sol."]
     },
     {
-      "tipo": "verdadero_falso",
-      "enunciado": "Marcá V o F:",
-      "afirmaciones": ["La Luna es una estrella.", "El Sol está en el centro del sistema solar."]
+      "tipo": "tabla",
+      "enunciado": "Completá la tabla:",
+      "columnas": ["Fracción", "Numerador", "Denominador"],
+      "filas": [["<frac>1/2</frac>", "", ""], ["<frac>3/4</frac>", "", ""]]
     }
   ],
   "reflexion": "pregunta para conectar con la vida cotidiana del alumno"
