@@ -19,10 +19,10 @@ const C = {
 // ── Helpers ──
 
 // Detecta ejercicios que ya tienen su espacio de respuesta embebido
-// (tabla HTML o espacios en blanco _____)
+// (tabla HTML o espacios en blanco con guiones/span)
 function tieneRespuestaEmbebida(texto) {
   if (!texto) return false;
-  return texto.includes("<table") || texto.includes("_____");
+  return texto.includes("<table") || texto.includes("_____") || texto.includes("_______");
 }
 
 function stripMarkdown(str) {
