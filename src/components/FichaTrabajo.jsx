@@ -291,12 +291,23 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     padding: "6px 8px", resize: "vertical", background: "#fff",
   };
 
-  const Textarea = ({ minRows = 2 }) => (
+  const handleDraftChange = (e) => {
+    const pos = e.target.selectionStart;
+    setDraft(e.target.value);
+    requestAnimationFrame(() => {
+      if (e.target) {
+        e.target.selectionStart = pos;
+        e.target.selectionEnd = pos;
+      }
+    });
+  };
+
+  const renderTextarea = (minRows = 2) => (
     <>
       <textarea
         autoFocus
         value={draft}
-        onChange={e => setDraft(e.target.value)}
+        onChange={handleDraftChange}
         rows={Math.max(minRows, (draft || "").split("\n").length + 1)}
         style={estiloTextarea}
       />
@@ -469,7 +480,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                 <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojiLeft}</span>
                 <div ref={setRef("titulo")} style={{ flex: 1 }}>
                   {editandoCampo === "titulo"
-                    ? <Textarea minRows={1} />
+                    ? renderTextarea(1)
                     : (
                       <h2 style={{ fontSize: 15, fontWeight: 800, margin: 0, lineHeight: 1.25, letterSpacing: "-0.01em", textAlign: "center" }}>
                         {renderTitulo(tituloTexto)}
@@ -508,8 +519,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                       <SeccionHeader numero="1" titulo="Leemos" icono="📖" />
                       <div ref={setRef("texto")}>
                         {editandoCampo === "texto"
-                          ? <Textarea minRows={6} />
-                          : <p className="explicacion" style={{ fontSize: 11, color: C.texto, lineHeight: 1.65, margin: 0, whiteSpace: "pre-line" }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.texto)} />
+                          ? renderTextarea(6)
+                          : <div className="explicacion" style={{ fontSize: 11, color: C.texto, lineHeight: 1.65, margin: 0, whiteSpace: "pre-line" }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.texto)} />
                         }
                       </div>
                     </div>
@@ -522,8 +533,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                               <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
                               <div ref={setRef(`pregunta_${idx}`)} style={{ flex: 1 }}>
                                 {editandoCampo === `pregunta_${idx}`
-                                  ? <Textarea minRows={2} />
-                                  : <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(preg)} />
+                                  ? renderTextarea(2)
+                                  : <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(preg)} />
                                 }
                               </div>
                             </div>
@@ -541,8 +552,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                       <SeccionHeader numero="1" titulo="¡A escribir!" icono="✏️" />
                       <div ref={setRef("consigna")}>
                         {editandoCampo === "consigna"
-                          ? <Textarea minRows={3} />
-                          : <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.consigna)} />
+                          ? renderTextarea(3)
+                          : <div className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.consigna)} />
                         }
                       </div>
                     </div>
@@ -553,7 +564,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                           {fichaLocal.orientaciones.map((orientacion, idx) => (
                             <div key={idx} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
                               <span style={{ fontSize: 12, color: C.muted, flexShrink: 0, marginTop: 1 }}>→</span>
-                              <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(orientacion)} />
+                              <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(orientacion)} />
                             </div>
                           ))}
                         </div>
@@ -577,22 +588,22 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                         <div style={{ background: "#eafaf4", borderLeft: "3px solid #00c48c", borderRadius: "0 6px 6px 0", padding: "8px 12px", marginBottom: 8 }}>
                           <div ref={setRef("concepto_clave")}>
                             {editandoCampo === "concepto_clave"
-                              ? <Textarea minRows={2} />
-                              : <p className="concepto-clave-texto" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0, fontWeight: 500 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.concepto_clave)} />
+                              ? renderTextarea(2)
+                              : <div className="concepto-clave-texto" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0, fontWeight: 500 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.concepto_clave)} />
                             }
                           </div>
                         </div>
                       )}
                       <div ref={setRef("explicacion")}>
                         {editandoCampo === "explicacion"
-                          ? <Textarea minRows={3} />
-                          : <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: "0 0 6px" }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.explicacion)} />
+                          ? renderTextarea(3)
+                          : <div className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: "0 0 6px" }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.explicacion)} />
                         }
                       </div>
                       {fichaLocal.ejemplo && (
                         <div style={{ background: "#f7f7f0", borderRadius: 6, padding: "8px 12px", border: `1px solid ${C.border}` }}>
                           <p style={{ fontSize: 10, color: C.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Ejemplo</p>
-                          <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.ejemplo)} />
+                          <div className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.ejemplo)} />
                         </div>
                       )}
                     </div>
@@ -606,8 +617,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                                 <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
                                 <div ref={setRef(`ejercicio_${idx}`)} style={{ flex: 1 }}>
                                   {editandoCampo === `ejercicio_${idx}`
-                                    ? <Textarea minRows={2} />
-                                    : <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio)} />
+                                    ? renderTextarea(2)
+                                    : <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio)} />
                                   }
                                 </div>
                               </div>
@@ -630,16 +641,16 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                       <div style={{ background: "#eafaf4", borderLeft: "3px solid #00c48c", borderRadius: "0 6px 6px 0", padding: "8px 12px", marginBottom: 8 }}>
                         <div ref={setRef("concepto_clave")}>
                           {editandoCampo === "concepto_clave"
-                            ? <Textarea minRows={2} />
-                            : <p className="concepto-clave-texto" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0, fontWeight: 500 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.concepto_clave)} />
+                            ? renderTextarea(2)
+                            : <div className="concepto-clave-texto" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0, fontWeight: 500 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.concepto_clave)} />
                           }
                         </div>
                       </div>
                     )}
                     <div ref={setRef("explicacion")}>
                       {editandoCampo === "explicacion"
-                        ? <Textarea minRows={3} />
-                        : <p className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.explicacion)} />
+                        ? renderTextarea(3)
+                        : <div className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.explicacion)} />
                       }
                     </div>
                   </div>
@@ -654,8 +665,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                               <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{num}.</span>
                               <div ref={setRef(`item_${idx}`)} style={{ flex: 1 }}>
                                 {editandoCampo === `item_${idx}`
-                                  ? <Textarea minRows={2} />
-                                  : <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(texto)} />
+                                  ? renderTextarea(2)
+                                  : <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(texto)} />
                                 }
                               </div>
                             </div>
@@ -667,8 +678,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                       <>
                         <div ref={setRef("actividad")}>
                           {editandoCampo === "actividad"
-                            ? <Textarea minRows={3} />
-                            : <p className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, marginBottom: 8 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.actividad)} />
+                            ? renderTextarea(3)
+                            : <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, marginBottom: 8 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.actividad)} />
                           }
                         </div>
                         {!tieneRespuestaEmbebida(fichaLocal.actividad) && <RecuadroRespuesta />}
@@ -681,8 +692,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                       <SeccionHeader numero="3" titulo="Reflexionamos" icono="💭" />
                       <div ref={setRef("pregunta_reflexion")}>
                         {editandoCampo === "pregunta_reflexion"
-                          ? <Textarea minRows={2} />
-                          : <p className="reflexion-texto" style={{ fontSize: 12, color: C.texto, fontStyle: "italic", lineHeight: 1.55, marginBottom: 6 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.pregunta_reflexion)} />
+                          ? renderTextarea(2)
+                          : <div className="reflexion-texto" style={{ fontSize: 12, color: C.texto, fontStyle: "italic", lineHeight: 1.55, marginBottom: 6 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.pregunta_reflexion)} />
                         }
                       </div>
                       <LineasRespuesta n={2} />
