@@ -215,12 +215,15 @@ function EditableText({ value, onSave, children, flex }) {
         onClick={() => { setDraft(value); setEditando(true); }}
         title="Editar"
         style={{
-          position: "absolute", top: 0, right: 0,
-          background: "none", border: "none", cursor: "pointer",
-          fontSize: 11, opacity: 0, padding: "2px 4px", lineHeight: 1,
-          transition: "opacity 0.15s",
+          position: "absolute", top: 0, right: -48,
+          background: C.acento, color: "#fff",
+          border: "none", borderRadius: 5, cursor: "pointer",
+          fontSize: 12, fontWeight: 600,
+          padding: "3px 9px", lineHeight: 1.4,
+          opacity: 0, transition: "opacity 0.15s",
+          whiteSpace: "nowrap", zIndex: 5,
         }}>
-        ✏️
+        ✏ Editar
       </button>
     </div>
   );
@@ -401,7 +404,6 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
           background: C.fondo,
           border: `2.5px solid ${C.borderFuerte}`,
           borderRadius: 10,
-          overflow: "hidden",
           fontFamily: "'Lexend Deca', sans-serif",
         }}>
 
@@ -409,6 +411,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
           <div style={{
             background: C.fondoHeader,
             borderBottom: `2.5px solid ${C.borderFuerte}`,
+            borderRadius: "8px 8px 0 0",
             padding: "10px 16px"
           }}>
             {/* Tags (sin logo) */}
@@ -616,6 +619,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
           {/* Footer */}
           <div style={{
             borderTop: `2px solid ${C.borderFuerte}`,
+            borderRadius: "0 0 8px 8px",
             padding: "6px 16px",
             display: "flex", justifyContent: "space-between", alignItems: "center",
             background: C.fondoHeader
