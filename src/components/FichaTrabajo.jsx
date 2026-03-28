@@ -551,10 +551,33 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     const element = document.getElementById("ficha-imprimible");
     const areaSlug = registro.area.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
     const filename = `tiza-${areaSlug}-${registro.grado}.pdf`;
+
+    // Ocultar recuadro temporalmente para que no aparezca en el PDF
+    const prevBorder = element.style.border;
+    const prevBorderRadius = element.style.borderRadius;
+    const prevBoxShadow = element.style.boxShadow;
+    element.style.border = "none";
+    element.style.borderRadius = "0";
+    element.style.boxShadow = "none";
+
     const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+
+    // Restaurar estilos originales
+    element.style.border = prevBorder;
+    element.style.borderRadius = prevBorderRadius;
+    element.style.boxShadow = prevBoxShadow;
+
     const imgData = canvas.toDataURL("image/jpeg", 0.98);
     const pdf = new jsPDF("p", "mm", "a4");
-    pdf.addImage(imgData, "JPEG", 10, 10, 190, 0);
+    const altoPagina = 297;
+    const anchoImg = 210;
+    const altoImg = (canvas.height * anchoImg) / canvas.width;
+    let posY = 0;
+    while (posY < altoImg) {
+      if (posY > 0) pdf.addPage();
+      pdf.addImage(imgData, "JPEG", 0, -posY, anchoImg, altoImg);
+      posY += altoPagina;
+    }
     pdf.save(filename);
   };
 
@@ -683,18 +706,6 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
               borderRadius: "8px 8px 0 0",
               padding: "10px 16px"
             }}>
-              {/* Tags */}
-              <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 8 }}>
-                {[gradoDisplay, registro.area, registro.bloque].map(tag => (
-                  <span key={tag} style={{
-                    fontSize: 9, fontWeight: 700, padding: "2px 8px",
-                    borderRadius: 4, border: `1.5px solid ${C.borderFuerte}`,
-                    color: C.texto, background: "white",
-                    letterSpacing: "0.05em", textTransform: "uppercase"
-                  }}>{tag}</span>
-                ))}
-              </div>
-
               {/* Título editable */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 10 }}>
                 <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojiLeft}</span>
@@ -928,7 +939,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
               background: C.fondoHeader
             }}>
               <span style={{ fontSize: 10, color: C.muted }}>tiza. · Diseño Curricular 2018</span>
-              <span style={{ fontSize: 10, color: C.muted }}>{gradoDisplay} · {registro.area}</span>
+              <span style={{ fontSize: 10, color: C.muted }}>{gradoDisplay} · {registro.area} · {registro.bloque}</span>
             </div>
 
           </div>
