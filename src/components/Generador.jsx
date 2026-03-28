@@ -3,16 +3,17 @@ import curricularData from "../../dc_pba_base_curricular_corregida.json";
 import Logo from "./Logo.jsx";
 
 const C = {
-  fondo: "#f8f8f4",
-  acento: "#00c48c",
-  acentoOscuro: "#008f66",
-  texto: "#0d1f1a",
+  fondo: "#F5F5F5",
+  acento: "#22C55E",
+  acentoOscuro: "#16a34a",
+  acentoCaldo: "#F5A623",
+  texto: "#2B2B2B",
   suave: "#e0faf2",
   muted: "#4a6b60",
-  btn: "#0d1f1a",
-  btnText: "#00c48c",
+  btn: "#004733",
+  btnText: "#ffffff",
   white: "#ffffff",
-  border: "#d8ede8",
+  border: "#D9D9D9",
   gris: "#f0f0ec",
   error: "#fee2e2",
   errorTexto: "#991b1b",
@@ -29,10 +30,10 @@ const GRADOS = [
 ];
 
 const AREAS_CONFIG = {
-  "Matemática":              { emoji: "🔢", color: "#e8f0ff", colorHover: "#c5d5ff", border: "#c5d5ff", borderHover: "#7a9ef5", desc: "Números, geometría, medidas" },
-  "Prácticas del Lenguaje":  { emoji: "📖", color: "#fff0e8", colorHover: "#ffd5b8", border: "#ffd5b8", borderHover: "#f5a06a", desc: "Lectura, escritura, oralidad" },
-  "Ciencias Naturales":      { emoji: "🔬", color: "#e8fff4", colorHover: "#b8ffdc", border: "#b8ffdc", borderHover: "#00c48c", desc: "Seres vivos, cuerpo, materiales" },
-  "Ciencias Sociales":       { emoji: "🌍", color: "#fef9e0", colorHover: "#fde98a", border: "#fde98a", borderHover: "#e6c800", desc: "Historia, geografía, sociedad" },
+  "Matemática":              { emoji: "🔢", color: "#E8F5EE", colorHover: "#c5dfd0", border: "#b8d4c0", borderHover: "#004733", iconColor: "#004733", desc: "Números, geometría, medidas" },
+  "Prácticas del Lenguaje":  { emoji: "📖", color: "#F0F0F0", colorHover: "#ddddd8", border: "#cccccc", borderHover: "#2B2B2B", iconColor: "#2B2B2B", desc: "Lectura, escritura, oralidad" },
+  "Ciencias Naturales":      { emoji: "🔬", color: "#E8F5EE", colorHover: "#b8ffdc", border: "#b8ffdc", borderHover: "#22C55E", iconColor: "#22C55E", desc: "Seres vivos, cuerpo, materiales" },
+  "Ciencias Sociales":       { emoji: "🌍", color: "#FFF8E8", colorHover: "#fde98a", border: "#fde98a", borderHover: "#F5A623", iconColor: "#F5A623", desc: "Historia, geografía, sociedad" },
 };
 
 // ── PDL — Datos para el flujo en cascada ──
@@ -199,13 +200,13 @@ function PasoActivo({ pregunta, sub, children }) {
     <div style={{ animation: "fadeUp 0.35s cubic-bezier(.22,1,.36,1) both" }}>
       <h2 style={{
         fontFamily: "Georgia, serif",
-        fontSize: "clamp(20px, 3.5vw, 28px)", fontWeight: 400,
-        color: C.texto, lineHeight: 1.25,
+        fontSize: "clamp(20px, 3.5vw, 28px)", fontWeight: 700,
+        color: "#004733", lineHeight: 1.25, textAlign: "center",
         letterSpacing: "-0.02em", marginBottom: sub ? 8 : 20
       }}>
         {pregunta}
       </h2>
-      {sub && <p style={{ fontSize: 13, color: C.muted, marginBottom: 20, lineHeight: 1.6 }}>{sub}</p>}
+      {sub && <p style={{ fontSize: 13, color: C.muted, marginBottom: 20, lineHeight: 1.6, textAlign: "center" }}>{sub}</p>}
       {children}
     </div>
   );
@@ -219,16 +220,17 @@ function GradoBtn({ g, i, onClick }) {
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        padding: "22px 8px", borderRadius: 12,
+        padding: "2rem 8px", borderRadius: 12,
+        minHeight: 120,
         border: `1.5px solid ${hov ? C.btn : C.border}`,
         background: hov ? C.btn : C.white,
         cursor: "pointer", transition: "all 0.18s",
-        display: "flex", flexDirection: "column", alignItems: "center", gap: 5,
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 5,
         transform: hov ? "translateY(-2px)" : "none",
         animation: `fadeUp 0.3s ${i * 0.05}s both`
       }}
     >
-      <span style={{ fontSize: 26, fontWeight: 800, fontFamily: "Georgia, serif", transition: "color 0.18s", color: hov ? C.acento : C.texto }}>{g.num}</span>
+      <span style={{ fontSize: 32, fontWeight: 800, fontFamily: "Georgia, serif", transition: "color 0.18s", color: hov ? C.acento : "#004733" }}>{g.num}</span>
       <span style={{ fontSize: 9, textTransform: "uppercase", letterSpacing: "0.06em", textAlign: "center", lineHeight: 1.4, transition: "color 0.18s", color: C.muted }}>{g.ciclo}</span>
     </button>
   );
@@ -242,19 +244,21 @@ function AreaBtn({ a, i, onClick }) {
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        padding: "22px 18px", borderRadius: 14,
+        padding: "2rem", borderRadius: 14,
+        minHeight: 140,
         border: `1.5px solid ${hov ? a.borderHover : a.border}`,
         background: hov ? a.colorHover : a.color,
-        cursor: "pointer", textAlign: "left",
+        cursor: "pointer", textAlign: "center",
         transition: "all 0.18s",
         transform: hov ? "translateY(-3px)" : "none",
         boxShadow: hov ? "0 10px 28px rgba(0,0,0,0.10)" : "0 2px 8px rgba(0,0,0,0.04)",
-        animation: `fadeUp 0.3s ${i * 0.07}s both`
+        animation: `fadeUp 0.3s ${i * 0.07}s both`,
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6,
       }}
     >
-      <div style={{ fontSize: 30, marginBottom: 10 }}>{a.emoji}</div>
-      <div style={{ fontSize: 14, fontWeight: 600, color: C.texto, marginBottom: 4 }}>{a.nombre}</div>
-      <div style={{ fontSize: 12, color: C.muted }}>{a.desc}</div>
+      <div style={{ fontSize: 48, lineHeight: 1 }}>{a.emoji}</div>
+      <div style={{ fontSize: 18, fontWeight: 700, color: C.texto }}>{a.nombre}</div>
+      <div style={{ fontSize: 13, color: C.muted }}>{a.desc}</div>
     </button>
   );
 }
@@ -282,6 +286,122 @@ function OpcionBtn({ label, i, onClick, suave = false }) {
   );
 }
 
+// ── Tooltip wrapper para checkboxes ──
+function TooltipWrapper({ children, text }) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <div
+      style={{ position: "relative" }}
+      onMouseEnter={() => setVisible(true)}
+      onMouseLeave={() => setVisible(false)}
+    >
+      {children}
+      {visible && (
+        <div style={{
+          position: "absolute",
+          bottom: "calc(100% + 6px)",
+          left: "50%",
+          transform: "translateX(-50%)",
+          background: "#2B2B2B",
+          color: "#ffffff",
+          fontSize: 12,
+          borderRadius: 6,
+          padding: "6px 10px",
+          whiteSpace: "nowrap",
+          zIndex: 100,
+          pointerEvents: "none",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
+        }}>
+          {text}
+          <div style={{
+            position: "absolute",
+            top: "100%",
+            left: "50%",
+            transform: "translateX(-50%)",
+            borderWidth: "5px 5px 0 5px",
+            borderStyle: "solid",
+            borderColor: "#2B2B2B transparent transparent transparent",
+          }} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Acordeón de bloques + contenidos ──
+function AcordeonBloques({ bloques, contenidosPorBloque, onSelectContenido }) {
+  const [bloqueAbierto, setBloqueAbierto] = useState(null);
+
+  const toggleBloque = (b) => {
+    setBloqueAbierto(prev => prev === b ? null : b);
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {bloques.map((b) => {
+        const abierto = bloqueAbierto === b;
+        const contenidos = contenidosPorBloque[b] || [];
+        return (
+          <div key={b} style={{
+            border: `1.5px solid ${abierto ? C.btn : C.border}`,
+            borderRadius: 10,
+            overflow: "hidden",
+            transition: "border-color 0.2s",
+          }}>
+            <button
+              onClick={() => toggleBloque(b)}
+              style={{
+                width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
+                padding: "16px 20px",
+                background: abierto ? "#E8F5EE" : C.white,
+                border: "none", cursor: "pointer",
+                textAlign: "left",
+                transition: "background 0.2s",
+              }}
+            >
+              <span style={{ fontSize: 14, fontWeight: 600, color: abierto ? "#004733" : C.texto }}>{b}</span>
+              <span style={{
+                fontSize: 16, color: abierto ? "#004733" : C.muted,
+                transform: abierto ? "rotate(180deg)" : "rotate(0deg)",
+                transition: "transform 0.3s ease",
+                display: "inline-block",
+              }}>▼</span>
+            </button>
+            <div style={{
+              maxHeight: abierto ? `${contenidos.length * 60 + 20}px` : "0px",
+              overflow: "hidden",
+              transition: "max-height 0.3s ease",
+            }}>
+              <div style={{ padding: "4px 12px 12px" }}>
+                {contenidos.map((r, i) => (
+                  <button
+                    key={r.id}
+                    onClick={() => onSelectContenido(r)}
+                    style={{
+                      width: "100%", padding: "12px 14px", borderRadius: 8,
+                      border: `1px solid ${C.border}`,
+                      background: C.white, cursor: "pointer",
+                      textAlign: "left", fontSize: 13, color: C.texto,
+                      marginBottom: i < contenidos.length - 1 ? 6 : 0,
+                      transition: "all 0.15s",
+                      display: "flex", alignItems: "center", justifyContent: "space-between",
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = C.suave; e.currentTarget.style.borderColor = C.acento; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = C.white; e.currentTarget.style.borderColor = C.border; }}
+                  >
+                    <span style={{ lineHeight: 1.5 }}>{r.item_original}</span>
+                    <span style={{ color: C.acento, fontSize: 18, flexShrink: 0, marginLeft: 12 }}>›</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── Componente principal ──
 
 export default function Generador({ onFichaGenerada, onVolver }) {
@@ -299,6 +419,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
   const [error, setError] = useState(null);
   const [msgIdx, setMsgIdx] = useState(0);
   const [msgVisible, setMsgVisible] = useState(true);
+  const [busqueda, setBusqueda] = useState("");
 
   // Estado PDL
   const [isPDL, setIsPDL] = useState(false);
@@ -325,12 +446,27 @@ export default function Generador({ onFichaGenerada, onVolver }) {
     )].sort();
   }, [curricular, gradoData, area, isPDL]);
 
-  const contenidosDisponibles = useMemo(() => {
-    if (!gradoData || !area || !bloque || isPDL) return [];
-    return curricular
-      .filter(r => gradoData.valores.includes(String(r.grado)) && r.area === area && r.bloque === bloque)
-      .sort((a, b) => a.item_original.localeCompare(b.item_original));
-  }, [curricular, gradoData, area, bloque, isPDL]);
+  const contenidosPorBloque = useMemo(() => {
+    if (!gradoData || !area || isPDL) return {};
+    const result = {};
+    bloquesDisponibles.forEach(b => {
+      result[b] = curricular
+        .filter(r => gradoData.valores.includes(String(r.grado)) && r.area === area && r.bloque === b)
+        .sort((a, b) => a.item_original.localeCompare(b.item_original));
+    });
+    return result;
+  }, [curricular, gradoData, area, isPDL, bloquesDisponibles]);
+
+  // Resultados de búsqueda: filtra todos los contenidos del área seleccionada
+  const resultadosBusqueda = useMemo(() => {
+    if (!busqueda.trim() || !gradoData || !area || isPDL) return null;
+    const q = busqueda.trim().toLowerCase();
+    return curricular.filter(r =>
+      gradoData.valores.includes(String(r.grado)) &&
+      r.area === area &&
+      r.item_original.toLowerCase().includes(q)
+    ).sort((a, b) => a.item_original.localeCompare(b.item_original));
+  }, [busqueda, curricular, gradoData, area, isPDL]);
 
   const getMensaje = (idx) => {
     const msgs = [
@@ -364,12 +500,25 @@ export default function Generador({ onFichaGenerada, onVolver }) {
 
   const elegir = (setter, val, sig) => { setter(val); setTimeout(() => setPaso(sig), 160); };
 
-  const volver = (p) => {
+  // Cambiar desde un paso específico: limpia solo los estados desde ese paso en adelante
+  const cambiarDesde = (p) => {
     setPaso(p);
-    if (p <= 1) setGradoData(null);
-    if (p <= 2) { setArea(null); setAreaConfig(null); setIsPDL(false); }
-    if (p <= 3) { setBloque(null); setPdlTipoTexto(null); setPdlPractica(null); }
-    if (p <= 4) { setRegistro(null); setPdlTipoTexto(null); setPdlPractica(null); }
+    if (p <= 1) {
+      setGradoData(null);
+      setArea(null); setAreaConfig(null); setIsPDL(false);
+      setBloque(null); setPdlTipoTexto(null); setPdlPractica(null);
+      setRegistro(null);
+    } else if (p <= 2) {
+      setArea(null); setAreaConfig(null); setIsPDL(false);
+      setBloque(null); setPdlTipoTexto(null); setPdlPractica(null);
+      setRegistro(null);
+    } else if (p <= 3) {
+      setBloque(null); setPdlTipoTexto(null); setPdlPractica(null);
+      setRegistro(null);
+    } else if (p <= 4) {
+      setRegistro(null); setPdlTipoTexto(null); setPdlPractica(null);
+    }
+    setBusqueda("");
     setError(null);
     setGenerando(false);
     setMensajeLoading(0);
@@ -402,6 +551,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
         setMensajeLoading(2);
         setTimeout(() => {
           setGenerando(false);
+          setError(null); // limpiar error antes de mostrar la ficha (cambio #11)
           onFichaGenerada(resultado.ficha, registroParaFicha, null);
         }, 1000);
       }
@@ -473,8 +623,8 @@ export default function Generador({ onFichaGenerada, onVolver }) {
         @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
         @keyframes spin { to { transform:rotate(360deg); } }
         @keyframes pulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(0,196,140,0.5); }
-          50% { box-shadow: 0 0 0 7px rgba(0,196,140,0); }
+          0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+          50% { box-shadow: 0 0 0 7px rgba(34,197,94,0); }
         }
       `}</style>
 
@@ -482,13 +632,13 @@ export default function Generador({ onFichaGenerada, onVolver }) {
       <nav style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "16px 32px", borderBottom: `0.5px solid ${C.border}`,
-        background: "rgba(248,248,244,0.95)", backdropFilter: "blur(8px)",
+        background: "#004733",
         position: "sticky", top: 0, zIndex: 10
       }}>
         <button onClick={onVolver} style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-          <Logo size={22} />
+          <Logo size={32} color="#ffffff" />
         </button>
-        <span style={{ fontSize: 12, color: C.muted }}>
+        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.7)" }}>
           {generando ? "Generando…" : `Paso ${paso} de ${totalPasos}`}
         </span>
       </nav>
@@ -506,22 +656,22 @@ export default function Generador({ onFichaGenerada, onVolver }) {
 
         {/* Bloques confirmados */}
         {gradoData && paso > 1 && (
-          <BloqueConfirmado label="Grado" valor={gradoData.num} emoji="🎓" onClick={() => volver(1)} />
+          <BloqueConfirmado label="Grado" valor={gradoData.num} emoji="🎓" onClick={() => cambiarDesde(1)} />
         )}
         {area && paso > 2 && (
-          <BloqueConfirmado label="Área" valor={area} emoji={areaConfig?.emoji} color={areaConfig?.color} onClick={() => volver(2)} />
+          <BloqueConfirmado label="Área" valor={area} emoji={areaConfig?.emoji} color={areaConfig?.color} onClick={() => cambiarDesde(2)} />
         )}
 
         {/* Bloques confirmados — PDL */}
         {isPDL && bloque && paso > 3 && (
-          <BloqueConfirmado label="Tipo de ficha" valor={bloque} emoji="📚" onClick={() => volver(3)} />
+          <BloqueConfirmado label="Tipo de ficha" valor={bloque} emoji="📚" onClick={() => cambiarDesde(3)} />
         )}
         {isPDL && pdlTipoTexto && paso > 4 && (
           <BloqueConfirmado
             label={bloque === "Ortografía" ? "Regla ortográfica" : "Tipo de texto"}
             valor={pdlTipoTexto}
             emoji="📄"
-            onClick={() => volver(4)}
+            onClick={() => cambiarDesde(4)}
           />
         )}
         {isPDL && bloque === "Lectura de textos" && pdlPractica && paso > 4 && (
@@ -530,18 +680,18 @@ export default function Generador({ onFichaGenerada, onVolver }) {
 
         {/* Bloques confirmados — No PDL */}
         {!isPDL && bloque && paso > 3 && (
-          <BloqueConfirmado label="Bloque" valor={bloque} emoji="📦" onClick={() => volver(3)} />
+          <BloqueConfirmado label="Bloque" valor={bloque} emoji="📦" onClick={() => cambiarDesde(3)} />
         )}
         {!isPDL && registro && paso > 4 && (
-          <BloqueConfirmado label="Contenido" valor={registro.item_original} emoji="🎯" onClick={() => volver(4)} />
+          <BloqueConfirmado label="Contenido" valor={registro.item_original} emoji="🎯" onClick={() => cambiarDesde(4)} />
         )}
 
         {paso > 1 && !generando && (
           <div style={{ height: 1, background: C.border, margin: "16px 0 28px" }} />
         )}
 
-        {/* Error */}
-        {error && (
+        {/* Error — solo si no estamos generando exitosamente */}
+        {error && !generando && (
           <div style={{
             background: C.error, border: `1px solid #fca5a5`,
             borderRadius: 10, padding: "12px 16px", marginBottom: 20,
@@ -575,6 +725,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                     setArea(a.nombre);
                     setAreaConfig(a);
                     setIsPDL(a.nombre === "Prácticas del Lenguaje");
+                    setBusqueda("");
                     setTimeout(() => setPaso(3), 160);
                   }}
                 />
@@ -610,14 +761,61 @@ export default function Generador({ onFichaGenerada, onVolver }) {
           </PasoActivo>
         )}
 
-        {/* Paso 4: Contenido (no PDL) */}
+        {/* Paso 4: Contenido (no PDL) — con buscador y acordeón */}
         {paso === 4 && !isPDL && (
           <PasoActivo pregunta="¿Cuál es el contenido?" sub={`Del Diseño Curricular oficial · ${gradoData?.num} · ${area}`}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {contenidosDisponibles.map((r, i) => (
-                <OpcionBtn key={r.id} label={r.item_original} i={i} onClick={() => elegir(setRegistro, r, 5)} suave />
-              ))}
+            {/* Buscador */}
+            <div style={{ marginBottom: 16 }}>
+              <input
+                type="text"
+                value={busqueda}
+                onChange={e => setBusqueda(e.target.value)}
+                placeholder="Buscar contenido... (ej: fracciones)"
+                style={{
+                  width: "100%", padding: "12px 16px",
+                  border: `1.5px solid ${busqueda ? C.acento : C.border}`,
+                  borderRadius: 10, fontSize: 14, color: C.texto,
+                  background: C.white, outline: "none",
+                  boxSizing: "border-box",
+                  transition: "border-color 0.15s",
+                }}
+              />
             </div>
+
+            {/* Resultados de búsqueda */}
+            {busqueda.trim() ? (
+              resultadosBusqueda && resultadosBusqueda.length > 0 ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  {resultadosBusqueda.map((r, i) => (
+                    <OpcionBtn key={r.id} label={r.item_original} i={i} onClick={() => { setBusqueda(""); elegir(setRegistro, r, 5); }} suave />
+                  ))}
+                </div>
+              ) : (
+                <p style={{ fontSize: 13, color: C.muted, textAlign: "center", padding: "20px 0", fontStyle: "italic" }}>
+                  No encontramos ese contenido. Explorá los bloques abajo.
+                </p>
+              )
+            ) : null}
+
+            {/* Acordeón de bloques */}
+            {!busqueda.trim() && (
+              <AcordeonBloques
+                bloques={bloquesDisponibles}
+                contenidosPorBloque={contenidosPorBloque}
+                onSelectContenido={(r) => elegir(setRegistro, r, 5)}
+              />
+            )}
+
+            {/* Si hay búsqueda y no hay resultados, mostrar acordeón igual */}
+            {busqueda.trim() && resultadosBusqueda && resultadosBusqueda.length === 0 && (
+              <div style={{ marginTop: 16 }}>
+                <AcordeonBloques
+                  bloques={bloquesDisponibles}
+                  contenidosPorBloque={contenidosPorBloque}
+                  onSelectContenido={(r) => { setBusqueda(""); elegir(setRegistro, r, 5); }}
+                />
+              </div>
+            )}
           </PasoActivo>
         )}
 
@@ -675,7 +873,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                 <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.6, margin: 0 }}>{registro.objetivo}</p>
               </div>
             )}
-            {/* Checkboxes opcionales */}
+            {/* Checkboxes opcionales con tooltips */}
             <div style={{ marginBottom: 20 }}>
               <p style={{ fontSize: 11, color: C.muted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 10 }}>
                 Opciones adicionales
@@ -683,50 +881,53 @@ export default function Generador({ onFichaGenerada, onVolver }) {
               {[
                 {
                   id: "explicacion",
-                  label: "Incluir explicación del tema",
+                  label: "Incluir explicación",
+                  tooltip: "El alumno lee una explicación del tema antes de arrancar",
                   checked: incluirExplicacion,
                   disabled: false,
                   onChange: (v) => { setIncluirExplicacion(v); if (!v) setIncluirEjemplo(false); },
                 },
                 {
                   id: "ejemplo",
-                  label: "Incluir ejemplo concreto",
+                  label: "Incluir ejemplo",
+                  tooltip: "Se muestra un ejemplo resuelto antes de los ejercicios",
                   checked: incluirEjemplo,
                   disabled: !incluirExplicacion,
                   onChange: setIncluirEjemplo,
                 },
-              ].map(({ id, label, checked, disabled, onChange }) => (
-                <div
-                  key={id}
-                  onClick={() => !disabled && onChange(!checked)}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 12,
-                    padding: "12px 16px",
-                    background: C.white,
-                    border: `1px solid ${checked ? C.acento : C.border}`,
-                    borderRadius: 10,
-                    cursor: disabled ? "not-allowed" : "pointer",
-                    opacity: disabled ? 0.4 : 1,
-                    transition: "all 0.15s",
-                    marginBottom: 8,
-                    userSelect: "none",
-                  }}
-                >
-                  <div style={{
-                    width: 20, height: 20, borderRadius: 5, flexShrink: 0,
-                    border: `1.5px solid ${checked ? C.acento : C.border}`,
-                    background: checked ? C.acento : C.white,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    transition: "all 0.15s",
-                  }}>
-                    {checked && (
-                      <svg viewBox="0 0 12 10" fill="none" width="10" height="10">
-                        <polyline points="1,5 4,8 11,1" stroke={C.btn} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    )}
+              ].map(({ id, label, tooltip, checked, disabled, onChange }) => (
+                <TooltipWrapper key={id} text={tooltip}>
+                  <div
+                    onClick={() => !disabled && onChange(!checked)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 12,
+                      padding: "12px 16px",
+                      background: C.white,
+                      border: `1px solid ${checked ? C.acento : C.border}`,
+                      borderRadius: 10,
+                      cursor: disabled ? "not-allowed" : "pointer",
+                      opacity: disabled ? 0.4 : 1,
+                      transition: "all 0.15s",
+                      marginBottom: 8,
+                      userSelect: "none",
+                    }}
+                  >
+                    <div style={{
+                      width: 20, height: 20, borderRadius: 5, flexShrink: 0,
+                      border: `1.5px solid ${checked ? C.acento : C.border}`,
+                      background: checked ? C.acento : C.white,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      transition: "all 0.15s",
+                    }}>
+                      {checked && (
+                        <svg viewBox="0 0 12 10" fill="none" width="10" height="10">
+                          <polyline points="1,5 4,8 11,1" stroke={C.btn} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </div>
+                    <span style={{ fontSize: 14, color: C.texto, fontWeight: 500 }}>{label}</span>
                   </div>
-                  <span style={{ fontSize: 14, color: C.texto, fontWeight: 500 }}>{label}</span>
-                </div>
+                </TooltipWrapper>
               ))}
             </div>
 
@@ -787,7 +988,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
               <div style={{ position: "relative", width: 64, height: 64, margin: "0 auto 28px" }}>
                 <div style={{
                   position: "absolute", inset: 0,
-                  border: "4px solid rgba(0,196,140,0.2)",
+                  border: "4px solid rgba(34,197,94,0.2)",
                   borderTopColor: C.acento,
                   borderRadius: "50%",
                   animation: "spin 1.8s linear infinite",
@@ -812,7 +1013,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
 
               {/* Barra de progreso */}
               <div style={{
-                height: 4, background: "rgba(0,196,140,0.2)",
+                height: 4, background: "rgba(34,197,94,0.2)",
                 borderRadius: 999, overflow: "hidden", marginBottom: 28,
               }}>
                 <div style={{
@@ -832,7 +1033,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                       <div style={{
                         width: 28, height: 28, borderRadius: "50%",
                         background: completado ? C.acento : "white",
-                        border: `2px solid ${completado || activo ? C.acento : "rgba(0,196,140,0.3)"}`,
+                        border: `2px solid ${completado || activo ? C.acento : "rgba(34,197,94,0.3)"}`,
                         display: "flex", alignItems: "center", justifyContent: "center",
                         animation: activo ? "pulse 1.5s ease-in-out infinite" : "none",
                         transition: "all 0.4s",
