@@ -493,9 +493,9 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                   return (
                     <tr key={i}>
                       {(ejercicio.columnas || []).map((_, j) => (
-                        <td key={j} style={{ border: "0.5px solid #ddddd8", padding: "4px 8px", height: 32 }}>
-                          {celdas[j] || ''}
-                        </td>
+                        <td key={j} style={{ border: "0.5px solid #ddddd8", padding: "4px 8px", height: 32 }}
+                          dangerouslySetInnerHTML={renderHTMLConNegrita(celdas[j] || '')}
+                        />
                       ))}
                     </tr>
                   );
@@ -516,7 +516,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
           <div style={{ marginLeft: 24, display: "flex", flexDirection: "column", gap: 6 }}>
             {(ejercicio.afirmaciones || []).map((afirmacion, j) => (
               <div key={j} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ fontSize: 12, lineHeight: 1.5, flex: 1 }}>{afirmacion}</span>
+                <span style={{ fontSize: 12, lineHeight: 1.5, flex: 1 }} dangerouslySetInnerHTML={renderHTMLConNegrita(afirmacion)} />
                 <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
                   {["V", "F"].map(l => (
                     <span key={l} style={{ border: `1px solid ${C.border}`, padding: "2px 7px", fontSize: 11, fontWeight: 700, borderRadius: 3 }}>{l}</span>
