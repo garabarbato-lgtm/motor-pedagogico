@@ -387,11 +387,11 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
   const ejercicioTieneContenido = (ejercicio) => {
     if (typeof ejercicio === "string") return ejercicio.trim().length > 0;
-    if (ejercicio.tipo === "texto_libre") return !!ejercicio.enunciado;
     if (ejercicio.tipo === "completar_oraciones") return Array.isArray(ejercicio.oraciones) && ejercicio.oraciones.length > 0;
     if (ejercicio.tipo === "tabla") return Array.isArray(ejercicio.filas) && ejercicio.filas.length > 0;
     if (ejercicio.tipo === "verdadero_falso") return Array.isArray(ejercicio.afirmaciones) && ejercicio.afirmaciones.length > 0;
-    return false;
+    // Todos los demás tipos (texto_libre, situacion_problematica, resolver_operaciones, etc.) solo necesitan enunciado
+    return !!ejercicio.enunciado;
   };
 
   const renderEjercicioItem = (ejercicio, idx) => {

@@ -180,6 +180,49 @@ function buildGeneratorPrompt(contenido, tipoFicha, incluirExplicacion, incluirE
     : incluirExplicacion ? 4
     : 5;
 
+  const bloqueLC = (contenido.bloque || "").toLowerCase();
+  const itemLC = (contenido.item || "").toLowerCase();
+  const esHistoria = bloqueLC.includes("tiempo") || bloqueLC.includes("historia") || itemLC.includes("historia");
+  const esGeografia = bloqueLC.includes("territorio") || bloqueLC.includes("geograf") || itemLC.includes("mapa") || itemLC.includes("territorio");
+  const esEstimacion = itemLC.includes("estimaci") || itemLC.includes("número sense") || itemLC.includes("numero sense");
+
+  const tiposPool = contenido.area === "Matemática"
+    ? `TIPOS DE EJERCICIO DISPONIBLES (elegir con variedad):
+- "completar_oraciones": completar espacios con números, términos o resultados. Array "oraciones" con _______ (5+ guiones).
+- "situacion_problematica": problema contextualizado para resolver. Solo "enunciado".
+- "tabla": tabla para completar. "columnas" + "filas" (string vacío "" = celda a completar). NUNCA concatenar columnas.
+- "verdadero_falso": afirmaciones para evaluar con V/F. Array "afirmaciones".
+- "dibujar_y_explicar": consigna para dibujar y/o explicar con palabras. Solo "enunciado".
+- "resolver_operaciones": operaciones o cuentas para resolver. Solo "enunciado".
+- "completar_la_cuenta": operaciones incompletas para completar. Solo "enunciado".${esEstimacion ? `
+- "estimacion": consigna de estimación o número sense. Solo "enunciado".` : ""}`
+
+    : contenido.area === "Ciencias Naturales"
+    ? `TIPOS DE EJERCICIO DISPONIBLES (elegir con variedad):
+- "completar_oraciones": completar espacios con términos o conceptos. Array "oraciones" con _______ (5+ guiones).
+- "tabla": tabla para completar o clasificar. "columnas" + "filas" (string vacío "" = celda vacía). NUNCA concatenar columnas.
+- "verdadero_falso": afirmaciones para evaluar con V/F. Array "afirmaciones".
+- "preguntas_comprension": preguntas abiertas de comprensión. Solo "enunciado".
+- "ordenar_secuencia": consigna para ordenar pasos o etapas de un proceso. Solo "enunciado".
+- "describir_con_palabras": consigna de descripción libre. Solo "enunciado".`
+
+    : contenido.area === "Ciencias Sociales"
+    ? `TIPOS DE EJERCICIO DISPONIBLES (elegir con variedad):
+- "completar_oraciones": completar espacios con términos o datos. Array "oraciones" con _______ (5+ guiones).
+- "tabla": tabla para completar o comparar. "columnas" + "filas" (string vacío "" = celda vacía). NUNCA concatenar columnas.
+- "verdadero_falso": afirmaciones para evaluar con V/F. Array "afirmaciones".
+- "preguntas_comprension": preguntas abiertas de comprensión. Solo "enunciado".
+- "ordenar_secuencia": consigna para ordenar hechos o etapas. Solo "enunciado".${esHistoria ? `
+- "linea_de_tiempo": consigna para ubicar hechos en una línea de tiempo. Solo si el contenido es de Historia. Solo "enunciado".` : ""}${esGeografia ? `
+- "ubicar_en_mapa": consigna para ubicar elementos usando un mapa. La consigna debe aclarar "usando un mapa". Solo si el contenido es de Geografía. Solo "enunciado".` : ""}`
+
+    // Fallback genérico para otras áreas
+    : `TIPOS DE EJERCICIO DISPONIBLES:
+- "completar_oraciones": array "oraciones" con _______ (5+ guiones).
+- "tabla": "columnas" + "filas" con "" para celdas vacías. NUNCA concatenar columnas.
+- "verdadero_falso": array "afirmaciones" para V/F.
+- "preguntas_comprension": preguntas abiertas. Solo "enunciado".`;
+
   return `Sos un docente experto en nivel primario de la Provincia de Buenos Aires.
 Generá un recurso educativo para:
 
@@ -197,12 +240,12 @@ CRITERIOS:
 4. Título: dos partes separadas por dos puntos, mayúscula solo en la primera letra
 5. Elegí 1 o 2 emojis relevantes al tema para "emojis"
 
-TIPOS DE EJERCICIO:
-- "texto_libre": problemas o respuestas abiertas. Puede incluir "emoji" si hay objeto cotidiano concreto.
-- "completar_oraciones": array "oraciones" con strings con _______ (5+ guiones) donde va la respuesta
-- "tabla": "columnas" = encabezados. "filas" = array de arrays donde cada sub-array tiene un valor por columna (string vacío "" para celda que el alumno completa). NUNCA concatenar varias columnas en un solo string.
-- "verdadero_falso": array "afirmaciones" para evaluar con V/F
-LÍMITE DE ITEMS: Cada ejercicio puede tener como máximo 4 items (oraciones, afirmaciones o filas). Nunca más de 4.
+${tiposPool}
+
+REGLAS DE SELECCIÓN:
+- Elegí los tipos con variedad. No uses tabla y verdadero_falso en la misma ficha si hay otras opciones disponibles.
+- Máximo 1 tabla y máximo 1 verdadero_falso por ficha. Estos tipos no son obligatorios — podés no usarlos.
+- LÍMITE DE ITEMS: cada ejercicio puede tener como máximo 4 items (oraciones, afirmaciones o filas). Nunca más de 4.
 ${contenido.area === "Matemática" ? `
 FRACCIONES: Cuando escribas fracciones en cualquier campo del JSON (enunciado, oraciones, explicacion), usá siempre el formato: <frac>numerador/denominador</frac>. Ejemplo: <frac>1/2</frac>, <frac>3/4</frac>` : ""}
 FORMATO (JSON estricto, sin markdown):
@@ -217,10 +260,8 @@ ${camposOpcionales}
       "oraciones": ["El _______ es la fuente de energía.", "La Tierra gira _______ el Sol."]
     },
     {
-      "tipo": "tabla",
-      "enunciado": "Completá la tabla:",
-      "columnas": ["Fracción", "Numerador", "Denominador"],
-      "filas": [["<frac>1/2</frac>", "", ""], ["<frac>3/4</frac>", "", ""]]
+      "tipo": "situacion_problematica",
+      "enunciado": "Enunciado del problema contextualizado."
     }
   ],
   "reflexion": "pregunta para conectar con la vida cotidiana del alumno"
