@@ -228,7 +228,6 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   const [posiciones, setPosiciones] = useState({});
   const [editDraft, setEditDraft] = useState(null);
   const [mostrarReflexion, setMostrarReflexion] = useState(true);
-  const [ejerciciosVisibles, setEjerciciosVisibles] = useState(3);
   const refFicha = useRef(null);
   const sectionRefs = useRef({});
   const textareaRef = useRef(null);
@@ -269,27 +268,6 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     window.addEventListener("resize", compute);
     return () => { cancelAnimationFrame(id); window.removeEventListener("resize", compute); };
   }, [fichaLocal, itemsLocal, editandoCampo]);
-
-  // ── Control de tamaño (solo Matemática y Ciencias Naturales) ──
-  useEffect(() => {
-    if (!["Matemática", "Ciencias Naturales"].includes(registro.area)) return;
-    const fichaEl = document.querySelector(".ficha-contenido");
-    if (!fichaEl) return;
-    const ALTO_MAX = 1050;
-
-    // Paso 1: resetear — mostrar todo
-    setMostrarReflexion(true);
-    setEjerciciosVisibles(3);
-
-    // Paso 2: si se pasa, ocultar Reflexionamos primero
-    if (fichaEl.scrollHeight > ALTO_MAX) setMostrarReflexion(false);
-
-    // Paso 3: si sigue pasándose, recortar ejercicio 3
-    if (fichaEl.scrollHeight > ALTO_MAX) setEjerciciosVisibles(2);
-
-    // Paso 4: si sigue pasándose, recortar ejercicio 2
-    if (fichaEl.scrollHeight > ALTO_MAX) setEjerciciosVisibles(1);
-  }, [ficha]);
 
   const setRef = (key) => (el) => { sectionRefs.current[key] = el; };
 
@@ -624,6 +602,17 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
         </button>
         <div style={{ display: "flex", gap: 10 }}>
           <button
+            onClick={() => setMostrarReflexion(v => !v)}
+            style={{
+              fontSize: 13, fontWeight: 600, padding: "8px 18px",
+              borderRadius: 7, cursor: "pointer",
+              border: mostrarReflexion ? `2px solid ${C.acento}` : `2px solid ${C.border}`,
+              background: "transparent",
+              color: mostrarReflexion ? C.acento : C.muted,
+            }}>
+            👁 {mostrarReflexion ? "Ocultar reflexión" : "Mostrar reflexión"}
+          </button>
+          <button
             onClick={handleImprimir}
             disabled={imprimiendo}
             style={{
@@ -690,6 +679,17 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
         {/* Botones — se ocultan mientras hay edición activa */}
         {!editandoCampo && (
           <div className="btn-imprimir" style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginBottom: 16 }}>
+            <button
+              onClick={() => setMostrarReflexion(v => !v)}
+              style={{
+                fontSize: 12, fontWeight: 600, padding: "8px 20px",
+                borderRadius: 7, cursor: "pointer",
+                border: mostrarReflexion ? `2px solid ${C.acento}` : `2px solid ${C.border}`,
+                background: "transparent",
+                color: mostrarReflexion ? C.acento : C.muted,
+              }}>
+              👁 {mostrarReflexion ? "Ocultar reflexión" : "Mostrar reflexión"}
+            </button>
             <button
               onClick={handleImprimir}
               disabled={imprimiendo}
@@ -920,8 +920,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                     <SeccionHeader numero="2" titulo="Tu turno" icono="✏️" />
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                       {Array.isArray(fichaLocal.ejercicios) && fichaLocal.ejercicios.length > 0
-                        ? fichaLocal.ejercicios.slice(0, ejerciciosVisibles).map((ejercicio, idx) => renderEjercicioItem(ejercicio, idx))
-                        : itemsLocal.slice(0, ejerciciosVisibles).map(({ num, texto }, idx) => (
+                        ? fichaLocal.ejercicios.map((ejercicio, idx) => renderEjercicioItem(ejercicio, idx))
+                        : itemsLocal.map(({ num, texto }, idx) => (
                           <div key={num}>
                             <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
                               <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{num}.</span>
