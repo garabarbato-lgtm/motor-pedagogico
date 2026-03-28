@@ -235,10 +235,13 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   if (!ficha || !registro) return null;
 
   const isPDL = registro.area === "Prácticas del Lenguaje";
-  const tituloTexto = (fichaLocal.titulo || "")
-    .replace(/\*\*(.*?)\*\*/g, "$1")
-    .replace(/\*(.*?)\*/g, "$1")
-    .trim();
+  const tituloTexto = (() => {
+    const limpio = (fichaLocal.titulo || "")
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/\*(.*?)\*/g, "$1")
+      .trim();
+    return limpio.charAt(0).toUpperCase() + limpio.slice(1);
+  })();
   const emojis = Array.isArray(ficha.emojis) && ficha.emojis.length ? ficha.emojis : ["📝"];
   const emojiLeft = emojis[0];
   const emojiRight = emojis[1] || emojis[0];
@@ -749,7 +752,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                   {editandoCampo === "titulo"
                     ? renderTextarea(1)
                     : (
-                      <h2 style={{ fontSize: 15, fontWeight: 800, margin: 0, lineHeight: 1.25, letterSpacing: "-0.01em", textAlign: "center" }}>
+                      <h2 style={{ fontSize: 26, fontWeight: 800, margin: 0, lineHeight: 1.25, letterSpacing: "-0.01em", textAlign: "center" }}>
                         {renderTitulo(tituloTexto)}
                       </h2>
                     )

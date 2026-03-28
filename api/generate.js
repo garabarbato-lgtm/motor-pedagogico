@@ -175,6 +175,10 @@ function buildGeneratorPrompt(contenido, tipoFicha, incluirExplicacion, incluirE
     incluirExplicacion ? '  "explicacion": "explicación breve en lenguaje claro para el grado",' : null,
   ].filter(Boolean).join("\n");
 
+  const cantidadEjercicios = (incluirExplicacion && incluirEjemplo) ? 3
+    : incluirExplicacion ? 4
+    : 5;
+
   return `Sos un docente experto en nivel primario de la Provincia de Buenos Aires.
 Generá un recurso educativo para:
 
@@ -187,7 +191,7 @@ ${feedbackSection}
 
 CRITERIOS:
 1. Lenguaje claro para niños de primaria — sin términos académicos
-2. IMPORTANTE: Generá EXACTAMENTE 3 ejercicios, ni más ni menos. Si generás un cuarto ejercicio el sistema lo va a ignorar y quedará incompleto. Máximo 3.
+2. IMPORTANTE: Generá EXACTAMENTE ${cantidadEjercicios} ejercicios, ni más ni menos. Si generás uno de más el sistema lo va a ignorar y quedará incompleto. Máximo ${cantidadEjercicios}.
 3. Marcá con **doble asterisco** números, datos y conceptos clave en la explicación
 4. Título: dos partes separadas por dos puntos, mayúscula solo en la primera letra
 5. Elegí 1 o 2 emojis relevantes al tema para "emojis"
