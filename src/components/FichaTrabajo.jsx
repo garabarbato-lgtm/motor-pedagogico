@@ -228,7 +228,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   const [posiciones, setPosiciones] = useState({});
   const [editDraft, setEditDraft] = useState(null);
   const [mostrarReflexion, setMostrarReflexion] = useState(true);
-  const [ejerciciosVisibles, setEjerciciosVisibles] = useState(Infinity);
+  const [ejerciciosVisibles, setEjerciciosVisibles] = useState(3);
   const refFicha = useRef(null);
   const sectionRefs = useRef({});
   const textareaRef = useRef(null);
@@ -272,14 +272,24 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
   // ── Control de tamaño (solo Matemática y Ciencias Naturales) ──
   useEffect(() => {
+    if (!["Matemática", "Ciencias Naturales"].includes(registro.area)) return;
     const fichaEl = document.querySelector(".ficha-contenido");
     if (!fichaEl) return;
-    if (!["Matemática", "Ciencias Naturales"].includes(registro.area)) return;
     const ALTO_MAX = 1050;
+
+    // Paso 1: resetear — mostrar todo
+    setMostrarReflexion(true);
+    setEjerciciosVisibles(3);
+
+    // Paso 2: si se pasa, ocultar Reflexionamos primero
     if (fichaEl.scrollHeight > ALTO_MAX) setMostrarReflexion(false);
+
+    // Paso 3: si sigue pasándose, recortar ejercicio 3
     if (fichaEl.scrollHeight > ALTO_MAX) setEjerciciosVisibles(2);
+
+    // Paso 4: si sigue pasándose, recortar ejercicio 2
     if (fichaEl.scrollHeight > ALTO_MAX) setEjerciciosVisibles(1);
-  }, [fichaLocal]);
+  }, [ficha]);
 
   const setRef = (key) => (el) => { sectionRefs.current[key] = el; };
 
