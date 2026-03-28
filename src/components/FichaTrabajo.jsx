@@ -382,7 +382,17 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
   // ── Render de ejercicio tipado ──
 
+  const ejercicioTieneContenido = (ejercicio) => {
+    if (typeof ejercicio === "string") return ejercicio.trim().length > 0;
+    if (ejercicio.tipo === "texto_libre") return !!ejercicio.enunciado;
+    if (ejercicio.tipo === "completar_oraciones") return Array.isArray(ejercicio.oraciones) && ejercicio.oraciones.length > 0;
+    if (ejercicio.tipo === "tabla") return Array.isArray(ejercicio.filas) && ejercicio.filas.length > 0;
+    if (ejercicio.tipo === "verdadero_falso") return Array.isArray(ejercicio.afirmaciones) && ejercicio.afirmaciones.length > 0;
+    return false;
+  };
+
   const renderEjercicioItem = (ejercicio, idx) => {
+    if (!ejercicioTieneContenido(ejercicio)) return null;
     const keyEjercicio = `ejercicio_${idx}`;
     const editando = editandoCampo === keyEjercicio && editDraft;
     const numLabel = (

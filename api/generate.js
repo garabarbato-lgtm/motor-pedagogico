@@ -117,7 +117,7 @@ ${feedbackSection}
 
 CRITERIOS:
 - Explicación breve y clara (máximo 2 oraciones) + ejemplo concreto
-- 2 o 3 ejercicios variados: completar, corregir, clasificar (sin ejercicios mecánicos sin sentido)
+- IMPORTANTE: Generá EXACTAMENTE 3 ejercicios, ni más ni menos. Si generás un cuarto ejercicio el sistema lo va a ignorar y quedará incompleto. Máximo 3.
 - Vocabulario conocido para el grado, en contexto de oraciones o textos breves
 - Marcá con **doble asterisco** las palabras clave en la explicación y los enunciados
 - Título: dos partes separadas por dos puntos, mayúscula solo en la primera letra
@@ -187,7 +187,7 @@ ${feedbackSection}
 
 CRITERIOS:
 1. Lenguaje claro para niños de primaria — sin términos académicos
-2. 2 o 3 ejercicios que promuevan comprensión real, no repetición mecánica
+2. IMPORTANTE: Generá EXACTAMENTE 3 ejercicios, ni más ni menos. Si generás un cuarto ejercicio el sistema lo va a ignorar y quedará incompleto. Máximo 3.
 3. Marcá con **doble asterisco** números, datos y conceptos clave en la explicación
 4. Título: dos partes separadas por dos puntos, mayúscula solo en la primera letra
 5. Elegí 1 o 2 emojis relevantes al tema para "emojis"
@@ -466,6 +466,11 @@ export default async function handler(req, res) {
 
   try {
     const resultado = await runPipeline(contenido, tipoFicha, incluirExplicacion, incluirEjemplo);
+
+    // DIAGNÓSTICO: ver estructura completa antes de enviar al frontend
+    console.log("[DIAGNÓSTICO] JSON completo que se envía al frontend:");
+    console.log(JSON.stringify(resultado, null, 2));
+
     return res.status(200).json(resultado);
   } catch (error) {
     console.error("Error en el pipeline:", error);
