@@ -128,6 +128,7 @@ TIPOS DE EJERCICIO:
 - "completar_oraciones": array "oraciones" con strings con _______ (5+ guiones) en el espacio
 - "tabla": "columnas" = encabezados. "filas" = array de arrays donde cada sub-array tiene un valor por columna (string vacío "" para celda vacía). NUNCA concatenar varias columnas en un solo string.
 - "verdadero_falso": array "afirmaciones" para evaluar con V/F
+LÍMITE DE ITEMS: Cada ejercicio puede tener como máximo 4 items (oraciones, afirmaciones o filas). Nunca más de 4.
 
 FORMATO (JSON estricto, sin markdown):
 {
@@ -201,6 +202,7 @@ TIPOS DE EJERCICIO:
 - "completar_oraciones": array "oraciones" con strings con _______ (5+ guiones) donde va la respuesta
 - "tabla": "columnas" = encabezados. "filas" = array de arrays donde cada sub-array tiene un valor por columna (string vacío "" para celda que el alumno completa). NUNCA concatenar varias columnas en un solo string.
 - "verdadero_falso": array "afirmaciones" para evaluar con V/F
+LÍMITE DE ITEMS: Cada ejercicio puede tener como máximo 4 items (oraciones, afirmaciones o filas). Nunca más de 4.
 ${contenido.area === "Matemática" ? `
 FRACCIONES: Cuando escribas fracciones en cualquier campo del JSON (enunciado, oraciones, explicacion), usá siempre el formato: <frac>numerador/denominador</frac>. Ejemplo: <frac>1/2</frac>, <frac>3/4</frac>` : ""}
 FORMATO (JSON estricto, sin markdown):

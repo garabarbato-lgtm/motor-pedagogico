@@ -908,7 +908,13 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
               ) : (
 
                 /* ── No PDL: Matemática, Ciencias, etc. ── */
+                (() => {
+                  const tieneExplicacion = !!(fichaLocal.explicacion || fichaLocal.concepto_clave || fichaLocal.ejemplo);
+                  const numTuTurno = tieneExplicacion ? 2 : 1;
+                  const numReflexion = tieneExplicacion ? 3 : 2;
+                  return (
                 <>
+                  {tieneExplicacion && (
                   <div className="seccion">
                     <SeccionHeader numero="1" titulo={pregExplicacion || "Leemos juntos"} icono="📖" />
                     {fichaLocal.concepto_clave && (
@@ -928,9 +934,10 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                       }
                     </div>
                   </div>
+                  )}
 
                   <div className="seccion">
-                    <SeccionHeader numero="2" titulo="Tu turno" icono="✏️" />
+                    <SeccionHeader numero={numTuTurno} titulo="Tu turno" icono="✏️" />
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                       {Array.isArray(fichaLocal.ejercicios) && fichaLocal.ejercicios.length > 0
                         ? fichaLocal.ejercicios.map((ejercicio, idx) => renderEjercicioItem(ejercicio, idx))
@@ -954,7 +961,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
                   {mostrarReflexion && (fichaLocal.reflexion || fichaLocal.pregunta_reflexion) && (
                     <div className="seccion">
-                      <SeccionHeader numero="3" titulo="Reflexionamos" icono="💭" />
+                      <SeccionHeader numero={numReflexion} titulo="Reflexionamos" icono="💭" />
                       <div ref={setRef("reflexion")}>
                         {editandoCampo === "reflexion"
                           ? renderTextarea(2)
@@ -965,6 +972,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                     </div>
                   )}
                 </>
+                  );
+                })()
               )}
 
             </div>
