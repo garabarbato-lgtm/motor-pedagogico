@@ -572,7 +572,29 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
       );
     }
 
-    // Default: enunciado + recuadro (situacion_problematica, resolver_operaciones, etc.)
+    // Sin recuadro: el espacio de respuesta está integrado en los guiones del enunciado
+    if (ejercicio.tipo === "resolver_operaciones" || ejercicio.tipo === "completar_la_cuenta") {
+      const lineas = (ejercicio.enunciado || "").split(/\n|\\n/).map(l => l.trim()).filter(Boolean);
+      return (
+        <div key={idx} ref={setRef(keyEjercicio)}>
+          <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: lineas.length > 1 ? 4 : 0 }}>
+            {numLabel}
+            <div style={{ flex: 1 }}>
+              {lineas.length > 1
+                ? lineas.map((linea, j) => (
+                    <div key={j} style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, marginBottom: 12 }}
+                      dangerouslySetInnerHTML={renderHTMLConNegrita(linea)} />
+                  ))
+                : <div style={{ fontSize: 12, color: C.texto, lineHeight: 1.6 }}
+                    dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio.enunciado)} />
+              }
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Default: enunciado + recuadro (situacion_problematica, dibujar_y_explicar, texto_libre, etc.)
     return (
       <div key={idx} ref={setRef(keyEjercicio)}>
         <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>

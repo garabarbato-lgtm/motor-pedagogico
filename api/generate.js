@@ -176,9 +176,8 @@ function buildGeneratorPrompt(contenido, tipoFicha, incluirExplicacion, incluirE
     incluirExplicacion ? '  "explicacion": "explicación breve en lenguaje claro para el grado",' : null,
   ].filter(Boolean).join("\n");
 
-  const cantidadEjercicios = (incluirExplicacion && incluirEjemplo) ? 3
-    : incluirExplicacion ? 4
-    : 5;
+  console.log(`[generate] incluirExplicacion=${incluirExplicacion} incluirEjemplo=${incluirEjemplo}`);
+  const cantidadEjercicios = (!incluirExplicacion && !incluirEjemplo) ? 4 : 3;
 
   const bloqueLC = (contenido.bloque || "").toLowerCase();
   const itemLC = (contenido.item || "").toLowerCase();
@@ -238,7 +237,7 @@ CRITERIOS:
 2. IMPORTANTE: Generá EXACTAMENTE ${cantidadEjercicios} ejercicios, ni más ni menos. Si generás uno de más el sistema lo va a ignorar y quedará incompleto. Máximo ${cantidadEjercicios}.
 3. Marcá con **doble asterisco** números, datos y conceptos clave en la explicación
 4. Título: dos partes separadas por dos puntos, mayúscula solo en la primera letra
-5. Elegí 1 o 2 emojis relevantes al tema para "emojis"
+5. Elegí 1 o 2 emojis para "emojis": SOLO objetos cotidianos concretos relacionados al contexto (comida, animales, objetos escolares, deportes, naturaleza). NUNCA usar símbolos matemáticos o abstractos como ❌ ✖️ ➗ ➕ ➖ 🔢 📐 📏 o similares.
 
 ${tiposPool}
 
