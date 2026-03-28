@@ -246,6 +246,11 @@ REGLAS DE SELECCIÓN:
 - Elegí los tipos con variedad. No uses tabla y verdadero_falso en la misma ficha si hay otras opciones disponibles.
 - Máximo 1 tabla y máximo 1 verdadero_falso por ficha. Estos tipos no son obligatorios — podés no usarlos.
 - LÍMITE DE ITEMS: cada ejercicio puede tener como máximo 4 items (oraciones, afirmaciones o filas). Nunca más de 4.
+${contenido.area === "Matemática"
+  ? "- OBLIGATORIO: incluí al menos 1 ejercicio de tipo situacion_problematica. Este ejercicio obligatorio cuenta dentro del total indicado arriba."
+  : (contenido.area === "Ciencias Naturales" || contenido.area === "Ciencias Sociales")
+  ? "- OBLIGATORIO: incluí al menos 1 ejercicio de tipo preguntas_comprension. Este ejercicio obligatorio cuenta dentro del total indicado arriba."
+  : ""}
 ${contenido.area === "Matemática" ? `
 FRACCIONES: Cuando escribas fracciones en cualquier campo del JSON (enunciado, oraciones, explicacion), usá siempre el formato: <frac>numerador/denominador</frac>. Ejemplo: <frac>1/2</frac>, <frac>3/4</frac>` : ""}
 FORMATO (JSON estricto, sin markdown):

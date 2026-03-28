@@ -715,41 +715,6 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
           </div>
         )}
 
-        {/* Botones — se ocultan mientras hay edición activa */}
-        {!editandoCampo && (
-          <div className="btn-imprimir" style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginBottom: 16 }}>
-            <button
-              onClick={() => setMostrarReflexion(v => !v)}
-              style={{
-                fontSize: 12, fontWeight: 600, padding: "8px 20px",
-                borderRadius: 7, cursor: "pointer",
-                border: mostrarReflexion ? `2px solid ${C.acento}` : `2px solid ${C.border}`,
-                background: "transparent",
-                color: mostrarReflexion ? C.acento : C.muted,
-              }}>
-              👁 {mostrarReflexion ? "Ocultar reflexión" : "Mostrar reflexión"}
-            </button>
-            <button
-              onClick={handleImprimir}
-              disabled={imprimiendo}
-              style={{
-                fontSize: 12, fontWeight: 600, padding: "8px 20px",
-                borderRadius: 7, border: `2px solid ${C.borderFuerte}`,
-                background: C.borderFuerte, color: C.acento, cursor: "pointer"
-              }}>
-              🖨 Imprimir ficha
-            </button>
-            <button
-              onClick={handleDescargarPDF}
-              style={{
-                fontSize: 12, fontWeight: 600, padding: "8px 20px",
-                borderRadius: 7, border: `2px solid ${C.acento}`,
-                background: C.acento, color: "#ffffff", cursor: "pointer"
-              }}>
-              ⬇ Descargar PDF
-            </button>
-          </div>
-        )}
 
         {/* ── FICHA + BARRA LATERAL ── */}
         <div style={{ display: "flex", alignItems: "flex-start", gap: 0 }}>

@@ -459,6 +459,26 @@
     "id": "pba_0051"
   },
   {
+    "id": "pba_0127",
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Situaciones problemáticas de suma y resta",
+    "objetivo": "Resolver situaciones problemáticas de suma y resta con números hasta el orden de los 100.000 seleccionando estrategias de cálculo apropiadas",
+    "tipo": "contenido",
+    "contexto_pedagogico": "hasta el orden de los 100.000"
+  },
+  {
+    "id": "pba_0128",
+    "area": "Matemática",
+    "grado": "4",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Situaciones problemáticas de multiplicación y división",
+    "objetivo": "Resolver situaciones problemáticas de multiplicación y división por 1 cifra con números hasta 100.000 interpretando el sentido de cada operación",
+    "tipo": "contenido",
+    "contexto_pedagogico": "por 1 cifra, hasta 100.000"
+  },
+  {
     "area": "Matemática",
     "grado": "4",
     "bloque": "Números Racionales",
@@ -646,6 +666,26 @@
     "objetivo": "Identificar múltiplos y divisores comunes de dos o más números para resolver problemas de divisibilidad",
     "tipo": "contenido",
     "id": "pba_0073"
+  },
+  {
+    "id": "pba_0125",
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Situaciones problemáticas de suma y resta",
+    "objetivo": "Resolver situaciones problemáticas de suma y resta con números naturales eligiendo estrategias de cálculo mental, escrito o con calculadora según la complejidad",
+    "tipo": "contenido",
+    "contexto_pedagogico": "números naturales"
+  },
+  {
+    "id": "pba_0126",
+    "area": "Matemática",
+    "grado": "5",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Situaciones problemáticas de multiplicación y división",
+    "objetivo": "Resolver situaciones problemáticas de multiplicación y división con números naturales usando algoritmos de 1 y 2 cifras y analizando la razonabilidad del resultado",
+    "tipo": "contenido",
+    "contexto_pedagogico": "multiplicación y división por 1 y 2 cifras, solo números naturales"
   },
   {
     "area": "Matemática",
@@ -1051,6 +1091,26 @@
     "item_original": "Múltiplos, divisores y divisibilidad",
     "objetivo": "Resolver problemas usando múltiplos y divisores comunes, y aplicar criterios de divisibilidad del 2, del 5 y del 10 para validar afirmaciones y anticipar resultados",
     "tipo": "contenido"
+  },
+  {
+    "id": "pba_0123",
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Situaciones problemáticas de suma y resta",
+    "objetivo": "Resolver situaciones problemáticas de suma y resta con números naturales seleccionando y justificando las operaciones utilizadas",
+    "tipo": "contenido",
+    "contexto_pedagogico": "números naturales"
+  },
+  {
+    "id": "pba_0124",
+    "area": "Matemática",
+    "grado": "6",
+    "bloque": "Operaciones con Números Naturales",
+    "item_original": "Situaciones problemáticas de multiplicación y división",
+    "objetivo": "Resolver situaciones problemáticas de multiplicación y división con números naturales analizando el sentido de cada operación y controlando la razonabilidad de los resultados",
+    "tipo": "contenido",
+    "contexto_pedagogico": "números naturales"
   },
   {
     "id": "pba_0119",
