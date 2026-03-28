@@ -390,7 +390,14 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     if (ejercicio.tipo === "completar_oraciones") return Array.isArray(ejercicio.oraciones) && ejercicio.oraciones.length > 0;
     if (ejercicio.tipo === "tabla") return Array.isArray(ejercicio.filas) && ejercicio.filas.length > 0;
     if (ejercicio.tipo === "verdadero_falso") return Array.isArray(ejercicio.afirmaciones) && ejercicio.afirmaciones.length > 0;
-    // Todos los demás tipos (texto_libre, situacion_problematica, resolver_operaciones, etc.) solo necesitan enunciado
+    if (ejercicio.tipo === "preguntas_comprension") {
+      if (!Array.isArray(ejercicio.preguntas) || ejercicio.preguntas.length === 0) {
+        console.log("[preguntas_comprension] Sin array preguntas — JSON completo:", JSON.stringify(ejercicio, null, 2));
+        return false;
+      }
+      return true;
+    }
+    // Todos los demás tipos (situacion_problematica, resolver_operaciones, etc.) solo necesitan enunciado
     return !!ejercicio.enunciado;
   };
 
@@ -546,7 +553,26 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
       );
     }
 
-    // Default: texto_libre
+    if (ejercicio.tipo === "preguntas_comprension") {
+      return (
+        <div key={idx} ref={setRef(keyEjercicio)}>
+          <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 8 }}>
+            {numLabel}{enunciadoEl}
+          </div>
+          <div style={{ marginLeft: 24, display: "flex", flexDirection: "column", gap: 10 }}>
+            {(ejercicio.preguntas || []).map((pregunta, j) => (
+              <div key={j}>
+                <div style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, marginBottom: 4 }}
+                  dangerouslySetInnerHTML={renderHTMLConNegrita(`${j + 1}. ${pregunta}`)} />
+                <LineasRespuesta n={3} />
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Default: enunciado + recuadro (situacion_problematica, resolver_operaciones, etc.)
     return (
       <div key={idx} ref={setRef(keyEjercicio)}>
         <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>

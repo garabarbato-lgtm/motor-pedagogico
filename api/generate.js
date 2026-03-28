@@ -202,7 +202,7 @@ function buildGeneratorPrompt(contenido, tipoFicha, incluirExplicacion, incluirE
 - "completar_oraciones": completar espacios con términos o conceptos. Array "oraciones" con _______ (5+ guiones).
 - "tabla": tabla para completar o clasificar. "columnas" + "filas" (string vacío "" = celda vacía). NUNCA concatenar columnas.
 - "verdadero_falso": afirmaciones para evaluar con V/F. Array "afirmaciones".
-- "preguntas_comprension": preguntas abiertas de comprensión. Solo "enunciado".
+- "preguntas_comprension": preguntas abiertas de comprensión. Campo "enunciado" (intro opcional) + array "preguntas" con cada pregunta como string. NUNCA pongas las preguntas dentro del enunciado — deben ir en el array "preguntas".
 - "ordenar_secuencia": consigna para ordenar pasos o etapas de un proceso. Solo "enunciado".
 - "describir_con_palabras": consigna de descripción libre. Solo "enunciado".`
 
@@ -211,7 +211,7 @@ function buildGeneratorPrompt(contenido, tipoFicha, incluirExplicacion, incluirE
 - "completar_oraciones": completar espacios con términos o datos. Array "oraciones" con _______ (5+ guiones).
 - "tabla": tabla para completar o comparar. "columnas" + "filas" (string vacío "" = celda vacía). NUNCA concatenar columnas.
 - "verdadero_falso": afirmaciones para evaluar con V/F. Array "afirmaciones".
-- "preguntas_comprension": preguntas abiertas de comprensión. Solo "enunciado".
+- "preguntas_comprension": preguntas abiertas de comprensión. Campo "enunciado" (intro opcional) + array "preguntas" con cada pregunta como string. NUNCA pongas las preguntas dentro del enunciado — deben ir en el array "preguntas".
 - "ordenar_secuencia": consigna para ordenar hechos o etapas. Solo "enunciado".${esHistoria ? `
 - "linea_de_tiempo": consigna para ubicar hechos en una línea de tiempo. Solo si el contenido es de Historia. Solo "enunciado".` : ""}${esGeografia ? `
 - "ubicar_en_mapa": consigna para ubicar elementos usando un mapa. La consigna debe aclarar "usando un mapa". Solo si el contenido es de Geografía. Solo "enunciado".` : ""}`
@@ -221,7 +221,7 @@ function buildGeneratorPrompt(contenido, tipoFicha, incluirExplicacion, incluirE
 - "completar_oraciones": array "oraciones" con _______ (5+ guiones).
 - "tabla": "columnas" + "filas" con "" para celdas vacías. NUNCA concatenar columnas.
 - "verdadero_falso": array "afirmaciones" para V/F.
-- "preguntas_comprension": preguntas abiertas. Solo "enunciado".`;
+- "preguntas_comprension": array "preguntas" con cada pregunta como string. NUNCA pongas las preguntas dentro del enunciado.`;
 
   return `Sos un docente experto en nivel primario de la Provincia de Buenos Aires.
 Generá un recurso educativo para:
@@ -262,6 +262,11 @@ ${camposOpcionales}
     {
       "tipo": "situacion_problematica",
       "enunciado": "Enunciado del problema contextualizado."
+    },
+    {
+      "tipo": "preguntas_comprension",
+      "enunciado": "Respondé las siguientes preguntas:",
+      "preguntas": ["¿Por qué ocurre esto?", "¿Qué pasaría si...?"]
     }
   ],
   "reflexion": "pregunta para conectar con la vida cotidiana del alumno"
