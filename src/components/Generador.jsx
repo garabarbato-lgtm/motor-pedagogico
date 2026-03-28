@@ -4,8 +4,8 @@ import Logo from "./Logo.jsx";
 
 const C = {
   fondo: "#F5F5F5",
-  acento: "#22C55E",
-  acentoOscuro: "#16a34a",
+  acento: "#00c48c",
+  acentoOscuro: "#009970",
   acentoCaldo: "#F5A623",
   texto: "#2B2B2B",
   suave: "#e0faf2",
@@ -30,10 +30,10 @@ const GRADOS = [
 ];
 
 const AREAS_CONFIG = {
-  "Matemática":              { emoji: "🔢", color: "#E8F5EE", colorHover: "#c5dfd0", border: "#b8d4c0", borderHover: "#004733", iconColor: "#004733", desc: "Números, geometría, medidas" },
-  "Prácticas del Lenguaje":  { emoji: "📖", color: "#F0F0F0", colorHover: "#ddddd8", border: "#cccccc", borderHover: "#2B2B2B", iconColor: "#2B2B2B", desc: "Lectura, escritura, oralidad" },
-  "Ciencias Naturales":      { emoji: "🔬", color: "#E8F5EE", colorHover: "#b8ffdc", border: "#b8ffdc", borderHover: "#22C55E", iconColor: "#22C55E", desc: "Seres vivos, cuerpo, materiales" },
-  "Ciencias Sociales":       { emoji: "🌍", color: "#FFF8E8", colorHover: "#fde98a", border: "#fde98a", borderHover: "#F5A623", iconColor: "#F5A623", desc: "Historia, geografía, sociedad" },
+  "Matemática":              { emoji: "🔢", color: "#e8f0ff", colorHover: "#c5d5ff", border: "#c5d5ff", borderHover: "#7a9ef5", iconColor: "#7a9ef5", desc: "Números, geometría, medidas" },
+  "Prácticas del Lenguaje":  { emoji: "📖", color: "#fff0e8", colorHover: "#ffd5b8", border: "#ffd5b8", borderHover: "#f5a06a", iconColor: "#f5a06a", desc: "Lectura, escritura, oralidad" },
+  "Ciencias Naturales":      { emoji: "🔬", color: "#e8fff4", colorHover: "#b8ffdc", border: "#b8ffdc", borderHover: "#00c48c", iconColor: "#00c48c", desc: "Seres vivos, cuerpo, materiales" },
+  "Ciencias Sociales":       { emoji: "🌍", color: "#fef9e0", colorHover: "#fde98a", border: "#fde98a", borderHover: "#e6c800", iconColor: "#e6c800", desc: "Historia, geografía, sociedad" },
 };
 
 // ── PDL — Datos para el flujo en cascada ──
@@ -199,7 +199,7 @@ function PasoActivo({ pregunta, sub, children }) {
   return (
     <div style={{ animation: "fadeUp 0.35s cubic-bezier(.22,1,.36,1) both" }}>
       <h2 style={{
-        fontFamily: "Georgia, serif",
+        fontFamily: "'Lexend', sans-serif",
         fontSize: "clamp(20px, 3.5vw, 28px)", fontWeight: 700,
         color: "#004733", lineHeight: 1.25, textAlign: "center",
         letterSpacing: "-0.02em", marginBottom: sub ? 8 : 20
@@ -230,7 +230,7 @@ function GradoBtn({ g, i, onClick }) {
         animation: `fadeUp 0.3s ${i * 0.05}s both`
       }}
     >
-      <span style={{ fontSize: 32, fontWeight: 800, fontFamily: "Georgia, serif", transition: "color 0.18s", color: hov ? C.acento : "#004733" }}>{g.num}</span>
+      <span style={{ fontSize: 32, fontWeight: 800, fontFamily: "'Lexend', sans-serif", transition: "color 0.18s", color: hov ? C.acento : "#004733" }}>{g.num}</span>
       <span style={{ fontSize: 9, textTransform: "uppercase", letterSpacing: "0.06em", textAlign: "center", lineHeight: 1.4, transition: "color 0.18s", color: C.muted }}>{g.ciclo}</span>
     </button>
   );
@@ -500,6 +500,16 @@ export default function Generador({ onFichaGenerada, onVolver }) {
 
   const elegir = (setter, val, sig) => { setter(val); setTimeout(() => setPaso(sig), 160); };
 
+  const handleVolver = () => {
+    if (paso === 1) {
+      onVolver();
+    } else if (paso === 4 && isPDL && bloque === "Lectura de textos" && pdlTipoTexto && !pdlPractica) {
+      setPdlTipoTexto(null);
+    } else {
+      cambiarDesde(paso - 1);
+    }
+  };
+
   // Cambiar desde un paso específico: limpia solo los estados desde ese paso en adelante
   const cambiarDesde = (p) => {
     setPaso(p);
@@ -618,13 +628,13 @@ export default function Generador({ onFichaGenerada, onVolver }) {
 
 
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", background: C.fondo, minHeight: "100vh" }}>
+    <div style={{ fontFamily: "'Lexend', sans-serif", background: C.fondo, minHeight: "100vh" }}>
       <style>{`
         @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
         @keyframes spin { to { transform:rotate(360deg); } }
         @keyframes pulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
-          50% { box-shadow: 0 0 0 7px rgba(34,197,94,0); }
+          0%, 100% { box-shadow: 0 0 0 0 rgba(0,196,140,0.5); }
+          50% { box-shadow: 0 0 0 7px rgba(0,196,140,0); }
         }
       `}</style>
 
@@ -762,7 +772,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
         )}
 
         {/* Paso 4: Contenido (no PDL) — con buscador y acordeón */}
-        {paso === 4 && !isPDL && (
+        {paso === 4 && !isPDL && area && (
           <PasoActivo pregunta="¿Cuál es el contenido?" sub={`Del Diseño Curricular oficial · ${gradoData?.num} · ${area}`}>
             {/* Buscador */}
             <div style={{ marginBottom: 16 }}>
@@ -972,6 +982,24 @@ export default function Generador({ onFichaGenerada, onVolver }) {
           </PasoActivo>
         )}
 
+        {/* Botón Volver */}
+        {!generando && (
+          <div style={{ marginTop: 24, textAlign: "center" }}>
+            <button
+              onClick={handleVolver}
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                fontSize: 13, color: C.muted, padding: "6px 12px",
+                borderRadius: 6, transition: "color 0.15s",
+              }}
+              onMouseEnter={e => { e.currentTarget.style.color = C.texto; }}
+              onMouseLeave={e => { e.currentTarget.style.color = C.muted; }}
+            >
+              ← Volver
+            </button>
+          </div>
+        )}
+
         {/* Loading */}
         {generando && (
           <div style={{ padding: "48px 0", animation: "fadeUp 0.4s both" }}>
@@ -988,7 +1016,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
               <div style={{ position: "relative", width: 64, height: 64, margin: "0 auto 28px" }}>
                 <div style={{
                   position: "absolute", inset: 0,
-                  border: "4px solid rgba(34,197,94,0.2)",
+                  border: "4px solid rgba(0,196,140,0.2)",
                   borderTopColor: C.acento,
                   borderRadius: "50%",
                   animation: "spin 1.8s linear infinite",
@@ -1013,7 +1041,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
 
               {/* Barra de progreso */}
               <div style={{
-                height: 4, background: "rgba(34,197,94,0.2)",
+                height: 4, background: "rgba(0,196,140,0.2)",
                 borderRadius: 999, overflow: "hidden", marginBottom: 28,
               }}>
                 <div style={{
@@ -1033,7 +1061,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                       <div style={{
                         width: 28, height: 28, borderRadius: "50%",
                         background: completado ? C.acento : "white",
-                        border: `2px solid ${completado || activo ? C.acento : "rgba(34,197,94,0.3)"}`,
+                        border: `2px solid ${completado || activo ? C.acento : "rgba(0,196,140,0.3)"}`,
                         display: "flex", alignItems: "center", justifyContent: "center",
                         animation: activo ? "pulse 1.5s ease-in-out infinite" : "none",
                         transition: "all 0.4s",

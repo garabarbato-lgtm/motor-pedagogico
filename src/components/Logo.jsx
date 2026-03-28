@@ -1,6 +1,6 @@
 export default function Logo({ size = 22, color = null }) {
   const D = color || "#0d1f1a";
-  const G = color ? color : "#00c48c";
+  const G = "#00c48c";
   const style = {
     fontFamily: "'Nunito', sans-serif",
     fontWeight: 900,

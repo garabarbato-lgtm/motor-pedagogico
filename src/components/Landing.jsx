@@ -5,7 +5,7 @@ const DC_URL = "http://servicios.abc.gov.ar/lainstitucion/organismos/consejogene
 
 const C = {
   fondo: "#F5F5F5",
-  acento: "#22C55E",
+  acento: "#00c48c",
   acentoCaldo: "#F5A623",
   texto: "#2B2B2B",
   suave: "#e0faf2",
@@ -117,7 +117,7 @@ function FichaHero() {
           {/* Concepto clave con borde verde */}
           <div style={{
             background: "#eafaf4",
-            borderLeft: "3px solid #22C55E",
+            borderLeft: "3px solid #00c48c",
             borderRadius: "0 6px 6px 0",
             padding: "8px 12px",
             marginBottom: 8,
@@ -180,7 +180,7 @@ export default function Landing({ onEmpezar }) {
   const [btnHover, setBtnHover] = useState(false);
 
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", width: "100%", background: C.fondo, minHeight: "100vh" }}>
+    <div style={{ fontFamily: "'Lexend', sans-serif", width: "100%", background: C.fondo, minHeight: "100vh" }}>
 
       {/* ── NAV ── */}
       <nav style={{
@@ -210,7 +210,7 @@ export default function Landing({ onEmpezar }) {
 
       {/* ── HERO ── */}
       <section style={{
-        background: C.btn,
+        background: "#ffffff",
         padding: "80px 40px 88px",
       }}>
         <div style={{
@@ -219,43 +219,29 @@ export default function Landing({ onEmpezar }) {
           maxWidth: 1100, margin: "0 auto",
         }}>
           <div>
-            {/* Badge clickeable */}
-            <a
-              href={DC_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "inline-block", background: "rgba(255,255,255,0.15)", color: "#ffffff",
-                fontSize: 11, fontWeight: 500, letterSpacing: "0.08em",
-                textTransform: "uppercase", padding: "5px 16px",
-                borderRadius: 20, marginBottom: 32, textDecoration: "none",
-                border: "1px solid rgba(255,255,255,0.3)",
-              }}
-            >
+            {/* Badge */}
+            <div style={{
+              display: "inline-block", background: "#e0faf2", color: "#004733",
+              fontSize: 11, fontWeight: 500, letterSpacing: "0.08em",
+              textTransform: "uppercase", padding: "5px 16px",
+              borderRadius: 20, marginBottom: 32,
+              border: "1px solid #b0e8d4",
+            }}>
               Basado en el Diseño Curricular · PBA
-            </a>
+            </div>
 
             <h1 style={{
-              fontFamily: "Georgia, serif",
+              fontFamily: "'Lexend', sans-serif",
               fontSize: "clamp(28px, 3.2vw, 42px)", fontWeight: 400,
-              color: "#ffffff", lineHeight: 1.2, marginBottom: 20,
+              color: C.texto, lineHeight: 1.2, marginBottom: 20,
               letterSpacing: "-0.025em"
             }}>
               Lo que tardabas una tarde, ahora son{" "}
               <span style={{ color: C.acento, fontStyle: "italic" }}>diez minutos.</span>
             </h1>
 
-            <p style={{ fontSize: 17, color: "rgba(255,255,255,0.75)", lineHeight: 1.65, marginBottom: 40, maxWidth: 400 }}>
-              El{" "}
-              <a
-                href={DC_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: C.acento, textDecoration: "underline" }}
-              >
-                Diseño Curricular
-              </a>
-              , convertido en recursos listos para el aula.
+            <p style={{ fontSize: 17, color: C.muted, lineHeight: 1.65, marginBottom: 40, maxWidth: 400 }}>
+              El Diseño Curricular, convertido en recursos listos para el aula.
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 12 }}>
@@ -266,12 +252,12 @@ export default function Landing({ onEmpezar }) {
                 style={{
                   fontSize: 15, fontWeight: 600, padding: "14px 32px",
                   borderRadius: 8, border: "none",
-                  background: btnHover ? C.acento : "#22C55E",
-                  color: "#004733", cursor: "pointer", transition: "background 0.15s"
+                  background: btnHover ? C.acento : C.btn,
+                  color: "#ffffff", cursor: "pointer", transition: "background 0.15s"
                 }}>
                 Generar mi primer recurso
               </button>
-              <span style={{ fontSize: 12, color: "rgba(255,255,255,0.65)" }}>Contenido verificado · Alineado al DC · Listo para el aula</span>
+              <span style={{ fontSize: 12, color: C.muted }}>Contenido verificado · Alineado al DC · Listo para el aula</span>
             </div>
           </div>
 
@@ -286,27 +272,21 @@ export default function Landing({ onEmpezar }) {
       <section id="como-funciona" style={{ background: "#f5f5f0", padding: "80px 40px" }}>
         <div style={{ maxWidth: 860, margin: "0 auto" }}>
 
-          {/* Badge clickeable */}
+          {/* Badge */}
           <div style={{ textAlign: "center", marginBottom: 20 }}>
-            <a
-              href={DC_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "inline-block",
-                background: "#d4f0e8", color: "#0d5c4a",
-                fontSize: 11, fontWeight: 600, letterSpacing: "0.08em",
-                textTransform: "uppercase", padding: "5px 16px", borderRadius: 20,
-                textDecoration: "none",
-              }}
-            >
+            <div style={{
+              display: "inline-block",
+              background: "#d4f0e8", color: "#0d5c4a",
+              fontSize: 11, fontWeight: 600, letterSpacing: "0.08em",
+              textTransform: "uppercase", padding: "5px 16px", borderRadius: 20,
+            }}>
               Basado en el Diseño Curricular · PBA
-            </a>
+            </div>
           </div>
 
           {/* Título */}
           <h2 style={{
-            fontFamily: "Georgia, serif", textAlign: "center",
+            fontFamily: "'Lexend', sans-serif", textAlign: "center",
             fontSize: "clamp(24px, 3vw, 34px)", fontWeight: 400,
             color: "#0d1f1a", marginBottom: 12, letterSpacing: "-0.02em",
           }}>
@@ -327,7 +307,7 @@ export default function Landing({ onEmpezar }) {
             <div style={{
               position: "absolute", top: 20, zIndex: 0,
               left: "calc(16.67% + 20px)", right: "calc(16.67% + 20px)",
-              borderTop: "2px dashed #22C55E",
+              borderTop: "2px dashed #00c48c",
             }} />
 
             {/* Círculos numerados */}
@@ -373,14 +353,7 @@ export default function Landing({ onEmpezar }) {
                   Seleccionás el{" "}
                   <strong style={{ color: "#004733", fontWeight: 700 }}>grado, el área</strong>
                   {" "}y el contenido del{" "}
-                  <a
-                    href={DC_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: "#004733", fontWeight: 700 }}
-                  >
-                    Diseño Curricular
-                  </a>
+                  <strong style={{ color: "#004733", fontWeight: 700 }}>Diseño Curricular</strong>
                   {" "}que querés trabajar.
                 </p>
               </div>
@@ -400,14 +373,7 @@ export default function Landing({ onEmpezar }) {
                   En{" "}
                   <strong style={{ color: "#004733", fontWeight: 700 }}>segundos</strong>
                   {" "}tenés una ficha lista, basada en el{" "}
-                  <a
-                    href={DC_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: "#004733", fontWeight: 700 }}
-                  >
-                    Diseño Curricular de la Provincia de Buenos Aires
-                  </a>
+                  <strong style={{ color: "#004733", fontWeight: 700 }}>Diseño Curricular de la Provincia de Buenos Aires</strong>
                   .
                 </p>
               </div>
@@ -440,9 +406,9 @@ export default function Landing({ onEmpezar }) {
           {/* Tagline */}
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, marginTop: 48 }}>
             <span style={{ fontSize: 13, color: "#4a5550", fontWeight: 500 }}>Contenido verificado</span>
-            <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#22C55E" }} />
+            <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#00c48c" }} />
             <span style={{ fontSize: 13, color: "#4a5550", fontWeight: 500 }}>Alineado al DC</span>
-            <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#22C55E" }} />
+            <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#00c48c" }} />
             <span style={{ fontSize: 13, color: "#4a5550", fontWeight: 500 }}>Listo para el aula</span>
           </div>
 
@@ -457,7 +423,7 @@ export default function Landing({ onEmpezar }) {
         textAlign: "center"
       }}>
         <h2 style={{
-          fontFamily: "Georgia, serif",
+          fontFamily: "'Lexend', sans-serif",
           fontSize: 28, fontWeight: 400,
           color: "#ffffff", marginBottom: 32,
           letterSpacing: "-0.015em"
@@ -467,7 +433,7 @@ export default function Landing({ onEmpezar }) {
         <button
           onClick={onEmpezar}
           style={{
-            background: "#22C55E", color: "#004733",
+            background: "#004733", color: "#ffffff",
             border: "none", borderRadius: 8,
             fontSize: 15, fontWeight: 600,
             padding: "14px 32px", cursor: "pointer",
