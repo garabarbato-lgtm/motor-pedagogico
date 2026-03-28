@@ -227,6 +227,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   const [tablasLocal] = useState(() => initFieldData(ficha).tablas);
   const [posiciones, setPosiciones] = useState({});
   const [editDraft, setEditDraft] = useState(null);
+  const [mostrarReflexion, setMostrarReflexion] = useState(true);
+  const [ejerciciosVisibles, setEjerciciosVisibles] = useState(Infinity);
   const refFicha = useRef(null);
   const sectionRefs = useRef({});
   const textareaRef = useRef(null);
@@ -234,7 +236,10 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   if (!ficha || !registro) return null;
 
   const isPDL = registro.area === "Prácticas del Lenguaje";
-  const tituloTexto = fichaLocal.titulo || "";
+  const tituloTexto = (fichaLocal.titulo || "")
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
+    .trim();
   const emojis = Array.isArray(ficha.emojis) && ficha.emojis.length ? ficha.emojis : ["📝"];
   const emojiLeft = emojis[0];
   const emojiRight = emojis[1] || emojis[0];
@@ -264,6 +269,17 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     window.addEventListener("resize", compute);
     return () => { cancelAnimationFrame(id); window.removeEventListener("resize", compute); };
   }, [fichaLocal, itemsLocal, editandoCampo]);
+
+  // ── Control de tamaño (solo Matemática y Ciencias Naturales) ──
+  useEffect(() => {
+    const fichaEl = document.querySelector(".ficha-contenido");
+    if (!fichaEl) return;
+    if (!["Matemática", "Ciencias Naturales"].includes(registro.area)) return;
+    const ALTO_MAX = 1050;
+    if (fichaEl.scrollHeight > ALTO_MAX) setMostrarReflexion(false);
+    if (fichaEl.scrollHeight > ALTO_MAX) setEjerciciosVisibles(2);
+    if (fichaEl.scrollHeight > ALTO_MAX) setEjerciciosVisibles(1);
+  }, [fichaLocal]);
 
   const setRef = (key) => (el) => { sectionRefs.current[key] = el; };
 
@@ -739,7 +755,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
             </div>
 
             {/* Cuerpo */}
-            <div className="cuerpo-ficha" style={{ padding: "10px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
+            <div className="cuerpo-ficha ficha-contenido" style={{ padding: "10px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
 
               {isPDL ? (
 
@@ -769,7 +785,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                                 }
                               </div>
                             </div>
-                            <LineasRespuesta n={4} />
+                            <LineasRespuesta n={3} />
                           </div>
                         ))}
                       </div>
@@ -894,8 +910,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                     <SeccionHeader numero="2" titulo="Tu turno" icono="✏️" />
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                       {Array.isArray(fichaLocal.ejercicios) && fichaLocal.ejercicios.length > 0
-                        ? fichaLocal.ejercicios.map((ejercicio, idx) => renderEjercicioItem(ejercicio, idx))
-                        : itemsLocal.map(({ num, texto }, idx) => (
+                        ? fichaLocal.ejercicios.slice(0, ejerciciosVisibles).map((ejercicio, idx) => renderEjercicioItem(ejercicio, idx))
+                        : itemsLocal.slice(0, ejerciciosVisibles).map(({ num, texto }, idx) => (
                           <div key={num}>
                             <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
                               <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{num}.</span>
@@ -913,7 +929,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                     </div>
                   </div>
 
-                  {(fichaLocal.reflexion || fichaLocal.pregunta_reflexion) && (
+                  {mostrarReflexion && (fichaLocal.reflexion || fichaLocal.pregunta_reflexion) && (
                     <div className="seccion">
                       <SeccionHeader numero="3" titulo="Reflexionamos" icono="💭" />
                       <div ref={setRef("reflexion")}>
