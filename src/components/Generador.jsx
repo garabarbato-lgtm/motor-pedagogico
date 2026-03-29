@@ -1,158 +1,45 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import curricularData from "../../dc_pba_base_curricular_corregida.json";
 import Logo from "./Logo.jsx";
 
+// ── Paleta de colores ──────────────────────────────────────────────────────
 const C = {
-  fondo: "#F5F5F5",
-  acento: "#00c48c",
-  acentoOscuro: "#009970",
-  acentoCaldo: "#F5A623",
-  texto: "#2B2B2B",
-  suave: "#e0faf2",
-  muted: "#4a6b60",
-  btn: "#004733",
-  btnText: "#ffffff",
-  white: "#ffffff",
-  border: "#D9D9D9",
-  gris: "#f0f0ec",
-  error: "#fee2e2",
-  errorTexto: "#991b1b",
+  verdeOscuro:    "#004733",
+  verdeAcento:    "#00c48c",
+  verdeClaroBg:   "#E6FAF3",
+  verdeClaroBorder:"#5DCAA5",
+  verdeTexto:     "#085041",
+  verdeHoverBtn:  "#00603d",
+  fondoApp:       "#F0F4F2",
+  fondoCard:      "#ffffff",
+  bordeSuave:     "#D4E6DE",
+  bordeHover:     "#EBF2EE",
+  textoPrincipal: "#004733",
+  textoSec:       "#4a6b60",
+  textoMuted:     "#6B8C7D",
+  textoDisabled:  "#A0BDB5",
 };
 
-// Mapeo grado display → valores reales en el JSON
+// ── Datos estáticos ────────────────────────────────────────────────────────
 const GRADOS = [
   { num: "1°", ciclo: "Unidad Pedagógica", valores: ["1"] },
   { num: "2°", ciclo: "Unidad Pedagógica", valores: ["2"] },
-  { num: "3°", ciclo: "Primer ciclo", valores: ["3"] },
-  { num: "4°", ciclo: "Segundo ciclo", valores: ["4"] },
-  { num: "5°", ciclo: "Segundo ciclo", valores: ["5"] },
-  { num: "6°", ciclo: "Segundo ciclo", valores: ["6"] },
+  { num: "3°", ciclo: "Primer ciclo",      valores: ["3"] },
+  { num: "4°", ciclo: "Segundo ciclo",     valores: ["4"] },
+  { num: "5°", ciclo: "Segundo ciclo",     valores: ["5"] },
+  { num: "6°", ciclo: "Segundo ciclo",     valores: ["6"] },
 ];
 
 const AREAS_CONFIG = {
-  "Matemática":              { emoji: "🔢", color: "#e8f0ff", colorHover: "#c5d5ff", border: "#c5d5ff", borderHover: "#7a9ef5", iconColor: "#7a9ef5", desc: "Números, geometría, medidas" },
-  "Prácticas del Lenguaje":  { emoji: "📖", color: "#fff0e8", colorHover: "#ffd5b8", border: "#ffd5b8", borderHover: "#f5a06a", iconColor: "#f5a06a", desc: "Lectura, escritura, oralidad" },
-  "Ciencias Naturales":      { emoji: "🔬", color: "#e8fff4", colorHover: "#b8ffdc", border: "#b8ffdc", borderHover: "#00c48c", iconColor: "#00c48c", desc: "Seres vivos, cuerpo, materiales" },
-  "Ciencias Sociales":       { emoji: "🌍", color: "#fef9e0", colorHover: "#fde98a", border: "#fde98a", borderHover: "#e6c800", iconColor: "#e6c800", desc: "Historia, geografía, sociedad" },
+  "Matemática":             { emoji: "🔢", bg: "#E8F0FF", border: "#C5D5FF", desc: "Números, geometría, medidas" },
+  "Prácticas del Lenguaje": { emoji: "📖", bg: "#FFF0E8", border: "#FFD5B8", desc: "Lectura, escritura, oralidad" },
+  "Ciencias Naturales":     { emoji: "🔬", bg: "#E8FFF4", border: "#B8FFDC", desc: "Seres vivos, cuerpo, materiales" },
+  "Ciencias Sociales":      { emoji: "🌍", bg: "#FEF9E0", border: "#FDE98A", desc: "Historia, geografía, sociedad" },
 };
 
-// ── PDL — Datos para el flujo en cascada ──
+// ── Sub-componentes ────────────────────────────────────────────────────────
 
-const PDL_TIPOS_FICHA = [
-  { nombre: "Lectura de textos", emoji: "📖", desc: "Texto breve + preguntas de comprensión" },
-  { nombre: "Escritura de textos", emoji: "✏️", desc: "Consigna + orientaciones para escribir" },
-  { nombre: "Ortografía", emoji: "🔤", desc: "Ejercicios sobre la regla elegida" },
-];
-
-const PDL_TIPOS_TEXTO_LECTURA = {
-  "1": ["Cuento", "Fábula", "Poesía", "Trabalenguas y adivinanzas", "Historieta", "Libro álbum", "Obra de teatro", "Noticia", "Afiche y folleto", "Reglamento"],
-  "2": ["Cuento", "Fábula", "Poesía", "Trabalenguas y adivinanzas", "Historieta", "Libro álbum", "Obra de teatro", "Noticia", "Afiche y folleto", "Reglamento"],
-  "3": ["Cuento", "Fábula", "Leyenda", "Poesía", "Obra de teatro", "Novela", "Historieta", "Haiku", "Noticia", "Enciclopedia y manual", "Carta", "Afiche y folleto"],
-  "4": ["Cuento", "Fábula", "Leyenda", "Poesía", "Obra de teatro", "Novela", "Historieta", "Haiku", "Noticia", "Artículo de enciclopedia", "Manual", "Carta formal", "Afiche y folleto"],
-  "5": ["Cuento", "Poesía", "Obra de teatro", "Novela", "Historieta", "Noticia", "Artículo de divulgación", "Enciclopedia", "Manual", "Carta de lector", "Afiche"],
-  "6": ["Cuento", "Poesía", "Obra de teatro", "Novela", "Historieta", "Noticia", "Nota de opinión", "Artículo de enciclopedia", "Manual", "Reglamento y normas"],
-};
-
-// Prácticas lectoras por categoría de texto y grado
-const PDL_PRACTICAS_LECTORAS = {
-  narrativo: {
-    "1": ["Reconocer los personajes principales", "Identificar qué pasó al principio, en el medio y al final", "Describir cómo es el personaje principal", "Decir qué problema tuvo el personaje y cómo lo resolvió"],
-    "2": ["Reconocer los personajes principales", "Identificar qué pasó al principio, en el medio y al final", "Describir cómo es el personaje principal", "Decir qué problema tuvo el personaje y cómo lo resolvió"],
-    "3": ["Reconocer personajes principales y secundarios", "Ordenar los hechos del texto", "Describir el lugar y el tiempo donde ocurre la historia", "Identificar la moraleja (solo fábula)", "Explicar por qué actuó así el personaje"],
-    "4": ["Inferir los sentimientos o motivaciones de los personajes", "Identificar el conflicto central y cómo se resuelve", "Reconocer el narrador y su punto de vista", "Comparar dos versiones de un mismo texto (leyenda / cuento)", "Dar opinión sobre lo leído y justificarla"],
-    "5": ["Inferir los sentimientos o motivaciones de los personajes", "Identificar el conflicto central y cómo se resuelve", "Reconocer el narrador y su punto de vista", "Comparar dos versiones de un mismo texto (leyenda / cuento)", "Dar opinión sobre lo leído y justificarla"],
-    "6": ["Identificar recursos literarios: comparaciones, repeticiones", "Analizar cómo el autor construye el suspenso o la emoción", "Relacionar el texto con situaciones de la vida real", "Reconocer el género y sus características"],
-  },
-  poesia: {
-    "1": ["Identificar palabras que riman"],
-    "2": ["Identificar palabras que riman", "Reconocer de qué habla el poema", "Expresar qué sentimiento te produce escucharlo"],
-    "3": ["Identificar las palabras que riman y el efecto que producen", "Reconocer una comparación o imagen dentro del poema", "Explicar con tus palabras de qué trata el poema", "Expresar qué te gustó o no te gustó y por qué"],
-    "4": ["Reconocer recursos: comparaciones, repeticiones, personificaciones", "Interpretar el significado de una imagen poética", "Identificar el tema del poema y cómo lo desarrolla el autor", "Dar opinión sobre el poema y justificarla"],
-    "5": ["Reconocer recursos: comparaciones, repeticiones, personificaciones", "Interpretar el significado de una imagen poética", "Identificar el tema del poema y cómo lo desarrolla el autor", "Dar opinión sobre el poema y justificarla"],
-    "6": ["Analizar la estructura del poema: estrofas, versos, rima", "Reconocer el tono del poema y cómo lo construye el autor", "Comparar dos poemas sobre el mismo tema", "Identificar el tipo de poema y sus características"],
-  },
-  teatro: {
-    "1": ["Reconocer los personajes de la obra", "Identificar qué problema tienen los personajes", "Decir cómo termina la historia"],
-    "2": ["Reconocer los personajes de la obra", "Identificar qué problema tienen los personajes", "Decir cómo termina la historia"],
-    "3": ["Reconocer personajes principales y secundarios", "Identificar qué dice cada personaje y cómo lo dice", "Distinguir el diálogo de las acotaciones", "Explicar cómo se resuelve el conflicto"],
-    "4": ["Reconocer las partes de la obra: escenas y actos", "Inferir los sentimientos de los personajes a partir de sus diálogos", "Identificar el conflicto central y cómo evoluciona", "Dar opinión sobre las decisiones de los personajes"],
-    "5": ["Reconocer las partes de la obra: escenas y actos", "Inferir los sentimientos de los personajes a partir de sus diálogos", "Identificar el conflicto central y cómo evoluciona", "Dar opinión sobre las decisiones de los personajes"],
-    "6": ["Analizar cómo el autor construye los personajes a través del diálogo", "Reconocer el tono de la obra: dramático, humorístico, etc.", "Identificar las acotaciones y su función dentro del texto", "Relacionar la obra con su contexto o con otras obras leídas"],
-  },
-  historieta: {
-    "1": ["Reconocer los personajes de la historieta", "Identificar qué pasa en cada viñeta", "Contar con tus palabras de qué trata la historia"],
-    "2": ["Reconocer los personajes de la historieta", "Identificar qué pasa en cada viñeta", "Contar con tus palabras de qué trata la historia"],
-    "3": ["Reconocer personajes principales y secundarios", "Identificar el problema y cómo se resuelve", "Distinguir lo que dicen los personajes de lo que hace el narrador", "Reconocer la secuencia de viñetas y su orden"],
-    "4": ["Interpretar el significado de una imagen sin texto", "Identificar el humor o el recurso cómico que usa el autor", "Reconocer cómo se complementan imagen y texto", "Dar opinión sobre los personajes o la situación"],
-    "5": ["Interpretar el significado de una imagen sin texto", "Identificar el humor o el recurso cómico que usa el autor", "Reconocer cómo se complementan imagen y texto", "Dar opinión sobre los personajes o la situación"],
-    "6": ["Analizar cómo el dibujante usa el espacio de la viñeta para contar", "Reconocer recursos gráficos: globos, onomatopeyas, líneas de movimiento", "Comparar la historieta con otro texto narrativo sobre el mismo tema", "Identificar el género de la historieta y sus características"],
-  },
-  informativo: {
-    "1": ["Decir de qué tema trata el texto", "Identificar una información nueva que aprendiste", "Reconocer para qué sirve el título"],
-    "2": ["Decir de qué tema trata el texto", "Identificar una información nueva que aprendiste", "Reconocer para qué sirve el título"],
-    "3": ["Identificar el tema principal del texto", "Reconocer la información más importante", "Distinguir el título, los subtítulos y para qué sirven", "Formular una pregunta sobre el tema después de leer"],
-    "4": ["Identificar la idea principal de cada párrafo", "Reconocer cómo está organizada la información", "Distinguir definiciones, ejemplos y explicaciones dentro del texto", "Relacionar la información del texto con lo que ya sabías del tema"],
-    "5": ["Identificar la idea principal de cada párrafo", "Reconocer cómo está organizada la información", "Distinguir definiciones, ejemplos y explicaciones dentro del texto", "Relacionar la información del texto con lo que ya sabías del tema"],
-    "6": ["Analizar cómo el autor organiza y jerarquiza la información", "Reconocer el propósito del texto: informar, explicar, convencer", "Comparar información sobre el mismo tema en dos fuentes distintas", "Evaluar si la información del texto es suficiente para entender el tema"],
-  },
-  uso_social: {
-    "1": ["Decir para qué sirve el texto", "Identificar a quién está dirigido"],
-    "2": ["Decir para qué sirve el texto", "Identificar a quién está dirigido"],
-    "3": ["Identificar para qué sirve el texto y a quién está dirigido", "Reconocer las partes del texto: saludo, cuerpo, cierre (carta) o título, reglas (reglamento)", "Decir si el texto cumple su propósito"],
-    "4": ["Reconocer el propósito del texto y si lo logra", "Identificar el tono: formal o informal", "Distinguir la solicitud, la opinión o la norma según el tipo de texto"],
-    "5": ["Reconocer el propósito del texto y si lo logra", "Identificar el tono: formal o informal", "Distinguir la solicitud, la opinión o la norma según el tipo de texto"],
-    "6": ["Analizar si el texto es adecuado para su destinatario y propósito", "Reconocer los recursos que usa el autor para persuadir o convencer", "Dar opinión fundamentada sobre el contenido del texto"],
-  },
-  noticia: {
-    "1": ["Decir de qué trata la noticia", "Identificar a quién le pasó y dónde"],
-    "2": ["Decir de qué trata la noticia", "Identificar a quién le pasó y dónde"],
-    "3": ["Identificar qué pasó, quién, dónde y cuándo", "Reconocer el título y explicar para qué sirve", "Distinguir la información más importante de los detalles"],
-    "4": ["Identificar qué pasó, quién, dónde, cuándo y por qué", "Reconocer el punto de vista del autor de la noticia", "Distinguir hechos de opiniones dentro del texto", "Comparar cómo dos medios cuentan la misma noticia"],
-    "5": ["Identificar qué pasó, quién, dónde, cuándo y por qué", "Reconocer el punto de vista del autor de la noticia", "Distinguir hechos de opiniones dentro del texto", "Comparar cómo dos medios cuentan la misma noticia"],
-    "6": ["Analizar los recursos que usa el medio para presentar la noticia", "Reconocer si el texto es objetivo o tiene intención persuasiva", "Relacionar la noticia con el contexto social o histórico", "Dar opinión fundamentada sobre el tema de la noticia"],
-  },
-};
-
-// Mapeo de tipo de texto → categoría de prácticas lectoras
-const PDL_NARRATIVOS = ["Cuento", "Fábula", "Leyenda", "Novela", "Libro álbum"];
-const PDL_POESIA = ["Poesía", "Haiku", "Trabalenguas y adivinanzas"];
-const PDL_INFORMATIVOS = ["Enciclopedia", "Manual", "Artículo de enciclopedia", "Artículo de divulgación", "Enciclopedia y manual"];
-const PDL_USO_SOCIAL = ["Carta", "Carta formal", "Carta de lector", "Afiche y folleto", "Afiche", "Reglamento", "Reglamento y normas", "Nota de opinión"];
-
-function getPracticasPDL(tipoTexto, gradoNum) {
-  let categoria;
-  if (PDL_NARRATIVOS.includes(tipoTexto))       categoria = "narrativo";
-  else if (PDL_POESIA.includes(tipoTexto))       categoria = "poesia";
-  else if (tipoTexto === "Obra de teatro")        categoria = "teatro";
-  else if (tipoTexto === "Historieta")            categoria = "historieta";
-  else if (PDL_INFORMATIVOS.includes(tipoTexto)) categoria = "informativo";
-  else if (PDL_USO_SOCIAL.includes(tipoTexto))   categoria = "uso_social";
-  else if (tipoTexto === "Noticia")               categoria = "noticia";
-  else                                            categoria = "narrativo";
-  return (PDL_PRACTICAS_LECTORAS[categoria] || {})[gradoNum] || [];
-}
-
-const PDL_TIPOS_TEXTO_ESCRITURA = {
-  "1": ["Textos breves en contexto: listas, títulos, etiquetas, epígrafes", "Nueva versión de un cuento conocido (con ayuda del docente)", "Recomendación de un libro"],
-  "2": ["Textos breves en contexto: listas, títulos, etiquetas, epígrafes", "Nueva versión de un cuento conocido (con ayuda del docente)", "Recomendación de un libro"],
-  "3": ["Nueva versión de un cuento tradicional", "Reescritura de un cuento en versión dramática", "Afiche o invitación", "Texto de estudio (para comunicar lo aprendido)"],
-  "4": ["Narración: fábula · leyenda · cuento", "Carta formal", "Artículo de enciclopedia", "Historieta o haiku", "Transformación de texto: narrativo → dramático"],
-  "5": ["Texto literario: cuento · poema visual", "Carta de lector", "Artículo de divulgación científica", "Noticia", "Transformación de texto: narración → obra de teatro"],
-  "6": ["Texto literario: cuento · capítulo de novela", "Nota de opinión", "Reseña", "Texto institucional: reglamento · normas", "Texto de estudio"],
-};
-
-const PDL_REGLAS_ORTOGRAFIA = {
-  "1": ["Las letras y sus sonidos", "Mayúsculas al inicio de oración y en nombres propios", "Separación de palabras", "Punto al final de la oración"],
-  "2": ["Repaso y consolidación de mayúsculas y punto", "Coma en enumeraciones", "Signos de interrogación y exclamación"],
-  "3": ["mb · nv · nr", "Plurales: z → ces", "Terminación -aba del pretérito imperfecto", "Mayúsculas (consolidación)", "Sílaba tónica (preparación para la tilde en 4°)"],
-  "4": ["Familias de palabras para resolver dudas ortográficas", "Terminaciones: -aje · -ducir · -bundo/a", "Tilde (sistematización)", "Raya de diálogo"],
-  "5": ["Homófonos: haber/a ver · hay/ay · hacer/a ser", "Tilde en hiato", "Tilde en pronombres interrogativos", "Signos de puntuación (uso pertinente)"],
-  "6": ["Tilde diacrítica", "Tilde en adverbios terminados en -mente", "Homófonos: hecho/echo · valla/vaya · halla/haya", "Signos de puntuación avanzados: paréntesis · puntos suspensivos · dos puntos"],
-};
-
-// ── Subcomponentes ──
-
-function BloqueConfirmado({ emoji, label, valor, onClick, color }) {
+function Chip({ label, valor, onClick }) {
   const [hov, setHov] = useState(false);
   return (
     <button
@@ -160,83 +47,92 @@ function BloqueConfirmado({ emoji, label, valor, onClick, color }) {
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        width: "100%", display: "flex", alignItems: "center",
-        gap: 12, padding: "14px 18px",
-        background: hov ? C.btn : (color || C.white),
-        border: `1px solid ${hov ? C.btn : C.border}`,
-        borderRadius: 12, cursor: "pointer",
-        transition: "all 0.18s", textAlign: "left", marginBottom: 8,
+        width: "100%", display: "flex", alignItems: "center", gap: 10,
+        background: hov ? "#F8FDFB" : C.fondoCard,
+        border: `0.5px solid ${hov ? C.verdeAcento : C.bordeSuave}`,
+        borderRadius: 10, padding: "9px 14px",
+        cursor: "pointer", marginBottom: 6,
+        transition: "all 0.15s", textAlign: "left",
       }}
     >
       <div style={{
-        width: 28, height: 28, borderRadius: "50%",
-        background: C.acento, display: "flex",
-        alignItems: "center", justifyContent: "center", flexShrink: 0
+        width: 18, height: 18, borderRadius: "50%",
+        background: C.verdeOscuro, display: "flex",
+        alignItems: "center", justifyContent: "center", flexShrink: 0,
       }}>
-        <svg viewBox="0 0 24 24" fill="none" stroke={C.btn} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
-          <polyline points="20 6 9 17 4 12"/>
+        <svg viewBox="0 0 12 10" fill="none" width="10" height="10">
+          <polyline points="1,5 4,8 11,1" stroke={C.verdeAcento} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: 10, color: C.muted, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600, margin: 0 }}>{label}</p>
-        <p style={{ fontSize: 14, color: hov ? C.white : C.texto, fontWeight: 500, margin: "2px 0 0", transition: "color 0.18s", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {emoji && <span style={{ marginRight: 6 }}>{emoji}</span>}
-          {valor}
-        </p>
+        <p style={{ fontSize: 10, color: C.textoMuted, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.06em", margin: 0 }}>{label}</p>
+        <p style={{ fontSize: 13, color: C.textoPrincipal, fontWeight: 500, margin: "2px 0 0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{valor}</p>
       </div>
       <span style={{
-        fontSize: 11, padding: "3px 10px", borderRadius: 20, flexShrink: 0, transition: "all 0.18s",
-        background: hov ? C.acento : C.gris,
-        color: hov ? C.btn : C.muted,
-      }}>
-        Cambiar
-      </span>
+        fontSize: 11,
+        color: hov ? C.verdeAcento : C.textoDisabled,
+        background: hov ? C.verdeOscuro : C.fondoApp,
+        padding: "2px 8px", borderRadius: 99, flexShrink: 0,
+        transition: "all 0.15s",
+      }}>Cambiar</span>
     </button>
   );
 }
 
-function PasoActivo({ pregunta, sub, children }) {
+function PasoWrap({ children }) {
   return (
-    <div style={{ animation: "fadeUp 0.35s cubic-bezier(.22,1,.36,1) both" }}>
-      <h2 style={{
-        fontFamily: "'Lexend', sans-serif",
-        fontSize: "clamp(20px, 3.5vw, 28px)", fontWeight: 700,
-        color: "#004733", lineHeight: 1.25, textAlign: "center",
-        letterSpacing: "-0.02em", marginBottom: sub ? 8 : 20
-      }}>
-        {pregunta}
-      </h2>
-      {sub && <p style={{ fontSize: 13, color: C.muted, marginBottom: 20, lineHeight: 1.6, textAlign: "center" }}>{sub}</p>}
+    <div style={{ animation: "fadeUp 0.32s cubic-bezier(.22,1,.36,1) both" }}>
       {children}
     </div>
   );
 }
 
-function GradoBtn({ g, i, onClick }) {
+function PreguntaHeader({ pregunta, sub }) {
+  return (
+    <div style={{ marginBottom: sub ? 0 : 20 }}>
+      <h2 style={{
+        fontFamily: "Georgia, serif",
+        fontSize: 21, fontWeight: 400,
+        color: C.textoPrincipal, letterSpacing: "-0.02em",
+        lineHeight: 1.25, margin: "0 0 6px",
+      }}>{pregunta}</h2>
+      {sub && <p style={{ fontSize: 13, color: C.textoMuted, marginBottom: 20, lineHeight: 1.5, marginTop: 4 }}>{sub}</p>}
+    </div>
+  );
+}
+
+function GradoBtn({ g, activo, onClick }) {
   const [hov, setHov] = useState(false);
+  const isActive = activo;
   return (
     <button
       onClick={onClick}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        padding: "2rem 8px", borderRadius: 12,
-        minHeight: 120,
-        border: `1.5px solid ${hov ? C.btn : C.border}`,
-        background: hov ? C.btn : C.white,
+        padding: "18px 10px", borderRadius: 14,
+        border: isActive ? `2px solid ${C.verdeOscuro}` : `1.5px solid ${hov ? C.verdeAcento : C.bordeSuave}`,
+        background: isActive ? C.verdeOscuro : (hov ? "#F0FBF7" : C.fondoCard),
         cursor: "pointer", transition: "all 0.18s",
-        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 5,
-        transform: hov ? "translateY(-2px)" : "none",
-        animation: `fadeUp 0.3s ${i * 0.05}s both`
+        display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+        transform: (hov || isActive) ? "translateY(-2px)" : "none",
       }}
     >
-      <span style={{ fontSize: 32, fontWeight: 800, fontFamily: "'Lexend', sans-serif", transition: "color 0.18s", color: hov ? C.acento : "#004733" }}>{g.num}</span>
-      <span style={{ fontSize: 9, textTransform: "uppercase", letterSpacing: "0.06em", textAlign: "center", lineHeight: 1.4, transition: "color 0.18s", color: C.muted }}>{g.ciclo}</span>
+      <span style={{
+        fontFamily: "Georgia, serif", fontSize: 28, fontWeight: 700, lineHeight: 1,
+        color: isActive ? "#fff" : C.verdeOscuro,
+        transition: "color 0.18s",
+      }}>{g.num}</span>
+      <span style={{
+        fontSize: 9, textAlign: "center", lineHeight: 1.4,
+        color: isActive ? C.verdeAcento : C.textoMuted,
+        transition: "color 0.18s",
+      }}>{g.ciclo}</span>
     </button>
   );
 }
 
-function AreaBtn({ a, i, onClick }) {
+function AreaBtn({ a, activo, onClick }) {
   const [hov, setHov] = useState(false);
   return (
     <button
@@ -244,157 +140,133 @@ function AreaBtn({ a, i, onClick }) {
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        padding: "2rem", borderRadius: 14,
-        minHeight: 140,
-        border: `1.5px solid ${hov ? a.borderHover : a.border}`,
-        background: hov ? a.colorHover : a.color,
-        cursor: "pointer", textAlign: "center",
+        borderRadius: 14, padding: 16,
+        cursor: "pointer",
+        display: "flex", alignItems: "flex-start", gap: 12,
         transition: "all 0.18s",
-        transform: hov ? "translateY(-3px)" : "none",
-        boxShadow: hov ? "0 10px 28px rgba(0,0,0,0.10)" : "0 2px 8px rgba(0,0,0,0.04)",
-        animation: `fadeUp 0.3s ${i * 0.07}s both`,
-        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6,
+        border: activo ? `2px solid ${C.verdeOscuro}` : `1.5px solid ${hov ? C.verdeOscuro : a.border}`,
+        background: a.bg,
+        transform: (hov || activo) ? "translateY(-2px)" : "none",
+        filter: hov && !activo ? "brightness(0.96)" : "none",
+        textAlign: "left",
       }}
     >
-      <div style={{ fontSize: 48, lineHeight: 1 }}>{a.emoji}</div>
-      <div style={{ fontSize: 18, fontWeight: 700, color: C.texto }}>{a.nombre}</div>
-      <div style={{ fontSize: 13, color: C.muted }}>{a.desc}</div>
+      <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{a.emoji}</span>
+      <div>
+        <p style={{ fontSize: 13, fontWeight: 600, color: C.verdeOscuro, margin: "0 0 2px" }}>{a.nombre}</p>
+        <p style={{ fontSize: 11, color: C.textoSec, lineHeight: 1.4, margin: 0 }}>{a.desc}</p>
+      </div>
     </button>
   );
 }
 
-function OpcionBtn({ label, i, onClick, suave = false }) {
+function Toggle({ on, onChange, title, desc }) {
   const [hov, setHov] = useState(false);
-  return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
-      style={{
-        padding: "16px 20px", borderRadius: 10,
-        border: `1.5px solid ${hov ? C.acento : C.border}`,
-        background: hov && suave ? C.suave : C.white, cursor: "pointer",
-        textAlign: "left", display: "flex",
-        alignItems: "center", justifyContent: "space-between",
-        transition: "all 0.15s",
-        animation: `fadeUp 0.3s ${i * 0.07}s both`
-      }}
-    >
-      <span style={{ fontSize: 14, color: hov ? C.acento : C.texto, fontWeight: 500, transition: "color 0.15s", lineHeight: 1.5 }}>{label}</span>
-      <span style={{ color: hov ? C.acento : C.border, fontSize: 18, flexShrink: 0, marginLeft: 12, transition: "color 0.15s" }}>›</span>
-    </button>
-  );
-}
-
-// ── Tooltip wrapper para checkboxes ──
-function TooltipWrapper({ children, text }) {
-  const [visible, setVisible] = useState(false);
   return (
     <div
-      style={{ position: "relative" }}
-      onMouseEnter={() => setVisible(true)}
-      onMouseLeave={() => setVisible(false)}
+      onClick={() => onChange(!on)}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        display: "flex", alignItems: "flex-start", gap: 14,
+        background: on ? C.verdeClaroBg : (hov ? "#F8FDFB" : C.fondoCard),
+        border: `0.5px solid ${on ? C.verdeOscuro : (hov ? C.verdeAcento : C.bordeSuave)}`,
+        borderRadius: 12, padding: "14px 16px",
+        cursor: "pointer", marginBottom: 8,
+        transition: "all 0.15s", userSelect: "none",
+      }}
     >
-      {children}
-      {visible && (
+      <div style={{ flex: 1 }}>
+        <p style={{ fontSize: 13, fontWeight: 500, color: C.textoPrincipal, margin: "0 0 2px" }}>{title}</p>
+        <p style={{ fontSize: 12, color: C.textoMuted, lineHeight: 1.5, margin: 0 }}>{desc}</p>
+      </div>
+      <div style={{
+        width: 40, height: 22, borderRadius: 99,
+        background: on ? C.verdeOscuro : C.bordeSuave,
+        position: "relative", flexShrink: 0, marginTop: 2,
+        transition: "background 0.2s",
+      }}>
         <div style={{
-          position: "absolute",
-          bottom: "calc(100% + 6px)",
-          left: "50%",
-          transform: "translateX(-50%)",
-          background: "#2B2B2B",
-          color: "#ffffff",
-          fontSize: 12,
-          borderRadius: 6,
-          padding: "6px 10px",
-          whiteSpace: "nowrap",
-          zIndex: 100,
-          pointerEvents: "none",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
-        }}>
-          {text}
-          <div style={{
-            position: "absolute",
-            top: "100%",
-            left: "50%",
-            transform: "translateX(-50%)",
-            borderWidth: "5px 5px 0 5px",
-            borderStyle: "solid",
-            borderColor: "#2B2B2B transparent transparent transparent",
-          }} />
-        </div>
-      )}
+          position: "absolute", top: 3, left: 3,
+          width: 16, height: 16, borderRadius: "50%",
+          background: "#fff",
+          transform: on ? "translateX(18px)" : "translateX(0)",
+          transition: "transform 0.2s",
+        }} />
+      </div>
     </div>
   );
 }
 
-// ── Acordeón de bloques + contenidos ──
-function AcordeonBloques({ bloques, contenidosPorBloque, onSelectContenido }) {
+function AcordeonBloques({ bloques, contenidosPorBloque, registroSeleccionado, onSelect }) {
   const [bloqueAbierto, setBloqueAbierto] = useState(null);
 
-  const toggleBloque = (b) => {
-    setBloqueAbierto(prev => prev === b ? null : b);
-  };
-
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+    <div>
       {bloques.map((b) => {
         const abierto = bloqueAbierto === b;
-        const contenidos = contenidosPorBloque[b] || [];
+        const items = contenidosPorBloque[b] || [];
         return (
           <div key={b} style={{
-            border: `1.5px solid ${abierto ? C.btn : C.border}`,
-            borderRadius: 10,
-            overflow: "hidden",
-            transition: "border-color 0.2s",
+            background: C.fondoCard,
+            border: `0.5px solid ${C.bordeSuave}`,
+            borderRadius: 12, overflow: "hidden", marginBottom: 6,
           }}>
             <button
-              onClick={() => toggleBloque(b)}
+              onClick={() => setBloqueAbierto(abierto ? null : b)}
               style={{
                 width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
-                padding: "16px 20px",
-                background: abierto ? "#E8F5EE" : C.white,
-                border: "none", cursor: "pointer",
-                textAlign: "left",
-                transition: "background 0.2s",
+                padding: "12px 16px",
+                background: abierto ? C.verdeClaroBg : C.fondoCard,
+                border: "none", borderBottom: abierto ? `0.5px solid #D4EEE3` : "none",
+                cursor: "pointer", textAlign: "left",
+                fontSize: 13, fontWeight: 500, color: C.textoPrincipal,
+                minHeight: 44, transition: "background 0.12s",
               }}
+              onMouseEnter={e => { if (!abierto) e.currentTarget.style.background = "#F0FBF7"; }}
+              onMouseLeave={e => { if (!abierto) e.currentTarget.style.background = C.fondoCard; }}
             >
-              <span style={{ fontSize: 14, fontWeight: 600, color: abierto ? "#004733" : C.texto }}>{b}</span>
+              <span>{b}</span>
               <span style={{
-                fontSize: 16, color: abierto ? "#004733" : C.muted,
-                transform: abierto ? "rotate(180deg)" : "rotate(0deg)",
-                transition: "transform 0.3s ease",
+                fontSize: 12,
+                color: abierto ? C.verdeAcento : C.textoDisabled,
+                transform: abierto ? "rotate(90deg)" : "rotate(0deg)",
+                transition: "transform 0.2s, color 0.2s",
                 display: "inline-block",
-              }}>▼</span>
+              }}>›</span>
             </button>
-            <div style={{
-              maxHeight: abierto ? `${contenidos.length * 60 + 20}px` : "0px",
-              overflow: "hidden",
-              transition: "max-height 0.3s ease",
-            }}>
-              <div style={{ padding: "4px 12px 12px" }}>
-                {contenidos.map((r, i) => (
-                  <button
-                    key={r.id}
-                    onClick={() => onSelectContenido(r)}
-                    style={{
-                      width: "100%", padding: "12px 14px", borderRadius: 8,
-                      border: `1px solid ${C.border}`,
-                      background: C.white, cursor: "pointer",
-                      textAlign: "left", fontSize: 13, color: C.texto,
-                      marginBottom: i < contenidos.length - 1 ? 6 : 0,
-                      transition: "all 0.15s",
-                      display: "flex", alignItems: "center", justifyContent: "space-between",
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.background = C.suave; e.currentTarget.style.borderColor = C.acento; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = C.white; e.currentTarget.style.borderColor = C.border; }}
-                  >
-                    <span style={{ lineHeight: 1.5 }}>{r.item_original}</span>
-                    <span style={{ color: C.acento, fontSize: 18, flexShrink: 0, marginLeft: 12 }}>›</span>
-                  </button>
-                ))}
+            {abierto && (
+              <div>
+                {items.map((r, i) => {
+                  const activo = registroSeleccionado?.id === r.id;
+                  return (
+                    <button
+                      key={r.id}
+                      onClick={() => onSelect(r)}
+                      style={{
+                        width: "100%",
+                        padding: "10px 16px 10px 28px",
+                        fontSize: 13,
+                        color: activo ? C.textoPrincipal : C.textoSec,
+                        fontWeight: activo ? 500 : 400,
+                        background: activo ? C.verdeClaroBg : C.fondoCard,
+                        border: "none",
+                        borderTop: `0.5px solid ${C.bordeHover}`,
+                        cursor: "pointer", textAlign: "left",
+                        minHeight: 44,
+                        display: "flex", justifyContent: "space-between", alignItems: "center",
+                        lineHeight: 1.4, transition: "background 0.1s",
+                      }}
+                      onMouseEnter={e => { if (!activo) { e.currentTarget.style.background = "#F0FBF7"; e.currentTarget.style.color = C.textoPrincipal; } }}
+                      onMouseLeave={e => { if (!activo) { e.currentTarget.style.background = C.fondoCard; e.currentTarget.style.color = C.textoSec; } }}
+                    >
+                      <span>{r.item_original}</span>
+                      {activo && <span style={{ fontSize: 12, color: C.verdeAcento, flexShrink: 0, marginLeft: 8 }}>✓</span>}
+                    </button>
+                  );
+                })}
               </div>
-            </div>
+            )}
           </div>
         );
       })}
@@ -402,52 +274,157 @@ function AcordeonBloques({ bloques, contenidosPorBloque, onSelectContenido }) {
   );
 }
 
-// ── Componente principal ──
+function SidebarPreview({ gradoData, area, registro, incluirExplicacion, incluirEjemplo }) {
+  const tituloFicha = registro
+    ? registro.item_original
+    : area
+    ? `${area} · ${gradoData?.num}`
+    : gradoData
+    ? `${gradoData.num} grado`
+    : null;
+
+  const hasContent = !!registro;
+
+  // Renumeración automática según toggles
+  let blockNum = 1;
+  const blocks = [
+    incluirExplicacion ? { num: blockNum++, name: "Explicación", type: "explanation" } : null,
+    incluirEjemplo     ? { num: blockNum++, name: "Ejemplo",     type: "example" }     : null,
+    { num: blockNum++, name: "Actividad",  type: "activity" },
+    { num: blockNum,   name: "Reflexión",  type: "reflection" },
+  ].filter(Boolean);
+
+  return (
+    <div style={{
+      background: C.fondoCard,
+      borderRadius: 8,
+      border: `0.5px solid ${C.bordeSuave}`,
+      overflow: "hidden",
+      boxShadow: "0 2px 8px rgba(0,70,50,0.08)",
+    }}>
+      {/* Header hoja */}
+      <div style={{ background: C.verdeOscuro, padding: "8px 12px" }}>
+        <div style={{ display: "flex", gap: 4, marginBottom: 6, flexWrap: "wrap" }}>
+          {[gradoData?.num, area, registro ? "contenido" : null].map((val, i) => (
+            <span key={i} style={{
+              fontSize: 9, padding: "2px 6px", borderRadius: 99,
+              background: val ? C.verdeAcento : "rgba(255,255,255,0.15)",
+              color: val ? C.verdeOscuro : "rgba(255,255,255,0.3)",
+              fontWeight: 600,
+            }}>{val || "···"}</span>
+          ))}
+        </div>
+        <p style={{
+          fontSize: 11, fontWeight: 600, color: "#fff",
+          margin: 0, lineHeight: 1.4,
+          fontStyle: tituloFicha ? "normal" : "italic",
+          opacity: tituloFicha ? 1 : 0.5,
+        }}>{tituloFicha || "Tu ficha aparece acá"}</p>
+      </div>
+      {/* Cuerpo */}
+      <div style={{ padding: "8px 10px" }}>
+        {blocks.map((block) => (
+          <div key={block.name} style={{
+            marginBottom: 6,
+            opacity: hasContent ? 1 : 0.18,
+            filter: hasContent ? "none" : "grayscale(1)",
+            transition: "all 0.3s",
+          }}>
+            <div style={{
+              display: "flex", alignItems: "center", gap: 4,
+              background: C.verdeClaroBg, borderRadius: "4px 4px 0 0",
+              padding: "3px 6px",
+            }}>
+              <span style={{ fontSize: 8, fontWeight: 700, color: C.verdeTexto }}>{block.num}</span>
+              <span style={{ fontSize: 8, color: C.textoMuted }}>{block.name}</span>
+            </div>
+            <div style={{
+              background: "#fafafa", borderRadius: "0 0 4px 4px",
+              padding: "4px 6px", border: `0.5px solid ${C.bordeHover}`,
+            }}>
+              {block.type === "explanation" && (
+                <>{[80, 95, 70].map((w, i) => (
+                  <div key={i} style={{ height: 3, borderRadius: 2, background: C.verdeAcento, opacity: 0.5, marginBottom: 3, width: `${w}%` }} />
+                ))}</>
+              )}
+              {block.type === "example" && (
+                <div style={{ height: 14, borderRadius: 3, background: C.verdeClaroBg, border: `0.5px solid ${C.verdeClaroBorder}` }} />
+              )}
+              {block.type === "activity" && (
+                <>
+                  <div style={{ height: 3, borderRadius: 2, background: C.verdeAcento, opacity: 0.4, marginBottom: 3, width: "90%" }} />
+                  <div style={{ display: "flex", gap: 3, marginBottom: 3 }}>
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} style={{ flex: 1, height: 10, borderRadius: 2, border: `0.5px solid ${C.bordeSuave}` }} />
+                    ))}
+                  </div>
+                  <div style={{ height: 3, borderRadius: 2, background: C.verdeAcento, opacity: 0.3, width: "75%" }} />
+                </>
+              )}
+              {block.type === "reflection" && (
+                <>{[85, 65].map((w, i) => (
+                  <div key={i} style={{ height: 3, borderRadius: 2, background: C.bordeSuave, marginBottom: 3, width: `${w}%` }} />
+                ))}</>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Componente principal ───────────────────────────────────────────────────
 
 export default function Generador({ onFichaGenerada, onVolver }) {
   const [paso, setPaso] = useState(1);
-  const [gradoData, setGradoData] = useState(null);     // { num, ciclo, valores }
+  const [gradoData, setGradoData] = useState(null);
   const [area, setArea] = useState(null);
   const [areaConfig, setAreaConfig] = useState(null);
-  const [bloque, setBloque] = useState(null);
-  const [registro, setRegistro] = useState(null);       // full JSON record selected (non-PDL)
-  const [curricular] = useState(curricularData);
-  const [incluirExplicacion, setIncluirExplicacion] = useState(false);
-  const [incluirEjemplo, setIncluirEjemplo] = useState(false);
+  const [registro, setRegistro] = useState(null);
+  const [incluirExplicacion, setIncluirExplicacion] = useState(true);
+  const [incluirEjemplo, setIncluirEjemplo] = useState(true);
+  const [busqueda, setBusqueda] = useState("");
+  const [busquedaFocused, setBusquedaFocused] = useState(false);
   const [generando, setGenerando] = useState(false);
-  const [mensajeLoading, setMensajeLoading] = useState(0); // 0 Generando · 1 Validando · 2 ¡Lista!
+  const [mensajeLoading, setMensajeLoading] = useState(0);
   const [error, setError] = useState(null);
   const [msgIdx, setMsgIdx] = useState(0);
   const [msgVisible, setMsgVisible] = useState(true);
-  const [busqueda, setBusqueda] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Estado PDL
-  const [isPDL, setIsPDL] = useState(false);
-  const [pdlTipoTexto, setPdlTipoTexto] = useState(null);  // tipo de texto o regla elegida
-  const [pdlPractica, setPdlPractica] = useState(null);    // práctica lectora (solo Lectura)
-
-  // Derivados
+  const curricular = curricularData;
   const gradoNum = gradoData?.valores[0] || "1";
 
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  // Áreas disponibles
   const areasDisponibles = useMemo(() => {
     if (!gradoData) return [];
     const nombres = [...new Set(
       curricular.filter(r => gradoData.valores.includes(String(r.grado))).map(r => r.area)
     )];
-    return nombres.map(nombre => ({ nombre, ...AREAS_CONFIG[nombre] })).filter(a => a.color);
+    return nombres.map(nombre => ({ nombre, ...AREAS_CONFIG[nombre] })).filter(a => a.bg);
   }, [curricular, gradoData]);
 
+  // Bloques disponibles
   const bloquesDisponibles = useMemo(() => {
-    if (!gradoData || !area || isPDL) return [];
+    if (!gradoData || !area) return [];
     return [...new Set(
       curricular
         .filter(r => gradoData.valores.includes(String(r.grado)) && r.area === area)
         .map(r => r.bloque)
     )].sort();
-  }, [curricular, gradoData, area, isPDL]);
+  }, [curricular, gradoData, area]);
 
+  // Contenidos por bloque
   const contenidosPorBloque = useMemo(() => {
-    if (!gradoData || !area || isPDL) return {};
+    if (!gradoData || !area) return {};
     const result = {};
     bloquesDisponibles.forEach(b => {
       result[b] = curricular
@@ -455,19 +432,23 @@ export default function Generador({ onFichaGenerada, onVolver }) {
         .sort((a, b) => a.item_original.localeCompare(b.item_original));
     });
     return result;
-  }, [curricular, gradoData, area, isPDL, bloquesDisponibles]);
+  }, [curricular, gradoData, area, bloquesDisponibles]);
 
-  // Resultados de búsqueda: filtra todos los contenidos del área seleccionada
+  // Resultados de búsqueda
   const resultadosBusqueda = useMemo(() => {
-    if (!busqueda.trim() || !gradoData || !area || isPDL) return null;
+    if (!busqueda.trim()) return null;
     const q = busqueda.trim().toLowerCase();
-    return curricular.filter(r =>
-      gradoData.valores.includes(String(r.grado)) &&
-      r.area === area &&
-      r.item_original.toLowerCase().includes(q)
-    ).sort((a, b) => a.item_original.localeCompare(b.item_original));
-  }, [busqueda, curricular, gradoData, area, isPDL]);
+    let base = [...curricular];
+    if (gradoData) base = base.filter(r => gradoData.valores.includes(String(r.grado)));
+    if (area) base = base.filter(r => r.area === area);
+    return base.filter(r =>
+      r.item_original.toLowerCase().includes(q) ||
+      r.bloque.toLowerCase().includes(q) ||
+      r.area.toLowerCase().includes(q)
+    ).slice(0, 8);
+  }, [busqueda, curricular, gradoData, area]);
 
+  // Loading messages
   const getMensaje = (idx) => {
     const msgs = [
       "Consultando el Diseño Curricular...",
@@ -498,35 +479,15 @@ export default function Generador({ onFichaGenerada, onVolver }) {
     return () => clearInterval(interval);
   }, [generando]);
 
-  const elegir = (setter, val, sig) => { setter(val); setTimeout(() => setPaso(sig), 160); };
-
-  const handleVolver = () => {
-    if (paso === 1) {
-      onVolver();
-    } else if (paso === 4 && isPDL && bloque === "Lectura de textos" && pdlTipoTexto && !pdlPractica) {
-      setPdlTipoTexto(null);
-    } else {
-      cambiarDesde(paso - 1);
-    }
-  };
-
-  // Cambiar desde un paso específico: limpia solo los estados desde ese paso en adelante
+  // Cascade reset
   const cambiarDesde = (p) => {
     setPaso(p);
     if (p <= 1) {
-      setGradoData(null);
-      setArea(null); setAreaConfig(null); setIsPDL(false);
-      setBloque(null); setPdlTipoTexto(null); setPdlPractica(null);
-      setRegistro(null);
+      setGradoData(null); setArea(null); setAreaConfig(null); setRegistro(null);
     } else if (p <= 2) {
-      setArea(null); setAreaConfig(null); setIsPDL(false);
-      setBloque(null); setPdlTipoTexto(null); setPdlPractica(null);
-      setRegistro(null);
+      setArea(null); setAreaConfig(null); setRegistro(null);
     } else if (p <= 3) {
-      setBloque(null); setPdlTipoTexto(null); setPdlPractica(null);
       setRegistro(null);
-    } else if (p <= 4) {
-      setRegistro(null); setPdlTipoTexto(null); setPdlPractica(null);
     }
     setBusqueda("");
     setError(null);
@@ -534,34 +495,27 @@ export default function Generador({ onFichaGenerada, onVolver }) {
     setMensajeLoading(0);
   };
 
-  // Volver solo a elegir práctica (mantiene tipo de texto ya elegido)
-  const volverPDLPractica = () => {
-    setPaso(4);
-    setPdlPractica(null);
-    setError(null);
-  };
-
+  // API
   const generarConPayload = async (payload, registroParaFicha, isRetry) => {
     const timer4s = setTimeout(() => setMensajeLoading(1), 4000);
     try {
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
       clearTimeout(timer4s);
-      if (!res.ok) throw new Error('Error en el servidor');
+      if (!res.ok) throw new Error("Error en el servidor");
       const resultado = await res.json();
 
       if (!isRetry && resultado.validacion?.observaciones?.length > 0) {
-        // Primera versión con errores → regenerar silenciosamente
         setMensajeLoading(0);
         await generarConPayload(payload, registroParaFicha, true);
       } else {
         setMensajeLoading(2);
         setTimeout(() => {
           setGenerando(false);
-          setError(null); // limpiar error antes de mostrar la ficha (cambio #11)
+          setError(null);
           onFichaGenerada(resultado.ficha, registroParaFicha, null);
         }, 1000);
       }
@@ -569,524 +523,418 @@ export default function Generador({ onFichaGenerada, onVolver }) {
       clearTimeout(timer4s);
       setGenerando(false);
       setMensajeLoading(0);
-      setError('No se pudo generar la ficha. Verificá tu conexión e intentá de nuevo.');
+      setError("No se pudo generar la ficha. Verificá tu conexión e intentá de nuevo.");
     }
   };
 
   const generar = async () => {
-    if (isPDL) {
-      if (!bloque || !pdlTipoTexto) return;
-      if (bloque === "Lectura de textos" && !pdlPractica) return;
-    } else {
-      if (!registro) return;
-    }
-
+    if (!registro) return;
     setGenerando(true);
     setMensajeLoading(0);
     setError(null);
 
-    const payload = isPDL
-      ? {
-          contenido: {
-            grado: gradoNum,
-            area: "Prácticas del Lenguaje",
-            tipoFicha: bloque,
-            tipoTexto: pdlTipoTexto,
-            practica: pdlPractica,
-          },
-          tipoFicha: bloque,
-        }
-      : {
-          contenido: {
-            grado: registro.grado,
-            area: registro.area,
-            bloque: registro.bloque,
-            item: registro.item_original,
-          },
-          tipoFicha: "ficha de trabajo",
-          incluirExplicacion,
-          incluirEjemplo,
-        };
+    const payload = {
+      contenido: {
+        grado: registro.grado,
+        area: registro.area,
+        bloque: registro.bloque,
+        item: registro.item_original,
+        contexto_pedagogico: `Incluir explicación: ${incluirExplicacion}. Incluir ejemplo: ${incluirEjemplo}.`,
+      },
+      tipoFicha: "ficha de trabajo",
+      incluirExplicacion,
+      incluirEjemplo,
+    };
 
-    const registroParaFicha = isPDL
-      ? {
-          grado: gradoNum,
-          area: "Prácticas del Lenguaje",
-          bloque: bloque,
-          item_original: bloque === "Lectura de textos"
-            ? `${pdlTipoTexto} — ${pdlPractica}`
-            : pdlTipoTexto,
-          objetivo: null,
-        }
-      : registro;
-
-    await generarConPayload(payload, registroParaFicha, false);
+    await generarConPayload(payload, registro, false);
   };
 
-  const totalPasos = 5;
-  const progreso = generando ? 100 : Math.round(((paso - 1) / (totalPasos - 1)) * 100);
+  const progreso = paso * 25;
 
-
+  // ── Render ─────────────────────────────────────────────────────────────
   return (
-    <div style={{ fontFamily: "'Lexend', sans-serif", background: C.fondo, minHeight: "100vh" }}>
+    <div style={{ fontFamily: "'Lexend', sans-serif", background: C.fondoApp, minHeight: "100vh" }}>
       <style>{`
-        @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes spin { to { transform:rotate(360deg); } }
-        @keyframes pulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(0,196,140,0.5); }
-          50% { box-shadow: 0 0 0 7px rgba(0,196,140,0); }
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        * { box-sizing: border-box; }
       `}</style>
 
-      {/* Nav */}
+      {/* Navbar */}
       <nav style={{
+        background: C.verdeOscuro,
+        padding: "14px 28px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "16px 32px", borderBottom: `0.5px solid ${C.border}`,
-        background: "#004733",
-        position: "sticky", top: 0, zIndex: 10
+        position: "sticky", top: 0, zIndex: 10,
       }}>
         <button onClick={onVolver} style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-          <Logo size={32} color="#ffffff" />
+          <Logo size={28} color="#ffffff" />
         </button>
-        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.7)" }}>
-          {generando ? "Generando…" : `Paso ${paso} de ${totalPasos}`}
-        </span>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <span style={{ fontSize: 12, color: "rgba(255,255,255,0.7)" }}>
+            {generando ? "Generando…" : `Paso ${paso} de 4`}
+          </span>
+          <div style={{ width: 100, height: 3, background: "rgba(255,255,255,0.15)", borderRadius: 99 }}>
+            <div style={{
+              height: "100%", background: C.verdeAcento, borderRadius: 99,
+              width: `${progreso}%`,
+              transition: "width 0.45s cubic-bezier(.22,1,.36,1)",
+            }} />
+          </div>
+        </div>
       </nav>
 
-      {/* Barra de progreso */}
-      <div style={{ height: 2, background: C.border }}>
-        <div style={{
-          height: "100%", background: C.acento,
-          width: `${progreso}%`,
-          transition: "width 0.5s cubic-bezier(.22,1,.36,1)"
-        }} />
-      </div>
+      {/* Grid layout */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: isMobile ? "1fr" : "1fr 260px",
+        minHeight: "calc(100vh - 57px)",
+      }}>
 
-      <div style={{ maxWidth: 580, margin: "0 auto", padding: "48px 24px 80px" }}>
+        {/* ── MAIN ── */}
+        <main style={{
+          padding: isMobile ? "24px 16px 80px" : "32px 28px 80px",
+          minWidth: 0,
+          order: isMobile ? 1 : 0,
+        }}>
 
-        {/* Bloques confirmados */}
-        {gradoData && paso > 1 && (
-          <BloqueConfirmado label="Grado" valor={gradoData.num} emoji="🎓" onClick={() => cambiarDesde(1)} />
-        )}
-        {area && paso > 2 && (
-          <BloqueConfirmado label="Área" valor={area} emoji={areaConfig?.emoji} color={areaConfig?.color} onClick={() => cambiarDesde(2)} />
-        )}
-
-        {/* Bloques confirmados — PDL */}
-        {isPDL && bloque && paso > 3 && (
-          <BloqueConfirmado label="Tipo de ficha" valor={bloque} emoji="📚" onClick={() => cambiarDesde(3)} />
-        )}
-        {isPDL && pdlTipoTexto && paso > 4 && (
-          <BloqueConfirmado
-            label={bloque === "Ortografía" ? "Regla ortográfica" : "Tipo de texto"}
-            valor={pdlTipoTexto}
-            emoji="📄"
-            onClick={() => cambiarDesde(4)}
-          />
-        )}
-        {isPDL && bloque === "Lectura de textos" && pdlPractica && paso > 4 && (
-          <BloqueConfirmado label="Práctica lectora" valor={pdlPractica} emoji="🎯" onClick={volverPDLPractica} />
-        )}
-
-        {/* Bloques confirmados — No PDL */}
-        {!isPDL && bloque && paso > 3 && (
-          <BloqueConfirmado label="Bloque" valor={bloque} emoji="📦" onClick={() => cambiarDesde(3)} />
-        )}
-        {!isPDL && registro && paso > 4 && (
-          <BloqueConfirmado label="Contenido" valor={registro.item_original} emoji="🎯" onClick={() => cambiarDesde(4)} />
-        )}
-
-        {paso > 1 && !generando && (
-          <div style={{ height: 1, background: C.border, margin: "16px 0 28px" }} />
-        )}
-
-        {/* Error — solo si no estamos generando exitosamente */}
-        {error && !generando && (
+          {/* Buscador */}
           <div style={{
-            background: C.error, border: `1px solid #fca5a5`,
-            borderRadius: 10, padding: "12px 16px", marginBottom: 20,
-            fontSize: 13, color: C.errorTexto, animation: "fadeUp 0.3s both"
+            display: "flex", alignItems: "center", gap: 10,
+            background: C.fondoCard,
+            border: `1.5px solid ${busquedaFocused || busqueda ? C.verdeAcento : C.bordeSuave}`,
+            borderRadius: 12, padding: "10px 16px",
+            marginBottom: busqueda && resultadosBusqueda ? 4 : 22,
+            transition: "border-color 0.15s",
           }}>
-            {error}
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+              <circle cx="7" cy="7" r="5" stroke={C.textoMuted} strokeWidth="1.5" />
+              <path d="M11 11l3 3" stroke={C.textoMuted} strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            <input
+              type="text"
+              value={busqueda}
+              onChange={e => setBusqueda(e.target.value)}
+              onFocus={() => setBusquedaFocused(true)}
+              onBlur={() => setTimeout(() => setBusquedaFocused(false), 150)}
+              placeholder={'Buscá directo: "fracciones 4to", "sistema digestivo 6to"...'}
+              style={{
+                flex: 1, border: "none", outline: "none",
+                fontSize: 13, color: C.textoPrincipal,
+                background: "transparent",
+                fontFamily: "'Lexend', sans-serif",
+              }}
+            />
+            {busqueda && (
+              <button
+                onClick={() => setBusqueda("")}
+                style={{ background: "none", border: "none", cursor: "pointer", color: C.textoMuted, fontSize: 16, padding: 0, lineHeight: 1 }}
+              >×</button>
+            )}
           </div>
-        )}
 
-        {/* Paso 1: Grado */}
-        {paso === 1 && (
-          <PasoActivo pregunta="¿Con qué grado estás trabajando hoy?">
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
-              {GRADOS.map((g, i) => (
-                <GradoBtn key={g.num} g={g} i={i} onClick={() => elegir(setGradoData, g, 2)} />
-              ))}
-            </div>
-          </PasoActivo>
-        )}
-
-        {/* Paso 2: Área */}
-        {paso === 2 && (
-          <PasoActivo pregunta={`Perfecto. ¿Qué área trabajamos en ${gradoData?.num}?`}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              {areasDisponibles.map((a, i) => (
-                <AreaBtn
-                  key={a.nombre}
-                  a={a}
-                  i={i}
-                  onClick={() => {
-                    setArea(a.nombre);
-                    setAreaConfig(a);
-                    setIsPDL(a.nombre === "Prácticas del Lenguaje");
-                    setBusqueda("");
-                    setTimeout(() => setPaso(3), 160);
-                  }}
-                />
-              ))}
-            </div>
-          </PasoActivo>
-        )}
-
-        {/* Paso 3: Bloque (no PDL) */}
-        {paso === 3 && !isPDL && (
-          <PasoActivo pregunta={`¿Qué bloque de ${area}?`}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {bloquesDisponibles.map((b, i) => (
-                <OpcionBtn key={b} label={b} i={i} onClick={() => elegir(setBloque, b, 4)} />
-              ))}
-            </div>
-          </PasoActivo>
-        )}
-
-        {/* Paso 3: Tipo de ficha (PDL) */}
-        {paso === 3 && isPDL && (
-          <PasoActivo pregunta="¿Qué tipo de ficha necesitás?">
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {PDL_TIPOS_FICHA.map((t, i) => (
-                <OpcionBtn
-                  key={t.nombre}
-                  label={`${t.emoji}  ${t.nombre} — ${t.desc}`}
-                  i={i}
-                  onClick={() => elegir(setBloque, t.nombre, 4)}
-                />
-              ))}
-            </div>
-          </PasoActivo>
-        )}
-
-        {/* Paso 4: Contenido (no PDL) — con buscador y acordeón */}
-        {paso === 4 && !isPDL && area && (
-          <PasoActivo pregunta="¿Cuál es el contenido?" sub={`Del Diseño Curricular oficial · ${gradoData?.num} · ${area}`}>
-            {/* Buscador */}
-            <div style={{ marginBottom: 16 }}>
-              <input
-                type="text"
-                value={busqueda}
-                onChange={e => setBusqueda(e.target.value)}
-                placeholder="Buscar contenido... (ej: fracciones)"
-                style={{
-                  width: "100%", padding: "12px 16px",
-                  border: `1.5px solid ${busqueda ? C.acento : C.border}`,
-                  borderRadius: 10, fontSize: 14, color: C.texto,
-                  background: C.white, outline: "none",
-                  boxSizing: "border-box",
-                  transition: "border-color 0.15s",
-                }}
-              />
-            </div>
-
-            {/* Resultados de búsqueda */}
-            {busqueda.trim() ? (
-              resultadosBusqueda && resultadosBusqueda.length > 0 ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                  {resultadosBusqueda.map((r, i) => (
-                    <OpcionBtn key={r.id} label={r.item_original} i={i} onClick={() => { setBusqueda(""); elegir(setRegistro, r, 5); }} suave />
-                  ))}
-                </div>
-              ) : (
-                <p style={{ fontSize: 13, color: C.muted, textAlign: "center", padding: "20px 0", fontStyle: "italic" }}>
-                  No encontramos ese contenido. Explorá los bloques abajo.
+          {/* Resultados búsqueda */}
+          {busqueda && resultadosBusqueda && (
+            <div style={{
+              background: C.fondoCard,
+              border: `0.5px solid ${C.bordeSuave}`,
+              borderRadius: 12, marginBottom: 22,
+              overflow: "hidden", animation: "fadeUp 0.2s both",
+              boxShadow: "0 4px 12px rgba(0,70,50,0.08)",
+            }}>
+              {resultadosBusqueda.length === 0 ? (
+                <p style={{ fontSize: 13, color: C.textoMuted, padding: "12px 16px", margin: 0, fontStyle: "italic" }}>
+                  Sin resultados. Probá con otras palabras.
                 </p>
-              )
-            ) : null}
+              ) : resultadosBusqueda.map((r, i) => (
+                <button
+                  key={r.id}
+                  onClick={() => {
+                    const g = GRADOS.find(g => g.valores.includes(String(r.grado)));
+                    if (g) setGradoData(g);
+                    const ac = AREAS_CONFIG[r.area];
+                    if (ac) { setArea(r.area); setAreaConfig(ac); }
+                    setRegistro(r);
+                    setBusqueda("");
+                    setPaso(4);
+                  }}
+                  style={{
+                    width: "100%", textAlign: "left", padding: "10px 16px",
+                    borderTop: i > 0 ? `0.5px solid ${C.bordeHover}` : "none",
+                    background: C.fondoCard, border: "none", cursor: "pointer",
+                    transition: "background 0.1s",
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = "#F0FBF7"}
+                  onMouseLeave={e => e.currentTarget.style.background = C.fondoCard}
+                >
+                  <p style={{ fontSize: 11, color: C.textoMuted, margin: "0 0 2px" }}>
+                    {r.area} · {r.grado}° · {r.bloque}
+                  </p>
+                  <p style={{ fontSize: 13, color: C.textoPrincipal, fontWeight: 500, margin: 0 }}>{r.item_original}</p>
+                </button>
+              ))}
+            </div>
+          )}
 
-            {/* Acordeón de bloques */}
-            {!busqueda.trim() && (
+          {/* Chips de confirmación */}
+          {gradoData && paso > 1 && !generando && (
+            <Chip label="GRADO" valor={`${gradoData.num} grado`} onClick={() => cambiarDesde(1)} />
+          )}
+          {area && paso > 2 && !generando && (
+            <Chip label="ÁREA" valor={area} onClick={() => cambiarDesde(2)} />
+          )}
+          {registro && paso > 3 && !generando && (
+            <Chip label="CONTENIDO" valor={registro.item_original} onClick={() => cambiarDesde(3)} />
+          )}
+
+          {/* Separador */}
+          {paso > 1 && !generando && (
+            <div style={{ height: "0.5px", background: C.bordeSuave, margin: "14px 0" }} />
+          )}
+
+          {/* Botón volver */}
+          {paso > 1 && !generando && (
+            <button
+              onClick={() => cambiarDesde(paso - 1)}
+              style={{
+                display: "flex", alignItems: "center", gap: 4,
+                fontSize: 12, color: C.textoMuted,
+                background: "none", border: "none",
+                cursor: "pointer", padding: "0 0 14px",
+                transition: "color 0.15s",
+              }}
+              onMouseEnter={e => e.currentTarget.style.color = C.textoPrincipal}
+              onMouseLeave={e => e.currentTarget.style.color = C.textoMuted}
+            >
+              ‹ volver
+            </button>
+          )}
+
+          {/* Error */}
+          {error && !generando && (
+            <div style={{
+              background: "#fee2e2", border: "1px solid #fca5a5",
+              borderRadius: 10, padding: "12px 16px", marginBottom: 20,
+              fontSize: 13, color: "#991b1b", animation: "fadeUp 0.3s both",
+            }}>{error}</div>
+          )}
+
+          {/* ── PASO 1: Grado ── */}
+          {paso === 1 && (
+            <PasoWrap>
+              <PreguntaHeader pregunta="¿Con qué grado trabajamos hoy?" sub="Elegí el año de la primaria" />
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                {GRADOS.map((g) => (
+                  <GradoBtn
+                    key={g.num}
+                    g={g}
+                    activo={gradoData?.num === g.num}
+                    onClick={() => {
+                      setGradoData(g);
+                      setArea(null); setAreaConfig(null); setRegistro(null);
+                      setTimeout(() => setPaso(2), 240);
+                    }}
+                  />
+                ))}
+              </div>
+            </PasoWrap>
+          )}
+
+          {/* ── PASO 2: Área ── */}
+          {paso === 2 && (
+            <PasoWrap>
+              <PreguntaHeader
+                pregunta="¿Qué área trabajamos?"
+                sub={`${gradoData?.num} · elegí la materia`}
+              />
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                {areasDisponibles.map((a) => (
+                  <AreaBtn
+                    key={a.nombre}
+                    a={a}
+                    activo={area === a.nombre}
+                    onClick={() => {
+                      setArea(a.nombre);
+                      setAreaConfig(a);
+                      setRegistro(null);
+                      setBusqueda("");
+                      setTimeout(() => setPaso(3), 240);
+                    }}
+                  />
+                ))}
+              </div>
+            </PasoWrap>
+          )}
+
+          {/* ── PASO 3: Contenido (acordeón) ── */}
+          {paso === 3 && (
+            <PasoWrap>
+              <PreguntaHeader
+                pregunta={`¿Qué contenido de ${area}?`}
+                sub="Diseño Curricular PBA · elegí el bloque y el objetivo"
+              />
               <AcordeonBloques
                 bloques={bloquesDisponibles}
                 contenidosPorBloque={contenidosPorBloque}
-                onSelectContenido={(r) => elegir(setRegistro, r, 5)}
+                registroSeleccionado={registro}
+                onSelect={(r) => {
+                  setRegistro(r);
+                  setTimeout(() => setPaso(4), 260);
+                }}
               />
-            )}
+            </PasoWrap>
+          )}
 
-            {/* Si hay búsqueda y no hay resultados, mostrar acordeón igual */}
-            {busqueda.trim() && resultadosBusqueda && resultadosBusqueda.length === 0 && (
-              <div style={{ marginTop: 16 }}>
-                <AcordeonBloques
-                  bloques={bloquesDisponibles}
-                  contenidosPorBloque={contenidosPorBloque}
-                  onSelectContenido={(r) => { setBusqueda(""); elegir(setRegistro, r, 5); }}
+          {/* ── PASO 4: Opciones y generar ── */}
+          {paso === 4 && !generando && (
+            <PasoWrap>
+              <PreguntaHeader pregunta="Últimos detalles" sub="¿Qué querés que incluya la ficha?" />
+              <Toggle
+                on={incluirExplicacion}
+                onChange={(v) => {
+                  setIncluirExplicacion(v);
+                  if (!v) setIncluirEjemplo(false);
+                }}
+                title="Incluir explicación del tema"
+                desc="Agrega un párrafo explicativo antes de las actividades"
+              />
+              <div style={{ opacity: incluirExplicacion ? 1 : 0.45, transition: "opacity 0.2s" }}>
+                <Toggle
+                  on={incluirEjemplo && incluirExplicacion}
+                  onChange={(v) => { if (incluirExplicacion) setIncluirEjemplo(v); }}
+                  title="Incluir ejemplo concreto"
+                  desc="Agrega un ejemplo cercano a la experiencia del alumno"
                 />
               </div>
-            )}
-          </PasoActivo>
-        )}
-
-        {/* Paso 4: Tipo de texto / Regla (PDL) */}
-        {paso === 4 && isPDL && bloque === "Lectura de textos" && (
-          <PasoActivo
-            pregunta={!pdlTipoTexto ? "¿Qué tipo de texto?" : "¿Cuál es la práctica lectora?"}
-            sub={!pdlTipoTexto ? `Textos disponibles para ${gradoData?.num} grado` : pdlTipoTexto}
-          >
-            {!pdlTipoTexto ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {(PDL_TIPOS_TEXTO_LECTURA[gradoNum] || []).map((t, i) => (
-                  <OpcionBtn key={t} label={t} i={i} onClick={() => setPdlTipoTexto(t)} suave />
-                ))}
-              </div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {getPracticasPDL(pdlTipoTexto, gradoNum).map((p, i) => (
-                  <OpcionBtn key={p} label={p} i={i} onClick={() => elegir(setPdlPractica, p, 5)} suave />
-                ))}
-              </div>
-            )}
-          </PasoActivo>
-        )}
-
-        {paso === 4 && isPDL && bloque === "Escritura de textos" && (
-          <PasoActivo pregunta="¿Qué tipo de texto?" sub={`Tipos disponibles para ${gradoData?.num} grado`}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {(PDL_TIPOS_TEXTO_ESCRITURA[gradoNum] || []).map((t, i) => (
-                <OpcionBtn key={t} label={t} i={i} onClick={() => elegir(setPdlTipoTexto, t, 5)} suave />
-              ))}
-            </div>
-          </PasoActivo>
-        )}
-
-        {paso === 4 && isPDL && bloque === "Ortografía" && (
-          <PasoActivo pregunta="¿Cuál es la regla ortográfica?" sub={`Reglas para ${gradoData?.num} grado`}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {(PDL_REGLAS_ORTOGRAFIA[gradoNum] || []).map((r, i) => (
-                <OpcionBtn key={r} label={r} i={i} onClick={() => elegir(setPdlTipoTexto, r, 5)} suave />
-              ))}
-            </div>
-          </PasoActivo>
-        )}
-
-        {/* Paso 5: Confirmar y generar (no PDL) */}
-        {paso === 5 && !generando && !isPDL && (
-          <PasoActivo pregunta="Todo listo. ¿Generamos la ficha?" sub="Revisá arriba lo que elegiste. Tocá cualquier bloque para cambiarlo.">
-            {registro && (
-              <div style={{
-                background: C.white, border: `1px solid ${C.border}`,
-                borderRadius: 10, padding: "14px 16px", marginBottom: 24
-              }}>
-                <p style={{ fontSize: 11, color: C.muted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 6 }}>Objetivo de aprendizaje</p>
-                <p style={{ fontSize: 13, color: C.texto, lineHeight: 1.6, margin: 0 }}>{registro.objetivo}</p>
-              </div>
-            )}
-            {/* Checkboxes opcionales con tooltips */}
-            <div style={{ marginBottom: 20 }}>
-              <p style={{ fontSize: 11, color: C.muted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 10 }}>
-                Opciones adicionales
+              <button
+                onClick={generar}
+                style={{
+                  width: "100%", padding: 15,
+                  background: C.verdeOscuro, color: "#fff",
+                  border: "none", borderRadius: 12,
+                  fontSize: 15, fontWeight: 600,
+                  cursor: "pointer", letterSpacing: "-0.2px",
+                  marginTop: 16, transition: "all 0.18s",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = C.verdeHoverBtn; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = C.verdeOscuro; e.currentTarget.style.transform = "translateY(0)"; }}
+                onMouseDown={e => { e.currentTarget.style.transform = "scale(0.98)"; }}
+                onMouseUp={e => { e.currentTarget.style.transform = "translateY(-1px)"; }}
+              >
+                Generar ficha ✦
+              </button>
+              <p style={{ fontSize: 12, color: C.textoMuted, textAlign: "center", marginTop: 8 }}>
+                Tarda unos segundos · Alineada al Diseño Curricular PBA
               </p>
-              {[
-                {
-                  id: "explicacion",
-                  label: "Incluir explicación",
-                  tooltip: "El alumno lee una explicación del tema antes de arrancar",
-                  checked: incluirExplicacion,
-                  disabled: false,
-                  onChange: (v) => { setIncluirExplicacion(v); if (!v) setIncluirEjemplo(false); },
-                },
-                {
-                  id: "ejemplo",
-                  label: "Incluir ejemplo",
-                  tooltip: "Se muestra un ejemplo resuelto antes de los ejercicios",
-                  checked: incluirEjemplo,
-                  disabled: !incluirExplicacion,
-                  onChange: setIncluirEjemplo,
-                },
-              ].map(({ id, label, tooltip, checked, disabled, onChange }) => (
-                <TooltipWrapper key={id} text={tooltip}>
-                  <div
-                    onClick={() => !disabled && onChange(!checked)}
-                    style={{
-                      display: "flex", alignItems: "center", gap: 12,
-                      padding: "12px 16px",
-                      background: C.white,
-                      border: `1px solid ${checked ? C.acento : C.border}`,
-                      borderRadius: 10,
-                      cursor: disabled ? "not-allowed" : "pointer",
-                      opacity: disabled ? 0.4 : 1,
-                      transition: "all 0.15s",
-                      marginBottom: 8,
-                      userSelect: "none",
-                    }}
-                  >
-                    <div style={{
-                      width: 20, height: 20, borderRadius: 5, flexShrink: 0,
-                      border: `1.5px solid ${checked ? C.acento : C.border}`,
-                      background: checked ? C.acento : C.white,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      transition: "all 0.15s",
-                    }}>
-                      {checked && (
-                        <svg viewBox="0 0 12 10" fill="none" width="10" height="10">
-                          <polyline points="1,5 4,8 11,1" stroke={C.btn} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      )}
-                    </div>
-                    <span style={{ fontSize: 14, color: C.texto, fontWeight: 500 }}>{label}</span>
-                  </div>
-                </TooltipWrapper>
-              ))}
+            </PasoWrap>
+          )}
+
+          {/* ── Loading ── */}
+          {generando && (
+            <div style={{ padding: "48px 0", animation: "fadeUp 0.4s both" }}>
+              <div style={{
+                background: C.verdeClaroBg, borderRadius: 16,
+                padding: "36px 32px", textAlign: "center",
+                maxWidth: 400, margin: "0 auto",
+              }}>
+                <div style={{ position: "relative", width: 64, height: 64, margin: "0 auto 28px" }}>
+                  <div style={{
+                    position: "absolute", inset: 0,
+                    border: "4px solid rgba(0,196,140,0.2)",
+                    borderTopColor: C.verdeAcento, borderRadius: "50%",
+                    animation: "spin 1.8s linear infinite",
+                  }} />
+                  <span style={{
+                    position: "absolute", inset: 0,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 22,
+                  }}>✏️</span>
+                </div>
+                <p style={{
+                  fontSize: 17, fontWeight: 700, color: C.textoPrincipal,
+                  marginBottom: 20, minHeight: 28,
+                  opacity: msgVisible ? 1 : 0,
+                  transition: "opacity 0.3s ease",
+                }}>{getMensaje(msgIdx)}</p>
+                <div style={{ height: 4, background: "rgba(0,196,140,0.2)", borderRadius: 999, overflow: "hidden" }}>
+                  <div style={{
+                    height: "100%", background: C.verdeAcento, borderRadius: 999,
+                    width: mensajeLoading === 0 ? "30%" : mensajeLoading === 1 ? "75%" : "100%",
+                    transition: "width 1.5s ease",
+                  }} />
+                </div>
+              </div>
             </div>
+          )}
+        </main>
 
-            <button
-              onClick={generar}
-              style={{
-                width: "100%", padding: "18px",
-                background: C.btn, color: C.btnText,
-                fontSize: 17, fontWeight: 700, border: "none",
-                borderRadius: 12, cursor: "pointer", transition: "all 0.18s"
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = C.acento; e.currentTarget.style.color = C.btn; }}
-              onMouseLeave={e => { e.currentTarget.style.background = C.btn; e.currentTarget.style.color = C.btnText; }}
-            >
-              Generar ficha ✦
-            </button>
-            <p style={{ fontSize: 12, color: C.muted, textAlign: "center", marginTop: 10 }}>
-              Tarda unos segundos · Alineada al Diseño Curricular
-            </p>
-          </PasoActivo>
-        )}
+        {/* ── SIDEBAR ── */}
+        <aside style={{
+          background: C.fondoCard,
+          borderLeft: isMobile ? "none" : `0.5px solid ${C.bordeSuave}`,
+          borderTop: isMobile ? `0.5px solid ${C.bordeSuave}` : "none",
+          padding: 20,
+          display: "flex", flexDirection: "column", gap: 12,
+          position: isMobile ? "static" : "sticky",
+          top: isMobile ? "auto" : 57,
+          height: isMobile ? "auto" : "calc(100vh - 57px)",
+          overflowY: "auto",
+          order: isMobile ? 2 : 0,
+        }}>
+          <SidebarPreview
+            gradoData={gradoData}
+            area={area}
+            areaConfig={areaConfig}
+            registro={registro}
+            incluirExplicacion={incluirExplicacion}
+            incluirEjemplo={incluirEjemplo}
+          />
 
-        {/* Paso 5: Confirmar y generar (PDL) */}
-        {paso === 5 && !generando && isPDL && (
-          <PasoActivo pregunta="Todo listo. ¿Generamos la ficha?" sub="Revisá arriba lo que elegiste. Tocá cualquier bloque para cambiarlo.">
-            <button
-              onClick={generar}
-              style={{
-                width: "100%", padding: "18px",
-                background: C.btn, color: C.btnText,
-                fontSize: 17, fontWeight: 700, border: "none",
-                borderRadius: 12, cursor: "pointer", transition: "all 0.18s"
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = C.acento; e.currentTarget.style.color = C.btn; }}
-              onMouseLeave={e => { e.currentTarget.style.background = C.btn; e.currentTarget.style.color = C.btnText; }}
-            >
-              Generar ficha ✦
-            </button>
-            <p style={{ fontSize: 12, color: C.muted, textAlign: "center", marginTop: 10 }}>
-              Tarda unos segundos · Alineada al Diseño Curricular
-            </p>
-          </PasoActivo>
-        )}
-
-        {/* Botón Volver */}
-        {!generando && (
-          <div style={{ marginTop: 24, textAlign: "center" }}>
-            <button
-              onClick={handleVolver}
-              style={{
-                background: "none", border: "none", cursor: "pointer",
-                fontSize: 13, color: C.muted, padding: "6px 12px",
-                borderRadius: 6, transition: "color 0.15s",
-              }}
-              onMouseEnter={e => { e.currentTarget.style.color = C.texto; }}
-              onMouseLeave={e => { e.currentTarget.style.color = C.muted; }}
-            >
-              ← Volver
-            </button>
-          </div>
-        )}
-
-        {/* Loading */}
-        {generando && (
-          <div style={{ padding: "48px 0", animation: "fadeUp 0.4s both" }}>
-            <div style={{
-              background: C.suave,
-              borderRadius: 16,
-              padding: "36px 32px",
-              textAlign: "center",
-              maxWidth: 400,
-              margin: "0 auto",
-            }}>
-
-              {/* Spinner con ícono */}
-              <div style={{ position: "relative", width: 64, height: 64, margin: "0 auto 28px" }}>
-                <div style={{
-                  position: "absolute", inset: 0,
-                  border: "4px solid rgba(0,196,140,0.2)",
-                  borderTopColor: C.acento,
-                  borderRadius: "50%",
-                  animation: "spin 1.8s linear infinite",
-                }} />
+          {/* Resumen de selecciones */}
+          <div style={{ background: C.fondoApp, borderRadius: 12, padding: "12px 14px" }}>
+            {[
+              { key: "Grado",    val: gradoData?.num },
+              { key: "Área",     val: area },
+              { key: "Contenido", val: registro?.item_original },
+            ].map(({ key, val }) => (
+              <div key={key} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, marginBottom: 4 }}>
+                <span style={{ fontSize: 11, color: C.textoMuted, flexShrink: 0 }}>{key}</span>
                 <span style={{
-                  position: "absolute", inset: 0,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 22,
-                }}>✏️</span>
+                  fontSize: 11,
+                  color: val ? C.textoPrincipal : "#C4D9D0",
+                  fontWeight: val ? 500 : 400,
+                  fontStyle: val ? "normal" : "italic",
+                  textAlign: "right", maxWidth: 140,
+                  overflow: "hidden", textOverflow: "ellipsis",
+                  display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
+                }}>{val || "—"}</span>
               </div>
-
-              {/* Mensaje con fade */}
-              <p style={{
-                fontSize: 17, fontWeight: 700,
-                color: C.texto, marginBottom: 20,
-                minHeight: 28,
-                opacity: msgVisible ? 1 : 0,
-                transition: "opacity 0.3s ease",
-              }}>
-                {getMensaje(msgIdx)}
-              </p>
-
-              {/* Barra de progreso */}
-              <div style={{
-                height: 4, background: "rgba(0,196,140,0.2)",
-                borderRadius: 999, overflow: "hidden", marginBottom: 28,
-              }}>
-                <div style={{
-                  height: "100%", background: C.acento, borderRadius: 999,
-                  width: mensajeLoading === 0 ? "30%" : mensajeLoading === 1 ? "75%" : "100%",
-                  transition: "width 0.8s cubic-bezier(.22,1,.36,1)",
-                }} />
-              </div>
-
-              {/* Steps */}
-              <div style={{ display: "flex", justifyContent: "center", gap: 32 }}>
-                {["Generando", "Validando", "Lista"].map((label, i) => {
-                  const completado = i < mensajeLoading;
-                  const activo = i === mensajeLoading;
-                  return (
-                    <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-                      <div style={{
-                        width: 28, height: 28, borderRadius: "50%",
-                        background: completado ? C.acento : "white",
-                        border: `2px solid ${completado || activo ? C.acento : "rgba(0,196,140,0.3)"}`,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        animation: activo ? "pulse 1.5s ease-in-out infinite" : "none",
-                        transition: "all 0.4s",
-                      }}>
-                        {completado
-                          ? <span style={{ color: "white", fontWeight: 800, fontSize: 13 }}>✓</span>
-                          : <span style={{ opacity: activo ? 0.5 : 0.2, fontSize: 7 }}>●</span>
-                        }
-                      </div>
-                      <span style={{
-                        fontSize: 10, fontWeight: 500,
-                        color: completado || activo ? C.muted : "rgba(74,107,96,0.35)",
-                        transition: "color 0.4s", letterSpacing: "0.03em",
-                      }}>
-                        {label}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-
-            </div>
+            ))}
           </div>
-        )}
 
+          {/* Badge DC PBA */}
+          <a
+            href="https://www.abc.gob.ar/secretarias/sites/default/files/2024-07/diseno-curricular-primaria-2018.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "flex", alignItems: "center", gap: 8,
+              fontSize: 12, color: C.verdeTexto,
+              background: C.verdeClaroBg,
+              border: `0.5px solid ${C.verdeClaroBorder}`,
+              borderRadius: 10, padding: "9px 12px",
+              textDecoration: "none", transition: "opacity 0.15s",
+            }}
+            onMouseEnter={e => e.currentTarget.style.opacity = "0.8"}
+            onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+          >
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: C.verdeAcento, flexShrink: 0 }} />
+            Alineado al Diseño Curricular PBA 2018 ↗
+          </a>
+        </aside>
       </div>
     </div>
   );
