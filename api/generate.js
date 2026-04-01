@@ -180,7 +180,7 @@ function buildGeneratorPrompt(contenido, tipoFicha, incluirExplicacion, incluirE
   const cantidadEjercicios = (!incluirExplicacion && !incluirEjemplo) ? 4 : 3;
 
   const bloqueLC = (contenido.bloque || "").toLowerCase();
-  const itemLC = (contenido.item || "").toLowerCase();
+  const itemLC = (contenido.subtema || contenido.item_original || "").toLowerCase();
   const esHistoria = bloqueLC.includes("tiempo") || bloqueLC.includes("historia") || itemLC.includes("historia");
   const esGeografia = bloqueLC.includes("territorio") || bloqueLC.includes("geograf") || itemLC.includes("mapa") || itemLC.includes("territorio");
   const esEstimacion = itemLC.includes("estimaci") || itemLC.includes("número sense") || itemLC.includes("numero sense");
@@ -228,7 +228,9 @@ Generá un recurso educativo para:
 Grado: ${contenido.grado}°
 Área: ${contenido.area}
 Bloque: ${contenido.bloque}
-Contenido: ${contenido.item}
+Tema: ${contenido.subtema}
+Objetivo de aprendizaje: ${contenido.objetivo_especifico}
+${contenido.item_original ? `Referencia del bloque: ${contenido.item_original}` : ""}
 ${contenido.contexto_pedagogico ? `Contexto adicional: ${contenido.contexto_pedagogico}` : ""}
 ${feedbackSection}
 
@@ -377,7 +379,8 @@ DATOS CURRICULARES:
 - Grado: ${contenido.grado}°
 - Área: ${contenido.area}
 - Bloque: ${contenido.bloque}
-- Contenido: ${contenido.item}
+- Tema: ${contenido.subtema}
+- Objetivo de aprendizaje: ${contenido.objetivo_especifico}
 - Tipo de ficha solicitada: ${tipoFicha}
 
 FICHA A REVISAR:

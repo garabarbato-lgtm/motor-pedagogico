@@ -277,7 +277,7 @@ function AcordeonBloques({ bloques, contenidosPorBloque, registroSeleccionado, o
                       onMouseEnter={e => { if (!activo) { e.currentTarget.style.background = "#F0FBF7"; e.currentTarget.style.color = C.textoPrincipal; } }}
                       onMouseLeave={e => { if (!activo) { e.currentTarget.style.background = C.fondoCard; e.currentTarget.style.color = C.textoSec; } }}
                     >
-                      <span>{r.item_original}</span>
+                      <span>{r.subtema || r.item_original}</span>
                       {activo && <span style={{ fontSize: 12, color: C.verdeAcento, flexShrink: 0, marginLeft: 8 }}>✓</span>}
                     </button>
                   );
@@ -293,7 +293,7 @@ function AcordeonBloques({ bloques, contenidosPorBloque, registroSeleccionado, o
 
 function SidebarPreview({ gradoData, area, registro, incluirExplicacion, incluirEjemplo }) {
   const tituloFicha = registro
-    ? registro.item_original
+    ? (registro.subtema || registro.item_original)
     : area
     ? `${area} · ${gradoData?.num}`
     : gradoData
@@ -448,7 +448,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
     bloquesDisponibles.forEach(b => {
       result[b] = curricular
         .filter(r => gradoData.valores.includes(String(r.grado)) && r.area === area && r.bloque === b)
-        .sort((a, b) => a.item_original.localeCompare(b.item_original));
+        .sort((a, b) => (a.subtema || a.item_original).localeCompare(b.subtema || b.item_original));
     });
     return result;
   }, [curricular, gradoData, area, bloquesDisponibles]);
@@ -461,7 +461,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
     if (gradoData) base = base.filter(r => gradoData.valores.includes(String(r.grado)));
     if (area) base = base.filter(r => r.area === area);
     return base.filter(r =>
-      r.item_original.toLowerCase().includes(q) ||
+      (r.subtema || r.item_original).toLowerCase().includes(q) ||
       r.bloque.toLowerCase().includes(q) ||
       r.area.toLowerCase().includes(q)
     ).slice(0, 8);
@@ -582,7 +582,9 @@ export default function Generador({ onFichaGenerada, onVolver }) {
           grado: registro.grado,
           area: registro.area,
           bloque: registro.bloque,
-          item: registro.item_original,
+          item_original: registro.item_original,
+          subtema: registro.subtema || registro.item_original,
+          objetivo_especifico: registro.objetivo_especifico,
           contexto_pedagogico: `Incluir explicación: ${incluirExplicacion}. Incluir ejemplo: ${incluirEjemplo}.`,
         },
         tipoFicha: "ficha de trabajo",
@@ -719,7 +721,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                   <p style={{ fontSize: 11, color: C.textoMuted, margin: "0 0 2px" }}>
                     {r.area} · {r.grado}° · {r.bloque}
                   </p>
-                  <p style={{ fontSize: 13, color: C.textoPrincipal, fontWeight: 500, margin: 0 }}>{r.item_original}</p>
+                  <p style={{ fontSize: 13, color: C.textoPrincipal, fontWeight: 500, margin: 0 }}>{r.subtema || r.item_original}</p>
                 </button>
               ))}
             </div>
@@ -733,7 +735,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
             <Chip label="ÁREA" valor={area} onClick={() => cambiarDesde(2)} />
           )}
           {registro && paso > 3 && !generando && (
-            <Chip label="CONTENIDO" valor={registro.item_original} onClick={() => cambiarDesde(3)} />
+            <Chip label="CONTENIDO" valor={registro.subtema || registro.item_original} onClick={() => cambiarDesde(3)} />
           )}
           {area === "Prácticas del Lenguaje" && tipoFicha && genero && paso > 3 && !generando && (
             <Chip label="CONTENIDO" valor={`${tipoFicha} · ${genero}`} onClick={() => cambiarDesde(3)} />
@@ -1025,7 +1027,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
             {[
               { key: "Grado",    val: gradoData?.num },
               { key: "Área",     val: area },
-              { key: "Contenido", val: area === "Prácticas del Lenguaje" ? (genero ? `${tipoFicha} · ${genero}` : tipoFicha) : registro?.item_original },
+              { key: "Contenido", val: area === "Prácticas del Lenguaje" ? (genero ? `${tipoFicha} · ${genero}` : tipoFicha) : (registro?.subtema || registro?.item_original) },
             ].map(({ key, val }) => (
               <div key={key} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, marginBottom: 4 }}>
                 <span style={{ fontSize: 11, color: C.textoMuted, flexShrink: 0 }}>{key}</span>
