@@ -65,14 +65,11 @@ function pdlBloqueATipo(bloque) {
 }
 
 // ── Búsqueda: normalización ────────────────────────────────────────────────
-
-// Minúsculas + sin tildes (ej: "Matemática" → "matematica")
 function normalizar(str) {
   if (!str) return "";
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
-// Blob de todos los campos buscables de un registro
 function buildBlob(r) {
   const g = String(r.grado);
   return normalizar(
@@ -91,13 +88,27 @@ const SUGERENCIAS = [
 
 // ── Sub-componentes ────────────────────────────────────────────────────────
 
-// Animación GSAP en cada mount
-function PasoWrap({ children }) {
+// Animación GSAP en cada mount: entrar + stagger cards + boton
+function PasoWrap({ children, onMount }) {
   const ref = useRef(null);
   useEffect(() => {
-    if (ref.current) {
-      gsap.from(ref.current, { y: 12, opacity: 0, duration: 0.35, ease: "power2.out" });
+    if (!ref.current) return;
+    // Entrada principal
+    gsap.fromTo(ref.current,
+      { autoAlpha: 0, y: 16 },
+      { autoAlpha: 1, y: 0, duration: 0.4, ease: "power3.out" }
+    );
+    // Stagger cards
+    const cards = ref.current.querySelectorAll("[data-card]");
+    if (cards.length > 0) {
+      gsap.from(cards, { autoAlpha: 0, y: 10, duration: 0.35, stagger: 0.06, ease: "power2.out", delay: 0.15 });
     }
+    // Botón generar
+    const boton = ref.current.querySelector("[data-boton]");
+    if (boton) {
+      gsap.from(boton, { autoAlpha: 0, scale: 0.97, duration: 0.4, ease: "back.out(1.7)", delay: 0.2 });
+    }
+    if (onMount) onMount(ref.current);
   }, []);
   return <div ref={ref}>{children}</div>;
 }
@@ -127,7 +138,7 @@ function ChipSeleccion({ label, valor, onClick }) {
         width: "100%", display: "flex", alignItems: "center", gap: 10,
         background: hov ? "#F0FBF7" : C.fondoCard,
         border: `1px solid ${hov ? C.verdeAcento : C.bordeSuave}`,
-        borderRadius: 12, padding: "10px 16px",
+        borderRadius: 12, padding: "14px 20px",
         cursor: "pointer", marginBottom: 8,
         transition: "all 0.15s", textAlign: "left",
         boxShadow: hov ? "0 2px 8px rgba(0,71,51,0.08)" : "none",
@@ -161,11 +172,12 @@ function GradoBtn({ g, activo, onClick }) {
   const [hov, setHov] = useState(false);
   return (
     <button
+      data-card
       onClick={onClick}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        minHeight: 100, borderRadius: 16,
+        minHeight: 110, borderRadius: 16,
         border: activo ? `2px solid ${C.verdeOscuro}` : `1.5px solid ${hov ? C.verdeAcento : C.bordeSuave}`,
         background: activo ? C.verdeOscuro : (hov ? "#F0FBF7" : C.fondoCard),
         cursor: "pointer", transition: "all 0.18s",
@@ -175,7 +187,7 @@ function GradoBtn({ g, activo, onClick }) {
       }}
     >
       <span style={{
-        fontFamily: "Georgia, serif", fontSize: 32, fontWeight: 700, lineHeight: 1,
+        fontFamily: "'Lexend', sans-serif", fontSize: 36, fontWeight: 700, lineHeight: 1,
         color: activo ? "#fff" : C.verdeOscuro, transition: "color 0.18s",
       }}>{g.num}</span>
       <span style={{
@@ -190,11 +202,12 @@ function AreaBtn({ a, activo, onClick }) {
   const [hov, setHov] = useState(false);
   return (
     <button
+      data-card
       onClick={onClick}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        borderRadius: 16, padding: 24,
+        borderRadius: 16, padding: 28,
         cursor: "pointer",
         display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 10,
         transition: "all 0.18s",
@@ -205,7 +218,7 @@ function AreaBtn({ a, activo, onClick }) {
         textAlign: "left",
       }}
     >
-      <span style={{ fontSize: 32, lineHeight: 1 }}>{a.emoji}</span>
+      <span style={{ fontSize: 52, lineHeight: 1 }}>{a.emoji}</span>
       <div>
         <p style={{ fontSize: 16, fontWeight: 700, color: C.verdeOscuro, margin: "0 0 4px" }}>{a.nombre}</p>
         <p style={{ fontSize: 12, color: C.textoSec, lineHeight: 1.4, margin: 0 }}>{a.desc}</p>
@@ -236,16 +249,16 @@ function Toggle({ on, onChange, title, desc }) {
         <p style={{ fontSize: 12, color: C.textoMuted, lineHeight: 1.5, margin: 0 }}>{desc}</p>
       </div>
       <div style={{
-        width: 48, height: 26, borderRadius: 99,
+        width: 52, height: 28, borderRadius: 99,
         background: on ? C.verdeOscuro : C.bordeSuave,
         position: "relative", flexShrink: 0, marginTop: 2,
         transition: "background 0.2s",
       }}>
         <div style={{
           position: "absolute", top: 3, left: 3,
-          width: 20, height: 20, borderRadius: "50%",
+          width: 22, height: 22, borderRadius: "50%",
           background: "#fff",
-          transform: on ? "translateX(22px)" : "translateX(0)",
+          transform: on ? "translateX(24px)" : "translateX(0)",
           transition: "transform 0.2s",
           boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
         }} />
@@ -471,7 +484,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
   const [incluirEjemplo, setIncluirEjemplo] = useState(true);
   const [busqueda, setBusqueda] = useState("");
   const [busquedaFocused, setBusquedaFocused] = useState(false);
-  const [busquedaGrado, setBusquedaGrado] = useState(null); // filtro de chip
+  const [busquedaGrado, setBusquedaGrado] = useState(null);
   const [tipoFicha, setTipoFicha] = useState(null);
   const [genero, setGenero] = useState(null);
   const [generando, setGenerando] = useState(false);
@@ -480,6 +493,9 @@ export default function Generador({ onFichaGenerada, onVolver }) {
   const [msgIdx, setMsgIdx] = useState(0);
   const [msgVisible, setMsgVisible] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Ref al elemento DOM del PasoWrap actual (para salirPaso)
+  const pasoWrapEl = useRef(null);
 
   const curricular = curricularData;
   const gradoNum = gradoData?.valores[0] || "1";
@@ -522,10 +538,8 @@ export default function Generador({ onFichaGenerada, onVolver }) {
 
   const resultadosBusqueda = useMemo(() => {
     if (!busqueda.trim()) return null;
-    // Cada palabra del query debe aparecer en el blob del registro
     const words = normalizar(busqueda.trim()).split(/\s+/).filter(Boolean);
     let base = curricular;
-    // Filtro de chip (grado exacto seleccionado con chip de sugerencia)
     if (busquedaGrado) base = base.filter(r => String(r.grado) === busquedaGrado);
     return base
       .filter(r => { const b = buildBlob(r); return words.every(w => b.includes(w)); })
@@ -559,38 +573,53 @@ export default function Generador({ onFichaGenerada, onVolver }) {
     return () => clearInterval(interval);
   }, [generando]);
 
+  // ── Transición animada entre pasos ─────────────────────────────────────
+  const irAPaso = (nuevoPaso, setupFn) => {
+    const el = pasoWrapEl.current;
+    const doSwitch = () => {
+      if (setupFn) setupFn();
+      setPaso(nuevoPaso);
+    };
+    if (el) {
+      gsap.to(el, { autoAlpha: 0, y: -12, duration: 0.25, ease: "power2.in", onComplete: doSwitch });
+    } else {
+      doSwitch();
+    }
+  };
+
   // ── Navegación ─────────────────────────────────────────────────────────
   const cambiarDesde = (p) => {
-    setPaso(p);
-    if (p <= 0) {
-      setGradoData(null); setArea(null); setAreaConfig(null); setRegistro(null);
-      setTipoFicha(null); setGenero(null);
-    } else if (p <= 1) {
-      setArea(null); setAreaConfig(null); setRegistro(null);
-      setTipoFicha(null); setGenero(null);
-    } else if (p <= 2) {
-      setRegistro(null); setTipoFicha(null); setGenero(null);
-    } else if (p <= 3) {
-      setRegistro(null); setTipoFicha(null); setGenero(null);
-    }
-    setBusqueda(""); setBusquedaGrado(null);
-    setError(null); setGenerando(false); setMensajeLoading(0);
+    irAPaso(p, () => {
+      if (p <= 0) {
+        setGradoData(null); setArea(null); setAreaConfig(null); setRegistro(null);
+        setTipoFicha(null); setGenero(null);
+      } else if (p <= 1) {
+        setArea(null); setAreaConfig(null); setRegistro(null);
+        setTipoFicha(null); setGenero(null);
+      } else if (p <= 2) {
+        setRegistro(null); setTipoFicha(null); setGenero(null);
+      } else if (p <= 3) {
+        setRegistro(null); setTipoFicha(null); setGenero(null);
+      }
+      setBusqueda(""); setBusquedaGrado(null);
+      setError(null); setGenerando(false); setMensajeLoading(0);
+    });
   };
 
   // Seleccionar resultado de búsqueda → paso 4
   const selectResult = (r) => {
-    const g = GRADOS.find(g => g.valores.includes(String(r.grado)));
-    if (g) setGradoData(g);
-    const ac = AREAS_CONFIG[r.area];
-    if (ac) { setArea(r.area); setAreaConfig(ac); }
-    setRegistro(r);
-    // PDL: mapear bloque/subtema a tipoFicha/genero
-    if (r.area === "Prácticas del Lenguaje") {
-      const tipo = pdlBloqueATipo(r.bloque);
-      if (tipo) { setTipoFicha(tipo); setGenero(r.subtema || r.item_original); }
-    }
-    setBusqueda(""); setBusquedaGrado(null);
-    setPaso(4);
+    irAPaso(4, () => {
+      const g = GRADOS.find(g => g.valores.includes(String(r.grado)));
+      if (g) setGradoData(g);
+      const ac = AREAS_CONFIG[r.area];
+      if (ac) { setArea(r.area); setAreaConfig(ac); }
+      setRegistro(r);
+      if (r.area === "Prácticas del Lenguaje") {
+        const tipo = pdlBloqueATipo(r.bloque);
+        if (tipo) { setTipoFicha(tipo); setGenero(r.subtema || r.item_original); }
+      }
+      setBusqueda(""); setBusquedaGrado(null);
+    });
   };
 
   // ── API ────────────────────────────────────────────────────────────────
@@ -713,7 +742,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
           alignItems: "center", justifyContent: "center",
           padding: "40px 16px",
         }}>
-          <PasoWrap>
+          <PasoWrap onMount={(el) => { pasoWrapEl.current = el; }}>
             {/* Logo */}
             <div style={{ marginBottom: 40, textAlign: "center" }}>
               <Logo size={36} />
@@ -814,11 +843,21 @@ export default function Generador({ onFichaGenerada, onVolver }) {
             </button>
           </nav>
 
+          {/* Barra de progreso 3px */}
+          <div style={{ height: 3, background: C.bordeSuave, position: "sticky", top: 57, zIndex: 9 }}>
+            <div style={{
+              height: "100%", background: C.verdeAcento,
+              width: `${(paso / 4) * 100}%`,
+              transition: "width 0.4s ease",
+              borderRadius: "0 2px 2px 0",
+            }} />
+          </div>
+
           {/* Grid */}
           <div style={{
             display: "grid",
             gridTemplateColumns: isMobile ? "1fr" : "1fr 280px",
-            minHeight: "calc(100vh - 57px)",
+            minHeight: "calc(100vh - 60px)",
           }}>
             {/* Main */}
             <main style={{
@@ -873,15 +912,16 @@ export default function Generador({ onFichaGenerada, onVolver }) {
 
               {/* ── PASO 1: Grado ── */}
               {paso === 1 && (
-                <PasoWrap>
+                <PasoWrap onMount={(el) => { pasoWrapEl.current = el; }}>
                   <PreguntaHeader pregunta="¿Con qué grado trabajamos hoy?" sub="Elegí el año de la primaria" />
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
                     {GRADOS.map((g) => (
                       <GradoBtn key={g.num} g={g} activo={gradoData?.num === g.num}
                         onClick={() => {
-                          setGradoData(g);
-                          setArea(null); setAreaConfig(null); setRegistro(null);
-                          setTimeout(() => setPaso(2), 240);
+                          irAPaso(2, () => {
+                            setGradoData(g);
+                            setArea(null); setAreaConfig(null); setRegistro(null);
+                          });
                         }}
                       />
                     ))}
@@ -891,15 +931,16 @@ export default function Generador({ onFichaGenerada, onVolver }) {
 
               {/* ── PASO 2: Área ── */}
               {paso === 2 && (
-                <PasoWrap>
+                <PasoWrap onMount={(el) => { pasoWrapEl.current = el; }}>
                   <PreguntaHeader pregunta="¿Qué área trabajamos?" sub={`${gradoData?.num} · elegí la materia`} />
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                     {areasDisponibles.map((a) => (
                       <AreaBtn key={a.nombre} a={a} activo={area === a.nombre}
                         onClick={() => {
-                          setArea(a.nombre); setAreaConfig(a);
-                          setRegistro(null); setBusqueda("");
-                          setTimeout(() => setPaso(3), 240);
+                          irAPaso(3, () => {
+                            setArea(a.nombre); setAreaConfig(a);
+                            setRegistro(null); setBusqueda("");
+                          });
                         }}
                       />
                     ))}
@@ -909,7 +950,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
 
               {/* ── PASO 3: Contenido — áreas no-PDL ── */}
               {paso === 3 && area !== "Prácticas del Lenguaje" && (
-                <PasoWrap>
+                <PasoWrap onMount={(el) => { pasoWrapEl.current = el; }}>
                   <PreguntaHeader
                     pregunta={`¿Qué contenido de ${area}?`}
                     sub="Diseño Curricular PBA · elegí el bloque y el objetivo"
@@ -918,14 +959,14 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                     bloques={bloquesDisponibles}
                     contenidosPorBloque={contenidosPorBloque}
                     registroSeleccionado={registro}
-                    onSelect={(r) => { setRegistro(r); setTimeout(() => setPaso(4), 260); }}
+                    onSelect={(r) => { irAPaso(4, () => setRegistro(r)); }}
                   />
                 </PasoWrap>
               )}
 
               {/* ── PASO 3: PDL cascada ── */}
               {paso === 3 && area === "Prácticas del Lenguaje" && (
-                <PasoWrap>
+                <PasoWrap onMount={(el) => { pasoWrapEl.current = el; }}>
                   {!tipoFicha ? (
                     <>
                       <PreguntaHeader pregunta="¿Qué tipo de ficha?" sub={`Prácticas del Lenguaje · ${gradoData?.num}`} />
@@ -962,7 +1003,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                         ‹ volver a tipos
                       </button>
                       {getPDLGeneros(tipoFicha, gradoNum).map((gen) => (
-                        <button key={gen} onClick={() => { setGenero(gen); setTimeout(() => setPaso(4), 260); }} style={{
+                        <button key={gen} onClick={() => { irAPaso(4, () => setGenero(gen)); }} style={{
                           width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
                           background: C.fondoCard, border: `1px solid ${C.bordeSuave}`,
                           borderRadius: 12, padding: "13px 18px", cursor: "pointer", marginBottom: 8,
@@ -983,8 +1024,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
 
               {/* ── PASO 4: Opciones + Generar ── */}
               {paso === 4 && !generando && (
-                <PasoWrap>
-                  <PreguntaHeader pregunta="Últimos detalles" sub="¿Qué querés que incluya la ficha?" />
+                <PasoWrap onMount={(el) => { pasoWrapEl.current = el; }}>
                   <Toggle
                     on={incluirExplicacion}
                     onChange={(v) => { setIncluirExplicacion(v); if (!v) setIncluirEjemplo(false); }}
@@ -1000,6 +1040,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                     />
                   </div>
                   <button
+                    data-boton
                     onClick={generar}
                     style={{
                       width: "100%", padding: 18,
@@ -1066,8 +1107,8 @@ export default function Generador({ onFichaGenerada, onVolver }) {
               borderTop: isMobile ? `1px solid ${C.bordeSuave}` : "none",
               padding: 24, display: "flex", flexDirection: "column", gap: 14,
               position: isMobile ? "static" : "sticky",
-              top: isMobile ? "auto" : 57,
-              height: isMobile ? "auto" : "calc(100vh - 57px)",
+              top: isMobile ? "auto" : 60,
+              height: isMobile ? "auto" : "calc(100vh - 60px)",
               overflowY: "auto", order: isMobile ? 2 : 0,
             }}>
               <SidebarPreview
