@@ -228,6 +228,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   const [posiciones, setPosiciones] = useState({});
   const [editDraft, setEditDraft] = useState(null);
   const [mostrarReflexion, setMostrarReflexion] = useState(true);
+  const [ejerciciosOcultos, setEjerciciosOcultos] = useState(new Set());
   const refFicha = useRef(null);
   const sectionRefs = useRef({});
   const textareaRef = useRef(null);
@@ -235,6 +236,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   if (!ficha || !registro) return null;
 
   const isPDL = registro.area === "Prácticas del Lenguaje";
+  const esDosHojas = isPDL || registro.area === "Ciencias Sociales";
   const tituloTexto = (() => {
     const limpio = (fichaLocal.titulo || "")
       .replace(/\*\*(.*?)\*\*/g, "$1")
@@ -271,6 +273,28 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     window.addEventListener("resize", compute);
     return () => { cancelAnimationFrame(id); window.removeEventListener("resize", compute); };
   }, [fichaLocal, itemsLocal, editandoCampo]);
+
+  // ── Detección de overflow y recorte automático ──
+  useEffect(() => {
+    if (esDosHojas) return;
+    const el = refFicha.current;
+    if (!el) return;
+
+    if (el.scrollHeight <= el.clientHeight) return;
+
+    // Cascada: reflexión → ejercicio 3 → ejercicio 2
+    if (mostrarReflexion) {
+      setMostrarReflexion(false);
+      return;
+    }
+    if (!ejerciciosOcultos.has(2)) {
+      setEjerciciosOcultos(prev => new Set([...prev, 2]));
+      return;
+    }
+    if (!ejerciciosOcultos.has(1)) {
+      setEjerciciosOcultos(prev => new Set([...prev, 1]));
+    }
+  }, [fichaLocal, mostrarReflexion, ejerciciosOcultos, esDosHojas]);
 
   const setRef = (key) => (el) => { sectionRefs.current[key] = el; };
 
@@ -747,7 +771,9 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
             background: C.fondo,
             border: `2.5px solid ${C.borderFuerte}`,
             borderRadius: 10,
-            minHeight: "297mm",
+            minHeight: "277mm",
+            maxHeight: esDosHojas ? "574mm" : "277mm",
+            overflow: esDosHojas ? "visible" : "hidden",
             fontFamily: "'Lexend Deca', sans-serif",
           }}>
 
@@ -953,7 +979,9 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
                     <SeccionHeader numero={numTuTurno} titulo="Tu turno" icono="✏️" />
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                       {Array.isArray(fichaLocal.ejercicios) && fichaLocal.ejercicios.length > 0
-                        ? fichaLocal.ejercicios.map((ejercicio, idx) => renderEjercicioItem(ejercicio, idx))
+                        ? fichaLocal.ejercicios.map((ejercicio, idx) =>
+                            ejerciciosOcultos.has(idx) ? null : renderEjercicioItem(ejercicio, idx)
+                          )
                         : itemsLocal.map(({ num, texto }, idx) => (
                           <div key={num}>
                             <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
