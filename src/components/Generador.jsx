@@ -37,6 +37,23 @@ const AREAS_CONFIG = {
   "Ciencias Sociales":      { emoji: "🌍", bg: "#FEF9E0", border: "#FDE98A", desc: "Historia, geografía, sociedad" },
 };
 
+// ── Datos PDL (cascada hardcodeada) ────────────────────────────────────────
+const PDL_TIPOS = ["Lectura de textos", "Escritura de textos", "Ortografía"];
+
+function getPDLGeneros(tipoFicha, grado) {
+  const g = parseInt(grado);
+  if (tipoFicha === "Ortografía") {
+    if (g <= 2) return ["Separación de palabras", "Mayúsculas", "Punto"];
+    if (g === 3) return ["Tilde en agudas, graves y esdrújulas"];
+    if (g === 4) return ["Tilde diacrítica"];
+    if (g === 5) return ["Adverbios en -mente", "Verbos con b/v"];
+    return ["Reglas de acentuación avanzadas"];
+  }
+  // Lectura y Escritura
+  if (g <= 2) return ["Cuento", "Fábula", "Poesía", "Texto informativo"];
+  return ["Cuento", "Fábula", "Leyenda", "Poesía", "Obra de teatro", "Historieta", "Noticia", "Texto informativo"];
+}
+
 // ── Sub-componentes ────────────────────────────────────────────────────────
 
 function Chip({ label, valor, onClick }) {
@@ -386,6 +403,8 @@ export default function Generador({ onFichaGenerada, onVolver }) {
   const [incluirEjemplo, setIncluirEjemplo] = useState(true);
   const [busqueda, setBusqueda] = useState("");
   const [busquedaFocused, setBusquedaFocused] = useState(false);
+  const [tipoFicha, setTipoFicha] = useState(null);
+  const [genero, setGenero] = useState(null);
   const [generando, setGenerando] = useState(false);
   const [mensajeLoading, setMensajeLoading] = useState(0);
   const [error, setError] = useState(null);
@@ -484,10 +503,13 @@ export default function Generador({ onFichaGenerada, onVolver }) {
     setPaso(p);
     if (p <= 1) {
       setGradoData(null); setArea(null); setAreaConfig(null); setRegistro(null);
+      setTipoFicha(null); setGenero(null);
     } else if (p <= 2) {
       setArea(null); setAreaConfig(null); setRegistro(null);
+      setTipoFicha(null); setGenero(null);
     } else if (p <= 3) {
       setRegistro(null);
+      setTipoFicha(null); setGenero(null);
     }
     setBusqueda("");
     setError(null);
@@ -528,25 +550,49 @@ export default function Generador({ onFichaGenerada, onVolver }) {
   };
 
   const generar = async () => {
-    if (!registro) return;
+    const isPDL = area === "Prácticas del Lenguaje";
+    if (isPDL ? (!tipoFicha || !genero) : !registro) return;
     setGenerando(true);
     setMensajeLoading(0);
     setError(null);
 
-    const payload = {
-      contenido: {
-        grado: registro.grado,
-        area: registro.area,
-        bloque: registro.bloque,
-        item: registro.item_original,
-        contexto_pedagogico: `Incluir explicación: ${incluirExplicacion}. Incluir ejemplo: ${incluirEjemplo}.`,
-      },
-      tipoFicha: "ficha de trabajo",
-      incluirExplicacion,
-      incluirEjemplo,
-    };
+    let payload, registroParaFicha;
 
-    await generarConPayload(payload, registro, false);
+    if (isPDL) {
+      payload = {
+        contenido: {
+          grado: gradoNum,
+          area,
+          tipoTexto: genero,
+        },
+        tipoFicha,
+        incluirExplicacion,
+        incluirEjemplo,
+      };
+      registroParaFicha = {
+        id: `pdl_${gradoNum}_${tipoFicha}_${genero}`,
+        grado: gradoNum,
+        area,
+        bloque: tipoFicha,
+        item_original: genero,
+      };
+    } else {
+      payload = {
+        contenido: {
+          grado: registro.grado,
+          area: registro.area,
+          bloque: registro.bloque,
+          item: registro.item_original,
+          contexto_pedagogico: `Incluir explicación: ${incluirExplicacion}. Incluir ejemplo: ${incluirEjemplo}.`,
+        },
+        tipoFicha: "ficha de trabajo",
+        incluirExplicacion,
+        incluirEjemplo,
+      };
+      registroParaFicha = registro;
+    }
+
+    await generarConPayload(payload, registroParaFicha, false);
   };
 
   const progreso = paso * 25;
@@ -689,6 +735,9 @@ export default function Generador({ onFichaGenerada, onVolver }) {
           {registro && paso > 3 && !generando && (
             <Chip label="CONTENIDO" valor={registro.item_original} onClick={() => cambiarDesde(3)} />
           )}
+          {area === "Prácticas del Lenguaje" && tipoFicha && genero && paso > 3 && !generando && (
+            <Chip label="CONTENIDO" valor={`${tipoFicha} · ${genero}`} onClick={() => cambiarDesde(3)} />
+          )}
 
           {/* Separador */}
           {paso > 1 && !generando && (
@@ -769,8 +818,8 @@ export default function Generador({ onFichaGenerada, onVolver }) {
             </PasoWrap>
           )}
 
-          {/* ── PASO 3: Contenido (acordeón) ── */}
-          {paso === 3 && (
+          {/* ── PASO 3: Contenido (acordeón) — áreas no-PDL ── */}
+          {paso === 3 && area !== "Prácticas del Lenguaje" && (
             <PasoWrap>
               <PreguntaHeader
                 pregunta={`¿Qué contenido de ${area}?`}
@@ -785,6 +834,84 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                   setTimeout(() => setPaso(4), 260);
                 }}
               />
+            </PasoWrap>
+          )}
+
+          {/* ── PASO 3: PDL — cascada hardcodeada ── */}
+          {paso === 3 && area === "Prácticas del Lenguaje" && (
+            <PasoWrap>
+              {!tipoFicha ? (
+                <>
+                  <PreguntaHeader
+                    pregunta="¿Qué tipo de ficha?"
+                    sub={`Prácticas del Lenguaje · ${gradoData?.num}`}
+                  />
+                  {PDL_TIPOS.map((tipo) => (
+                    <button
+                      key={tipo}
+                      onClick={() => setTipoFicha(tipo)}
+                      style={{
+                        width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
+                        background: C.fondoCard,
+                        border: `0.5px solid ${C.bordeSuave}`,
+                        borderRadius: 10, padding: "13px 16px",
+                        cursor: "pointer", marginBottom: 6,
+                        fontSize: 14, fontWeight: 500, color: C.textoPrincipal,
+                        textAlign: "left", transition: "all 0.15s",
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = "#F0FBF7"; e.currentTarget.style.borderColor = C.verdeAcento; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = C.fondoCard; e.currentTarget.style.borderColor = C.bordeSuave; }}
+                    >
+                      {tipo}
+                      <span style={{ fontSize: 16, color: C.textoDisabled }}>›</span>
+                    </button>
+                  ))}
+                </>
+              ) : (
+                <>
+                  <PreguntaHeader
+                    pregunta={tipoFicha === "Ortografía" ? "¿Qué regla ortográfica?" : "¿Qué tipo de texto?"}
+                    sub={tipoFicha}
+                  />
+                  <button
+                    onClick={() => setTipoFicha(null)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 4,
+                      fontSize: 12, color: C.textoMuted,
+                      background: "none", border: "none",
+                      cursor: "pointer", padding: "0 0 14px",
+                      transition: "color 0.15s",
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.color = C.textoPrincipal}
+                    onMouseLeave={e => e.currentTarget.style.color = C.textoMuted}
+                  >
+                    ‹ volver a tipos
+                  </button>
+                  {getPDLGeneros(tipoFicha, gradoNum).map((gen) => (
+                    <button
+                      key={gen}
+                      onClick={() => {
+                        setGenero(gen);
+                        setTimeout(() => setPaso(4), 260);
+                      }}
+                      style={{
+                        width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
+                        background: C.fondoCard,
+                        border: `0.5px solid ${C.bordeSuave}`,
+                        borderRadius: 10, padding: "13px 16px",
+                        cursor: "pointer", marginBottom: 6,
+                        fontSize: 13, fontWeight: 400, color: C.textoSec,
+                        textAlign: "left", transition: "all 0.15s",
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = "#F0FBF7"; e.currentTarget.style.borderColor = C.verdeAcento; e.currentTarget.style.color = C.textoPrincipal; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = C.fondoCard; e.currentTarget.style.borderColor = C.bordeSuave; e.currentTarget.style.color = C.textoSec; }}
+                    >
+                      {gen}
+                      <span style={{ fontSize: 16, color: C.textoDisabled }}>›</span>
+                    </button>
+                  ))}
+                </>
+              )}
             </PasoWrap>
           )}
 
@@ -898,7 +1025,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
             {[
               { key: "Grado",    val: gradoData?.num },
               { key: "Área",     val: area },
-              { key: "Contenido", val: registro?.item_original },
+              { key: "Contenido", val: area === "Prácticas del Lenguaje" ? (genero ? `${tipoFicha} · ${genero}` : tipoFicha) : registro?.item_original },
             ].map(({ key, val }) => (
               <div key={key} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, marginBottom: 4 }}>
                 <span style={{ fontSize: 11, color: C.textoMuted, flexShrink: 0 }}>{key}</span>
