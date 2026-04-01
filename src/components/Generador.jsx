@@ -64,6 +64,22 @@ function pdlBloqueATipo(bloque) {
   return null;
 }
 
+// ── Búsqueda: normalización ────────────────────────────────────────────────
+
+// Minúsculas + sin tildes (ej: "Matemática" → "matematica")
+function normalizar(str) {
+  if (!str) return "";
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+// Blob de todos los campos buscables de un registro
+function buildBlob(r) {
+  const g = String(r.grado);
+  return normalizar(
+    [r.subtema, r.item_original, r.bloque, r.area, g, `${g}°`, `${g}to`].join(" ")
+  );
+}
+
 // ── Sugerencias populares ──────────────────────────────────────────────────
 const SUGERENCIAS = [
   { label: "Fracciones 4°",        q: "fraccion",   grado: "4" },
@@ -506,17 +522,15 @@ export default function Generador({ onFichaGenerada, onVolver }) {
 
   const resultadosBusqueda = useMemo(() => {
     if (!busqueda.trim()) return null;
-    const q = busqueda.trim().toLowerCase();
-    let base = [...curricular];
-    if (paso > 0 && gradoData) base = base.filter(r => gradoData.valores.includes(String(r.grado)));
-    if (paso > 0 && area) base = base.filter(r => r.area === area);
+    // Cada palabra del query debe aparecer en el blob del registro
+    const words = normalizar(busqueda.trim()).split(/\s+/).filter(Boolean);
+    let base = curricular;
+    // Filtro de chip (grado exacto seleccionado con chip de sugerencia)
     if (busquedaGrado) base = base.filter(r => String(r.grado) === busquedaGrado);
-    return base.filter(r =>
-      (r.subtema || r.item_original).toLowerCase().includes(q) ||
-      r.bloque.toLowerCase().includes(q) ||
-      r.area.toLowerCase().includes(q)
-    ).slice(0, 8);
-  }, [busqueda, busquedaGrado, curricular, paso, gradoData, area]);
+    return base
+      .filter(r => { const b = buildBlob(r); return words.every(w => b.includes(w)); })
+      .slice(0, 20);
+  }, [busqueda, busquedaGrado, curricular]);
 
   // ── Loading messages ───────────────────────────────────────────────────
   const getMensaje = (idx) => {
