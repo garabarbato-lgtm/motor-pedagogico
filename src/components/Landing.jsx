@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
 import Logo from "./Logo.jsx";
 
 const DC_URL = "http://servicios.abc.gov.ar/lainstitucion/organismos/consejogeneral/disenioscurriculares/primaria/2018/dis-curricular-PBA-completo.pdf";
@@ -347,6 +348,27 @@ function DemoInteractiva() {
 
 export default function Landing({ onEmpezar }) {
   const [btnHover, setBtnHover] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  const heroBadgeRef = useRef(null);
+  const heroTitleRef = useRef(null);
+  const heroSubRef = useRef(null);
+  const heroBtnRef = useRef(null);
+  const heroDemoRef = useRef(null);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const targets = [heroBadgeRef, heroTitleRef, heroSubRef, heroBtnRef, heroDemoRef].map(r => r.current).filter(Boolean);
+    gsap.from(targets, {
+      opacity: 0, y: 20, duration: 0.6,
+      ease: "power3.out", stagger: 0.12,
+    });
+  }, []);
 
   return (
     <div style={{ fontFamily: "'Lexend', sans-serif", width: "100%", background: C.fondo, minHeight: "100vh" }}>
@@ -354,8 +376,14 @@ export default function Landing({ onEmpezar }) {
       {/* ── NAV ── */}
       <nav style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "18px 40px", borderBottom: `0.5px solid ${C.border}`,
-        background: C.btn, position: "sticky", top: 0, zIndex: 10
+        padding: "18px 40px",
+        borderBottom: scrolled ? "none" : `0.5px solid ${C.border}`,
+        background: scrolled ? "rgba(0,71,51,0.95)" : C.btn,
+        backdropFilter: scrolled ? "blur(8px)" : "none",
+        WebkitBackdropFilter: scrolled ? "blur(8px)" : "none",
+        boxShadow: scrolled ? "0 1px 0 rgba(255,255,255,0.1), 0 4px 16px rgba(0,0,0,0.12)" : "none",
+        position: "sticky", top: 0, zIndex: 10,
+        transition: "background 0.3s, box-shadow 0.3s, backdrop-filter 0.3s",
       }}>
         <Logo size={32} color="#ffffff" />
         <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
@@ -383,31 +411,32 @@ export default function Landing({ onEmpezar }) {
         }}>
           {/* Columna izquierda */}
           <div>
-            <div style={{
+            <div ref={heroBadgeRef} style={{
               display: "inline-block", background: "#e0faf2", color: "#004733",
               fontSize: 11, fontWeight: 500, letterSpacing: "0.08em",
               textTransform: "uppercase", padding: "5px 16px",
               borderRadius: 20, marginBottom: 32,
               border: "1px solid #b0e8d4",
+              opacity: 1,
             }}>
               Basado en el Diseño Curricular · PBA
             </div>
 
-            <h1 style={{
+            <h1 ref={heroTitleRef} style={{
               fontFamily: "'Lexend', sans-serif",
               fontSize: "clamp(28px, 3.2vw, 42px)", fontWeight: 400,
               color: C.texto, lineHeight: 1.2, marginBottom: 20,
-              letterSpacing: "-0.025em"
+              letterSpacing: "-0.025em", opacity: 1,
             }}>
               Lo que tardabas una tarde, ahora son{" "}
               <span style={{ color: C.acento, fontStyle: "italic" }}>diez minutos.</span>
             </h1>
 
-            <p style={{ fontSize: 17, color: C.muted, lineHeight: 1.65, marginBottom: 40, maxWidth: 400 }}>
+            <p ref={heroSubRef} style={{ fontSize: 17, color: C.muted, lineHeight: 1.65, marginBottom: 40, maxWidth: 400, opacity: 1 }}>
               El Diseño Curricular, convertido en recursos listos para el aula.
             </p>
 
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 12 }}>
+            <div ref={heroBtnRef} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 12, opacity: 1 }}>
               <button
                 onClick={onEmpezar}
                 onMouseEnter={() => setBtnHover(true)}
@@ -415,8 +444,11 @@ export default function Landing({ onEmpezar }) {
                 style={{
                   fontSize: 15, fontWeight: 600, padding: "14px 32px",
                   borderRadius: 8, border: "none",
-                  background: btnHover ? C.acento : C.btn,
-                  color: "#ffffff", cursor: "pointer", transition: "background 0.15s"
+                  background: btnHover ? "#00603d" : C.btn,
+                  color: "#ffffff", cursor: "pointer",
+                  transform: btnHover ? "translateY(-2px)" : "none",
+                  boxShadow: btnHover ? "0 8px 24px rgba(0,71,51,0.3)" : "0 2px 8px rgba(0,71,51,0.12)",
+                  transition: "all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
                 }}>
                 Generar mi primer recurso
               </button>
@@ -425,7 +457,9 @@ export default function Landing({ onEmpezar }) {
           </div>
 
           {/* Columna derecha: demo interactiva */}
-          <DemoInteractiva />
+          <div ref={heroDemoRef} style={{ opacity: 1 }}>
+            <DemoInteractiva />
+          </div>
         </div>
       </section>
 
@@ -447,11 +481,15 @@ export default function Landing({ onEmpezar }) {
         <button
           onClick={onEmpezar}
           style={{
-            background: "#004733", color: "#ffffff",
+            background: C.acento, color: "#004733",
             border: "none", borderRadius: 8,
-            fontSize: 15, fontWeight: 600,
+            fontSize: 15, fontWeight: 700,
             padding: "14px 32px", cursor: "pointer",
+            boxShadow: "0 4px 20px rgba(0,196,140,0.35)",
+            transition: "all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
           }}
+          onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 28px rgba(0,196,140,0.45)"; }}
+          onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,196,140,0.35)"; }}
         >
           Generar mi primer recurso
         </button>

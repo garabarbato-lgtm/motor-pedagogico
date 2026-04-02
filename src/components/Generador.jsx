@@ -172,9 +172,9 @@ function GradoBtn({ g, activo, onClick }) {
         gap: 6, minHeight: 110, borderRadius: 16,
         border: activo ? `2px solid ${C.verdeOscuro}` : `1.5px solid ${hov ? C.verdeAcento : C.bordeSuave}`,
         background: activo ? C.verdeOscuro : (hov ? "#F0FBF7" : C.fondoCard),
-        cursor: "pointer", transition: "all 0.18s",
-        transform: (hov || activo) ? "translateY(-3px)" : "none",
-        boxShadow: (hov || activo) ? "0 6px 20px rgba(0,71,51,0.12)" : "none",
+        cursor: "pointer", transition: "all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        transform: (hov || activo) ? "translateY(-3px) scale(1.02)" : "none",
+        boxShadow: (hov || activo) ? "0 8px 24px rgba(0,71,51,0.12)" : "none",
         opacity: 1, visibility: "visible",
       }}
     >
@@ -202,11 +202,11 @@ function AreaBtn({ a, activo, onClick }) {
       style={{
         display: "flex", flexDirection: "column", alignItems: "flex-start",
         gap: 10, borderRadius: 16, padding: 28,
-        cursor: "pointer", textAlign: "left", transition: "all 0.18s",
+        cursor: "pointer", textAlign: "left", transition: "all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
         border: activo ? `2px solid ${C.verdeOscuro}` : `1.5px solid ${hov ? C.verdeOscuro : a.border}`,
         background: a.bg,
-        transform: (hov || activo) ? "translateY(-3px)" : "none",
-        boxShadow: (hov || activo) ? "0 6px 20px rgba(0,71,51,0.10)" : "none",
+        transform: (hov || activo) ? "translateY(-3px) scale(1.02)" : "none",
+        boxShadow: (hov || activo) ? "0 8px 24px rgba(0,71,51,0.10)" : "none",
         opacity: 1, visibility: "visible",
       }}
     >
@@ -261,6 +261,17 @@ function Toggle({ on, onChange, title, desc }) {
 
 function AcordeonBloques({ bloques, contenidosPorBloque, registroSeleccionado, onSelect }) {
   const [bloqueAbierto, setBloqueAbierto] = useState(null);
+
+  const handleSelect = (r, el) => {
+    if (el) {
+      gsap.fromTo(el,
+        { backgroundColor: "#b2f0da" },
+        { backgroundColor: "#E6FAF3", duration: 0.5, ease: "power2.out" }
+      );
+    }
+    onSelect(r);
+  };
+
   return (
     <div>
       {bloques.map((b) => {
@@ -302,7 +313,7 @@ function AcordeonBloques({ bloques, contenidosPorBloque, registroSeleccionado, o
                   return (
                     <button
                       key={r.id}
-                      onClick={() => onSelect(r)}
+                      onClick={(e) => handleSelect(r, e.currentTarget)}
                       style={{
                         width: "100%", padding: "11px 18px 11px 32px",
                         fontSize: 13,
@@ -724,6 +735,17 @@ export default function Generador({ onFichaGenerada, onVolver }) {
           to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes btnShine {
+          0%   { transform: translateX(-120%) skewX(-15deg); opacity: 0; }
+          15%  { opacity: 1; }
+          85%  { opacity: 1; }
+          100% { transform: translateX(320%) skewX(-15deg); opacity: 0; }
+        }
+        @keyframes itemFlash {
+          0%   { background: #E6FAF3; }
+          40%  { background: #b2f0da; }
+          100% { background: #E6FAF3; }
+        }
         * { box-sizing: border-box; }
       `}</style>
 
@@ -1040,14 +1062,33 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                       border: "none", borderRadius: 14,
                       fontSize: 16, fontWeight: 700,
                       cursor: "pointer", letterSpacing: "-0.2px",
-                      marginTop: 20, transition: "all 0.18s",
+                      marginTop: 20, transition: "all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
                       boxShadow: "0 4px 16px rgba(0,71,51,0.18)",
+                      position: "relative", overflow: "hidden",
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = C.verdeHoverBtn; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,71,51,0.22)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = C.verdeOscuro; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,71,51,0.18)"; }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.background = C.verdeHoverBtn;
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,71,51,0.30)";
+                      const shine = e.currentTarget.querySelector(".btn-shine");
+                      if (shine) shine.style.animation = "btnShine 0.7s ease forwards";
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.background = C.verdeOscuro;
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,71,51,0.18)";
+                      const shine = e.currentTarget.querySelector(".btn-shine");
+                      if (shine) { shine.style.animation = "none"; }
+                    }}
                     onMouseDown={e => e.currentTarget.style.transform = "scale(0.98)"}
                     onMouseUp={e => e.currentTarget.style.transform = "translateY(-2px)"}
                   >
+                    <span className="btn-shine" style={{
+                      position: "absolute", top: 0, left: 0,
+                      width: "40%", height: "100%",
+                      background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent)",
+                      animation: "none", pointerEvents: "none",
+                    }} />
                     Generar ficha ✦
                   </button>
                   <p style={{ fontSize: 12, color: C.textoMuted, textAlign: "center", marginTop: 10 }}>
