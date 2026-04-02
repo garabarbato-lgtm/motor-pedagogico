@@ -276,24 +276,32 @@ function DemoInteractiva() {
   const fade = { opacity: fading ? 0 : 1, transition: `opacity ${fading ? FADE_OUT : FADE_IN}ms ease` };
 
   return (
-    <div>
+    <div style={{ fontFamily: "'Lexend', sans-serif" }}>
       <div style={{
-        borderRadius: 16, border: "1px solid #D4E6DE",
+        borderRadius: 20, border: "1.5px solid #D4E6DE",
         overflow: "hidden", background: "#F0F4F2",
-        boxShadow: "0 8px 40px rgba(0,30,20,0.10)",
+        boxShadow: "0 12px 48px rgba(0,30,20,0.12)",
       }}>
-        {/* Browser bar */}
+        {/* Barra superior */}
         <div style={{
-          background: "#004733", padding: "11px 18px",
-          display: "flex", alignItems: "center", justifyContent: "center",
+          background: "#004733", padding: "12px 20px",
+          display: "flex", alignItems: "center", gap: 8,
         }}>
-          <span style={{
-            fontSize: 11, color: "rgba(255,255,255,0.55)",
-            letterSpacing: "0.02em", fontFamily: "'Lexend', sans-serif",
+          <div style={{ display: "flex", gap: 5 }}>
+            {["#ff5f56","#ffbd2e","#27c93f"].map(c => (
+              <div key={c} style={{ width: 9, height: 9, borderRadius: "50%", background: c, opacity: 0.7 }} />
+            ))}
+          </div>
+          <div style={{
+            flex: 1, background: "rgba(255,255,255,0.12)", borderRadius: 6,
+            padding: "4px 10px", textAlign: "center",
           }}>
-            fichastiza.vercel.app
-          </span>
+            <span style={{ fontSize: 10, color: "rgba(255,255,255,0.6)", letterSpacing: "0.02em" }}>
+              fichastiza.vercel.app
+            </span>
+          </div>
         </div>
+        {/* Contenido animado */}
         <div style={fade}>
           {step === 0 && <StepSearch typedText={typedText} searchFocused={searchFocused} />}
           {step === 1 && <StepResults />}
@@ -301,10 +309,7 @@ function DemoInteractiva() {
           {step === 3 && <StepFicha />}
         </div>
       </div>
-      <p style={{
-        textAlign: "center", fontSize: 11, color: "#6B8C7D",
-        marginTop: 12, marginBottom: 0, fontFamily: "'Lexend', sans-serif",
-      }}>
+      <p style={{ textAlign: "center", fontSize: 11, color: "#6B8C7D", marginTop: 14, marginBottom: 0 }}>
         Tarda unos segundos · Alineada al Diseño Curricular PBA
       </p>
     </div>
@@ -315,12 +320,16 @@ function DemoInteractiva() {
 
 export default function Landing() {
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", width: "100%", background: C.fondo, minHeight: "100vh" }}>
+    <div style={{
+      fontFamily: "'Lexend', sans-serif", width: "100%",
+      background: C.fondo, minHeight: "100vh",
+      display: "flex", flexDirection: "column",
+    }}>
 
       {/* ── NAV ── */}
       <nav style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "18px 48px", borderBottom: `0.5px solid ${C.border}`,
+        padding: "18px 24px", borderBottom: `0.5px solid ${C.border}`,
         background: C.fondo, position: "sticky", top: 0, zIndex: 10,
       }}>
         <span style={{ fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 400, color: C.texto, letterSpacing: "-0.01em" }}>
@@ -339,11 +348,11 @@ export default function Landing() {
       </nav>
 
       {/* ── HERO DOS COLUMNAS ── */}
-      <section style={{ width: "100%", padding: "80px 0 88px", background: C.fondo }}>
+      <section style={{ width: "100%", flex: 1, padding: "80px 0 88px", background: C.fondo }}>
         <div style={{
-          maxWidth: 1280, margin: "0 auto", padding: "0 48px",
+          maxWidth: 1280, margin: "0 auto", padding: "0 24px",
           display: "grid", gridTemplateColumns: "1fr 1fr",
-          gap: 56, alignItems: "center",
+          gap: 80, alignItems: "center",
         }}>
           {/* Izquierda */}
           <div>
@@ -358,16 +367,16 @@ export default function Landing() {
 
             <h1 style={{
               fontFamily: "Georgia, serif",
-              fontSize: "clamp(28px, 3.2vw, 42px)", fontWeight: 400,
-              color: C.texto, lineHeight: 1.2, marginBottom: 20,
+              fontSize: "clamp(28px, 3.2vw, 46px)", fontWeight: 400,
+              color: C.texto, lineHeight: 1.15, marginBottom: 24,
               letterSpacing: "-0.025em",
             }}>
               Lo que tardabas una tarde, ahora son{" "}
               <span style={{ color: C.acento, fontStyle: "italic" }}>diez minutos.</span>
             </h1>
 
-            <p style={{ fontSize: 17, color: C.muted, lineHeight: 1.65, maxWidth: 400 }}>
-              El Diseño, convertido en recursos listos para el aula.
+            <p style={{ fontSize: 17, color: C.muted, lineHeight: 1.65 }}>
+              El Diseño Curricular, convertido en recursos listos para el aula.
             </p>
           </div>
 
@@ -376,69 +385,13 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── SEPARADOR ── */}
-      <div style={{ borderTop: `0.5px solid ${C.border}` }} />
-
-      {/* ── PARA QUIÉN ── */}
-      <section style={{ width: "100%", padding: "72px 0 80px", background: C.white }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 48px" }}>
-          <p style={{
-            textAlign: "center", fontSize: 11, fontWeight: 500,
-            color: C.muted, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10,
-          }}>
-            ¿Para quién es?
-          </p>
-          <h2 style={{
-            fontFamily: "Georgia, serif",
-            textAlign: "center", fontSize: 26, fontWeight: 400,
-            color: C.texto, marginBottom: 52, letterSpacing: "-0.015em",
-          }}>
-            Para toda la comunidad educativa
-          </h2>
-
-          <div style={{
-            display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: 16, maxWidth: 760, margin: "0 auto",
-          }}>
-            {[
-              {
-                icon: <svg viewBox="0 0 24 24" fill="none" stroke={C.acento} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="20" height="20"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
-                nombre: "Docentes",
-                desc: "Generás recursos alineados al Diseño sin perder horas buscando o adaptando materiales.",
-              },
-              {
-                icon: <svg viewBox="0 0 24 24" fill="none" stroke={C.acento} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="20" height="20"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
-                nombre: "Familias",
-                desc: "Acompañás a tus hijos con explicaciones claras y actividades del grado, sin necesitar ser docente.",
-              },
-              {
-                icon: <svg viewBox="0 0 24 24" fill="none" stroke={C.acento} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="20" height="20"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>,
-                nombre: "Estudiantes",
-                desc: "Repasás cualquier tema con ejemplos concretos y ejercicios pensados para tu año.",
-              },
-            ].map((item) => (
-              <div key={item.nombre} style={{
-                background: C.fondo, border: `0.5px solid ${C.border}`,
-                borderRadius: 12, padding: "28px 24px",
-              }}>
-                <div style={{
-                  width: 40, height: 40, background: C.pillBg,
-                  borderRadius: 8, display: "flex", alignItems: "center",
-                  justifyContent: "center", marginBottom: 16,
-                }}>
-                  {item.icon}
-                </div>
-                <p style={{ fontSize: 15, fontWeight: 500, color: C.texto, marginBottom: 8 }}>{item.nombre}</p>
-                <p style={{ fontSize: 13, color: C.muted, lineHeight: 1.6 }}>{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── FOOTER ── */}
-      <footer style={{ background: C.btn, padding: "12px 48px", textAlign: "center" }}>
-        <p style={{ fontSize: 12, color: C.muted }}>
+      {/* ── FOOTER — cierre absoluto ── */}
+      <footer style={{
+        width: "100%", background: "#004733",
+        padding: "14px 24px", textAlign: "center",
+        marginTop: 0,
+      }}>
+        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.55)", margin: 0 }}>
           Basado en el{" "}
           <span style={{ color: C.acento, fontWeight: 500 }}>Diseño Curricular PBA</span>
           {" "}· DGCyE 2018 · Resolución N° 1482/17
