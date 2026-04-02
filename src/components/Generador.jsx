@@ -98,16 +98,7 @@ function PasoWrap({ children, onMount }) {
       { autoAlpha: 0, y: 16 },
       { autoAlpha: 1, y: 0, duration: 0.4, ease: "power3.out" }
     );
-    // Stagger cards — usar opacity (no autoAlpha) para no aplicar visibility:hidden al resto
-    const cards = ref.current.querySelectorAll("[data-card]");
-    if (cards.length > 0) {
-      gsap.from(cards, { opacity: 0, y: 10, duration: 0.35, stagger: 0.06, ease: "power2.out", delay: 0.15 });
-    }
-    // Botón generar
-    const boton = ref.current.querySelector("[data-boton]");
-    if (boton) {
-      gsap.from(boton, { opacity: 0, scale: 0.97, duration: 0.4, ease: "back.out(1.7)", delay: 0.2 });
-    }
+    // Cards y botón: sin animación GSAP — visibilidad garantizada por estilos inline
     if (onMount) onMount(ref.current);
   }, []);
   return <div ref={ref}>{children}</div>;
@@ -177,18 +168,20 @@ function GradoBtn({ g, activo, onClick }) {
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        minHeight: 110, borderRadius: 16,
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+        gap: 6, minHeight: 110, borderRadius: 16,
         border: activo ? `2px solid ${C.verdeOscuro}` : `1.5px solid ${hov ? C.verdeAcento : C.bordeSuave}`,
         background: activo ? C.verdeOscuro : (hov ? "#F0FBF7" : C.fondoCard),
         cursor: "pointer", transition: "all 0.18s",
-        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6,
         transform: (hov || activo) ? "translateY(-3px)" : "none",
         boxShadow: (hov || activo) ? "0 6px 20px rgba(0,71,51,0.12)" : "none",
+        opacity: 1, visibility: "visible",
       }}
     >
       <span style={{
         fontFamily: "'Lexend', sans-serif", fontSize: 36, fontWeight: 700, lineHeight: 1,
         color: activo ? "#fff" : C.verdeOscuro, transition: "color 0.18s",
+        opacity: 1, visibility: "visible",
       }}>{g.num}</span>
       <span style={{
         fontSize: 9, textAlign: "center", lineHeight: 1.4, padding: "0 8px",
@@ -207,15 +200,14 @@ function AreaBtn({ a, activo, onClick }) {
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        borderRadius: 16, padding: 28,
-        cursor: "pointer",
-        display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 10,
-        transition: "all 0.18s",
+        display: "flex", flexDirection: "column", alignItems: "flex-start",
+        gap: 10, borderRadius: 16, padding: 28,
+        cursor: "pointer", textAlign: "left", transition: "all 0.18s",
         border: activo ? `2px solid ${C.verdeOscuro}` : `1.5px solid ${hov ? C.verdeOscuro : a.border}`,
         background: a.bg,
         transform: (hov || activo) ? "translateY(-3px)" : "none",
         boxShadow: (hov || activo) ? "0 6px 20px rgba(0,71,51,0.10)" : "none",
-        textAlign: "left",
+        opacity: 1, visibility: "visible",
       }}
     >
       <span style={{ fontSize: 52, lineHeight: 1 }}>{a.emoji}</span>
