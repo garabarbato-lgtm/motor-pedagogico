@@ -463,40 +463,6 @@ export default function Landing({ onEmpezar }) {
         </div>
       </section>
 
-      {/* ── CTA FINAL ── */}
-      <section style={{
-        background: "#004733",
-        borderTop: "0.5px solid #003020",
-        padding: "20px 48px",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        flexWrap: "wrap", gap: 16,
-      }}>
-        <p style={{
-          fontFamily: "'Lexend', sans-serif",
-          fontSize: 14, fontWeight: 400,
-          color: "rgba(255,255,255,0.75)", margin: 0,
-          letterSpacing: "-0.01em",
-        }}>
-          ¿Listo para generar tu primera ficha?
-        </p>
-        <button
-          onClick={onEmpezar}
-          style={{
-            background: C.acento, color: "#004733",
-            border: "none", borderRadius: 8,
-            fontSize: 13, fontWeight: 700,
-            padding: "10px 24px", cursor: "pointer",
-            boxShadow: "0 2px 12px rgba(0,196,140,0.3)",
-            transition: "all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
-            whiteSpace: "nowrap",
-          }}
-          onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,196,140,0.4)"; }}
-          onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,196,140,0.3)"; }}
-        >
-          Generar mi primer recurso
-        </button>
-      </section>
-
       {/* ── FOOTER ── */}
       <footer style={{ background: C.btn, padding: "10px 48px", textAlign: "center" }}>
         <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)" }}>
