@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Logo from "./Logo.jsx";
 
 const DC_URL = "http://servicios.abc.gov.ar/lainstitucion/organismos/consejogeneral/disenioscurriculares/primaria/2018/dis-curricular-PBA-completo.pdf";
@@ -6,175 +6,344 @@ const DC_URL = "http://servicios.abc.gov.ar/lainstitucion/organismos/consejogene
 const C = {
   fondo: "#F5F5F5",
   acento: "#00c48c",
-  acentoCaldo: "#F5A623",
   texto: "#2B2B2B",
-  suave: "#e0faf2",
   muted: "#4a6b60",
   btn: "#004733",
-  btnText: "#ffffff",
-  pillBg: "#e0faf2",
-  pillText: "#003d2b",
   white: "#ffffff",
   border: "#D9D9D9",
-  fichaFondoHeader: "#f5f5f5",
-  fichaFondoEjemplo: "#f0f0f0",
-  fichaFondoReflexion: "#f7f7f0",
-  fichaBorder: "#cccccc",
-  fichaBorderFuerte: "#0d0d0d",
-  fichaLineaEscritura: "#bbbbbb",
-  fichaTexto: "#0d0d0d",
-  fichaMuted: "#555555",
 };
 
-function SeccionHeader({ numero, titulo, icono }) {
+/* ── DEMO INTERACTIVA ── */
+
+const QUERY = "fracciones 5to";
+const STEP_DURATIONS = [2000, 1500, 1500, 3500];
+const FADE_OUT = 250;
+const FADE_IN = 350;
+
+function SearchIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" stroke="#6B8C7D" strokeWidth="1.8"
+      strokeLinecap="round" width="14" height="14" style={{ flexShrink: 0 }}>
+      <circle cx="8.5" cy="8.5" r="5.5" />
+      <line x1="13" y1="13" x2="17" y2="17" />
+    </svg>
+  );
+}
+
+function SearchBar({ text, focused }) {
   return (
     <div style={{
       display: "flex", alignItems: "center", gap: 8,
-      marginBottom: 12, paddingBottom: 8,
-      borderBottom: `2px solid ${C.fichaBorderFuerte}`
+      borderRadius: 12, background: "#fff",
+      border: `1.5px solid ${focused ? "#00c48c" : "#D4E6DE"}`,
+      boxShadow: focused ? "0 0 0 3px rgba(0,196,140,0.12)" : "none",
+      padding: "9px 12px",
+      transition: "border-color 0.2s, box-shadow 0.2s",
     }}>
-      <div style={{
-        width: 24, height: 24, borderRadius: "50%",
-        background: C.fichaBorderFuerte, color: "#fff",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 11, fontWeight: 800, flexShrink: 0
-      }}>
-        {numero}
-      </div>
-      <span style={{ fontSize: 12, fontWeight: 700, color: C.fichaTexto }}>{titulo}</span>
-      <span style={{ fontSize: 12, marginLeft: "auto", opacity: 0.35 }}>{icono}</span>
+      <SearchIcon />
+      <span style={{ fontSize: 12, color: "#004733", flex: 1, minHeight: 16, letterSpacing: "-0.01em" }}>
+        {text}
+        {focused && (
+          <span style={{
+            display: "inline-block", width: 1.5, height: 13,
+            background: "#004733", marginLeft: 1, verticalAlign: "middle",
+            animation: "none", opacity: 1,
+          }} />
+        )}
+      </span>
     </div>
   );
 }
 
-function LineaEscritura() {
-  return <div style={{ borderBottom: `1.5px solid ${C.fichaLineaEscritura}`, height: 28, marginBottom: 5 }} />;
+function StepSearch({ typedText, searchFocused }) {
+  return (
+    <div style={{ padding: "16px 14px" }}>
+      <p style={{ fontSize: 10, color: "#6B8C7D", marginBottom: 8, letterSpacing: "0.04em", textTransform: "uppercase", fontWeight: 600 }}>
+        Buscá un contenido
+      </p>
+      <SearchBar text={typedText} focused={searchFocused} />
+    </div>
+  );
 }
 
-function FichaHero() {
+function StepResults() {
+  const results = [
+    { name: "Fracciones equivalentes", meta: "5° grado · Matemática · Números Racionales" },
+    { name: "Fracciones: partes del entero", meta: "5° grado · Matemática · Números Racionales" },
+  ];
+  return (
+    <div style={{ padding: "16px 14px", display: "flex", flexDirection: "column", gap: 8 }}>
+      <SearchBar text={QUERY} focused={false} />
+      <div style={{ display: "flex", flexDirection: "column", gap: 7, marginTop: 4 }}>
+        {results.map((r, i) => (
+          <div key={i} style={{
+            background: i === 0 ? "#E6FAF3" : "#fff",
+            border: `${i === 0 ? "2px" : "1px"} solid ${i === 0 ? "#004733" : "#D4E6DE"}`,
+            borderRadius: 10, padding: "9px 12px",
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+          }}>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#004733" }}>{r.name}</div>
+              <div style={{ fontSize: 10, color: "#6B8C7D", marginTop: 2 }}>{r.meta}</div>
+            </div>
+            {i === 0 && (
+              <span style={{
+                width: 18, height: 18, borderRadius: "50%",
+                background: "#00c48c", color: "#fff",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 10, fontWeight: 700, flexShrink: 0,
+              }}>✓</span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Toggle() {
   return (
     <div style={{
-      background: C.white,
-      border: `2.5px solid ${C.fichaBorderFuerte}`,
-      borderRadius: 10,
-      overflow: "hidden",
-      boxShadow: "0 8px 40px rgba(0,30,20,0.10)",
-      fontFamily: "'Lexend Deca', system-ui, sans-serif",
+      width: 36, height: 20, background: "#004733",
+      borderRadius: 10, position: "relative", flexShrink: 0,
     }}>
-
-      {/* Encabezado */}
       <div style={{
-        background: C.fichaFondoHeader,
-        borderBottom: `2.5px solid ${C.fichaBorderFuerte}`,
-        padding: "10px 16px"
+        width: 16, height: 16, background: "#fff",
+        borderRadius: "50%", position: "absolute",
+        right: 2, top: 2,
+      }} />
+    </div>
+  );
+}
+
+function StepConfirm() {
+  return (
+    <div style={{ padding: "16px 14px", display: "flex", flexDirection: "column", gap: 8 }}>
+      {/* Chip de confirmación */}
+      <div style={{
+        background: "#fff", border: "1px solid #D4E6DE",
+        borderRadius: 10, padding: "9px 12px",
+        display: "flex", alignItems: "center", gap: 8,
       }}>
-        {/* Tags + logo */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-          <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-            {["5° grado", "Matemática", "Números racionales"].map(tag => (
-              <span key={tag} style={{
-                fontSize: 9, fontWeight: 700, padding: "2px 8px",
-                borderRadius: 4, border: `1.5px solid ${C.fichaBorderFuerte}`,
-                color: C.fichaTexto, background: "white",
-                letterSpacing: "0.05em", textTransform: "uppercase"
-              }}>{tag}</span>
-            ))}
-          </div>
-          <span style={{ flexShrink: 0, marginLeft: 12 }}><Logo size={13} /></span>
-        </div>
-
-        {/* Título centrado con emojis */}
         <div style={{
+          width: 20, height: 20, borderRadius: "50%",
+          background: "#E6FAF3", border: "1.5px solid #00c48c",
           display: "flex", alignItems: "center", justifyContent: "center",
-          gap: 10, marginBottom: 10
+          flexShrink: 0,
         }}>
-          <span style={{ fontSize: 20, lineHeight: 1, flexShrink: 0 }}>🔢</span>
-          <h3 style={{ fontSize: 15, fontWeight: 800, margin: 0, lineHeight: 1.25, textAlign: "center" }}>
-            <span style={{ color: C.fichaTexto }}>Fracciones</span>
-            {" "}
-            <span style={{ color: C.acento }}>equivalentes</span>
-          </h3>
-          <span style={{ fontSize: 20, lineHeight: 1, flexShrink: 0 }}>🔢</span>
+          <span style={{ color: "#00c48c", fontSize: 10, fontWeight: 700 }}>✓</span>
         </div>
+        <span style={{ fontSize: 11, color: "#004733", flex: 1, fontWeight: 500 }}>
+          Fracciones equivalentes · 5° grado
+        </span>
+        <span style={{
+          fontSize: 10, color: "#6B8C7D", background: "#F0F4F2",
+          borderRadius: 6, padding: "3px 8px", flexShrink: 0,
+        }}>
+          Cambiar
+        </span>
+      </div>
 
+      {/* Toggles */}
+      {["Incluir explicación", "Incluir ejemplo concreto"].map((label) => (
+        <div key={label} style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "9px 12px", background: "#fff",
+          border: "1px solid #D4E6DE", borderRadius: 10,
+        }}>
+          <span style={{ fontSize: 11, color: "#004733" }}>{label}</span>
+          <Toggle />
+        </div>
+      ))}
+
+      {/* Botón generar */}
+      <div style={{
+        background: "#004733", color: "#fff",
+        borderRadius: 10, padding: "11px 16px",
+        fontSize: 12, fontWeight: 600,
+        width: "100%", textAlign: "center",
+        marginTop: 2,
+      }}>
+        Generar ficha ✦
+      </div>
+    </div>
+  );
+}
+
+function GrayLine({ width = "100%" }) {
+  return (
+    <div style={{
+      height: 7, background: "#D4E6DE",
+      borderRadius: 4, marginBottom: 4, width,
+    }} />
+  );
+}
+
+function StepFicha() {
+  return (
+    <div style={{ overflow: "hidden" }}>
+      {/* Header */}
+      <div style={{ background: "#004733", padding: "10px 14px" }}>
+        <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 6 }}>
+          {["5° grado", "Matemática", "Núm. racionales"].map(tag => (
+            <span key={tag} style={{
+              fontSize: 8, fontWeight: 700,
+              background: "rgba(0,196,140,0.22)", color: "#00c48c",
+              borderRadius: 4, padding: "2px 6px",
+            }}>{tag}</span>
+          ))}
+        </div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", lineHeight: 1.3 }}>
+          Fracciones{" "}
+          <span style={{ color: "#00c48c" }}>equivalentes</span>
+        </div>
         {/* Datos alumno */}
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
-          {["Nombre y apellido", "Fecha", "Grado / Sección"].map(label => (
+        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 8, marginTop: 8 }}>
+          {["Nombre y apellido", "Fecha"].map(label => (
             <div key={label}>
-              <p style={{ fontSize: 9, color: C.fichaMuted, fontWeight: 700, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</p>
-              <div style={{ borderBottom: `2px solid ${C.fichaBorderFuerte}`, height: 20 }} />
+              <div style={{ fontSize: 8, color: "rgba(255,255,255,0.5)", marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</div>
+              <div style={{ borderBottom: "1.5px solid rgba(255,255,255,0.3)", height: 16 }} />
             </div>
           ))}
         </div>
       </div>
 
       {/* Cuerpo */}
-      <div style={{ padding: "10px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
-
-        {/* Sección 1 */}
+      <div style={{ padding: "10px 14px", background: "#fff", display: "flex", flexDirection: "column", gap: 10 }}>
+        {/* Sección 1: Leemos juntos */}
         <div>
-          <SeccionHeader numero="1" titulo="Leemos juntos" icono="📖" />
-          {/* Concepto clave con borde verde */}
+          <div style={{ fontSize: 10, fontWeight: 700, color: "#004733", marginBottom: 5 }}>
+            1 · Leemos juntos
+          </div>
           <div style={{
-            background: "#eafaf4",
-            borderLeft: "3px solid #00c48c",
-            borderRadius: "0 6px 6px 0",
-            padding: "8px 12px",
-            marginBottom: 8,
+            background: "#E6FAF3", borderLeft: "3px solid #004733",
+            borderRadius: "0 6px 6px 0", padding: "7px 10px",
           }}>
-            <p style={{ fontSize: 12, color: C.fichaTexto, lineHeight: 1.5, margin: 0, fontWeight: 500 }}>
-              Dos fracciones son <strong>equivalentes</strong> cuando representan la misma parte del entero, aunque tengan números distintos.
-            </p>
-          </div>
-          <p style={{ fontSize: 12, color: C.fichaTexto, lineHeight: 1.6, margin: 0 }}>
-            Para encontrar fracciones equivalentes, multiplicamos o dividimos el numerador y el denominador por el mismo número.
-          </p>
-        </div>
-
-        {/* Sección 2 */}
-        <div>
-          <SeccionHeader numero="2" titulo="Tu turno" icono="✏️" />
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {[
-              "Completá las fracciones equivalentes: 1/2 = □/4 = □/8",
-              "¿Son equivalentes 2/3 y 4/6? Explicá cómo lo sabés.",
-            ].map((enunciado, idx) => (
-              <div key={idx}>
-                <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
-                  <p style={{ fontSize: 12, color: C.fichaTexto, lineHeight: 1.5, margin: 0 }}>{enunciado}</p>
-                </div>
-                <div style={{ height: 48, border: "0.5px solid #ddddd8", borderRadius: 6 }} />
-              </div>
-            ))}
+            <GrayLine width="95%" />
+            <GrayLine width="82%" />
+            <GrayLine width="70%" />
           </div>
         </div>
 
-        {/* Sección 3 */}
+        {/* Sección 2: Tu turno */}
         <div>
-          <SeccionHeader numero="3" titulo="Reflexionamos" icono="💭" />
-          <p style={{ fontSize: 12, color: C.fichaTexto, fontStyle: "italic", lineHeight: 1.55, marginBottom: 6 }}>
-            ¿Podés pensar en un ejemplo de la vida cotidiana donde uses fracciones equivalentes?
-          </p>
-          <LineaEscritura />
-          <LineaEscritura />
+          <div style={{ fontSize: 10, fontWeight: 700, color: "#004733", marginBottom: 5 }}>
+            2 · Tu turno
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div>
+              <GrayLine width="88%" />
+              <div style={{ height: 28, border: "0.5px solid #D4E6DE", borderRadius: 6 }} />
+            </div>
+            <div>
+              <GrayLine width="75%" />
+              <div style={{ height: 28, border: "0.5px solid #D4E6DE", borderRadius: 6 }} />
+            </div>
+          </div>
         </div>
-
       </div>
 
       {/* Footer */}
       <div style={{
-        borderTop: `2px solid ${C.fichaBorderFuerte}`,
-        padding: "6px 16px",
-        display: "flex", justifyContent: "space-between", alignItems: "center",
-        background: C.fichaFondoHeader
+        borderTop: "1px solid #D4E6DE", padding: "6px 14px",
+        display: "flex", justifyContent: "space-between",
+        background: "#F0F4F2",
       }}>
-        <span style={{ fontSize: 10, color: C.fichaMuted }}>tiza. · Diseño Curricular 2018</span>
-        <span style={{ fontSize: 10, color: C.fichaMuted }}>5° grado · Matemática</span>
+        <span style={{ fontSize: 8, color: "#6B8C7D" }}>tiza. · Diseño Curricular 2018</span>
+        <span style={{ fontSize: 8, color: "#6B8C7D" }}>5° grado · Matemática</span>
       </div>
     </div>
   );
 }
+
+function DemoInteractiva() {
+  const [step, setStep] = useState(0);
+  const [fading, setFading] = useState(false);
+  const [typedText, setTypedText] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
+
+  // Typing animation — only on step 0
+  useEffect(() => {
+    if (step !== 0) {
+      setTypedText("");
+      setSearchFocused(false);
+      return;
+    }
+    let interval = null;
+    const startTimer = setTimeout(() => {
+      setSearchFocused(true);
+      let i = 0;
+      interval = setInterval(() => {
+        i++;
+        setTypedText(QUERY.slice(0, i));
+        if (i >= QUERY.length) clearInterval(interval);
+      }, 75);
+    }, FADE_IN + 200);
+    return () => {
+      clearTimeout(startTimer);
+      if (interval) clearInterval(interval);
+    };
+  }, [step]);
+
+  // Step progression loop
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFading(true);
+      const changeTimer = setTimeout(() => {
+        setStep(s => (s + 1) % 4);
+        setFading(false);
+      }, FADE_OUT);
+      return () => clearTimeout(changeTimer);
+    }, STEP_DURATIONS[step]);
+    return () => clearTimeout(timer);
+  }, [step]);
+
+  const contentTransition = {
+    opacity: fading ? 0 : 1,
+    transition: `opacity ${fading ? FADE_OUT : FADE_IN}ms ease`,
+  };
+
+  return (
+    <div>
+      <div style={{
+        borderRadius: 16,
+        border: "0.5px solid #D4E6DE",
+        overflow: "hidden",
+        background: "#F0F4F2",
+        boxShadow: "0 8px 40px rgba(0,30,20,0.10)",
+        fontFamily: "'Lexend Deca', 'Lexend', system-ui, sans-serif",
+      }}>
+        {/* Browser header */}
+        <div style={{
+          background: "#004733",
+          padding: "11px 16px",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", letterSpacing: "0.02em" }}>
+            fichastiza.vercel.app
+          </span>
+        </div>
+
+        {/* Animated content */}
+        <div style={contentTransition}>
+          {step === 0 && <StepSearch typedText={typedText} searchFocused={searchFocused} />}
+          {step === 1 && <StepResults />}
+          {step === 2 && <StepConfirm />}
+          {step === 3 && <StepFicha />}
+        </div>
+      </div>
+
+      <p style={{
+        textAlign: "center", fontSize: 11, color: "#6B8C7D",
+        marginTop: 12, marginBottom: 0,
+      }}>
+        Tarda unos segundos · Alineada al Diseño Curricular PBA
+      </p>
+    </div>
+  );
+}
+
+/* ── LANDING ── */
 
 export default function Landing({ onEmpezar }) {
   const [btnHover, setBtnHover] = useState(false);
@@ -190,12 +359,6 @@ export default function Landing({ onEmpezar }) {
       }}>
         <Logo size={32} color="#ffffff" />
         <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
-          <button
-            onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })}
-            style={{ fontSize: 13, color: "rgba(255,255,255,0.8)", background: "none", border: "none", cursor: "pointer", padding: 0 }}
-          >
-            Cómo funciona
-          </button>
           <button
             onClick={onEmpezar}
             style={{
@@ -218,8 +381,8 @@ export default function Landing({ onEmpezar }) {
           gap: 56, alignItems: "center",
           maxWidth: 1100, margin: "0 auto",
         }}>
+          {/* Columna izquierda */}
           <div>
-            {/* Badge */}
             <div style={{
               display: "inline-block", background: "#e0faf2", color: "#004733",
               fontSize: 11, fontWeight: 500, letterSpacing: "0.08em",
@@ -261,157 +424,8 @@ export default function Landing({ onEmpezar }) {
             </div>
           </div>
 
-          <FichaHero />
-        </div>
-      </section>
-
-      {/* ── SEPARADOR ── */}
-      <div style={{ borderTop: `0.5px solid ${C.border}`, maxWidth: 860, margin: "0 auto" }} />
-
-      {/* ── CÓMO FUNCIONA ── */}
-      <section id="como-funciona" style={{ background: "#f5f5f0", padding: "80px 40px" }}>
-        <div style={{ maxWidth: 860, margin: "0 auto" }}>
-
-          {/* Badge */}
-          <div style={{ textAlign: "center", marginBottom: 20 }}>
-            <div style={{
-              display: "inline-block",
-              background: "#d4f0e8", color: "#0d5c4a",
-              fontSize: 11, fontWeight: 600, letterSpacing: "0.08em",
-              textTransform: "uppercase", padding: "5px 16px", borderRadius: 20,
-            }}>
-              Basado en el Diseño Curricular · PBA
-            </div>
-          </div>
-
-          {/* Título */}
-          <h2 style={{
-            fontFamily: "'Lexend', sans-serif", textAlign: "center",
-            fontSize: "clamp(24px, 3vw, 34px)", fontWeight: 400,
-            color: "#0d1f1a", marginBottom: 12, letterSpacing: "-0.02em",
-          }}>
-            Tres pasos. Una ficha lista.
-          </h2>
-
-          {/* Subtítulo */}
-          <p style={{
-            textAlign: "center", fontSize: 15, color: "#4a5550",
-            marginBottom: 52, lineHeight: 1.6,
-          }}>
-            Sin vueltas, sin registro, sin perder tiempo.
-          </p>
-
-          {/* Conectora + cards */}
-          <div style={{ position: "relative" }}>
-            {/* Línea punteada */}
-            <div style={{
-              position: "absolute", top: 20, zIndex: 0,
-              left: "calc(16.67% + 20px)", right: "calc(16.67% + 20px)",
-              borderTop: "2px dashed #00c48c",
-            }} />
-
-            {/* Círculos numerados */}
-            <div style={{
-              display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
-              marginBottom: 20, position: "relative", zIndex: 1,
-            }}>
-              {[1, 2, 3].map(n => (
-                <div key={n} style={{ display: "flex", justifyContent: "center" }}>
-                  <div style={{
-                    width: 40, height: 40, borderRadius: "50%",
-                    background: "#004733", color: "#ffffff",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 16, fontWeight: 800,
-                    boxShadow: "0 0 0 5px #f5f5f0",
-                  }}>
-                    {n}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Cards */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
-
-              {/* Card 1 */}
-              <div style={{ background: "#ffffff", border: "1px solid #ddddd8", borderRadius: 12, padding: "28px 22px" }}>
-                <div style={{
-                  width: 44, height: 44, background: "#d4f0e8", borderRadius: 10,
-                  display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16,
-                }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#004733" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
-                    <line x1="8" y1="6" x2="21" y2="6"/>
-                    <line x1="8" y1="12" x2="21" y2="12"/>
-                    <line x1="8" y1="18" x2="21" y2="18"/>
-                    <polyline points="3 6 4 7 6 5"/>
-                    <polyline points="3 12 4 13 6 11"/>
-                    <polyline points="3 18 4 19 6 17"/>
-                  </svg>
-                </div>
-                <p style={{ fontSize: 15, fontWeight: 600, color: "#0d1f1a", marginBottom: 10 }}>Elegís el objetivo</p>
-                <p style={{ fontSize: 13, color: "#4a5550", lineHeight: 1.65 }}>
-                  Seleccionás el{" "}
-                  <strong style={{ color: "#004733", fontWeight: 700 }}>grado, el área</strong>
-                  {" "}y el contenido del{" "}
-                  <strong style={{ color: "#004733", fontWeight: 700 }}>Diseño Curricular</strong>
-                  {" "}que querés trabajar.
-                </p>
-              </div>
-
-              {/* Card 2 */}
-              <div style={{ background: "#ffffff", border: "1px solid #ddddd8", borderRadius: 12, padding: "28px 22px" }}>
-                <div style={{
-                  width: 44, height: 44, background: "#d4f0e8", borderRadius: 10,
-                  display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16,
-                }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#004733" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
-                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                  </svg>
-                </div>
-                <p style={{ fontSize: 15, fontWeight: 600, color: "#0d1f1a", marginBottom: 10 }}>La IA genera la ficha</p>
-                <p style={{ fontSize: 13, color: "#4a5550", lineHeight: 1.65 }}>
-                  En{" "}
-                  <strong style={{ color: "#004733", fontWeight: 700 }}>segundos</strong>
-                  {" "}tenés una ficha lista, basada en el{" "}
-                  <strong style={{ color: "#004733", fontWeight: 700 }}>Diseño Curricular de la Provincia de Buenos Aires</strong>
-                  .
-                </p>
-              </div>
-
-              {/* Card 3 */}
-              <div style={{ background: "#ffffff", border: "1px solid #ddddd8", borderRadius: 12, padding: "28px 22px" }}>
-                <div style={{
-                  width: 44, height: 44, background: "#d4f0e8", borderRadius: 10,
-                  display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16,
-                }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#004733" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="7 10 12 15 17 10"/>
-                    <line x1="12" y1="15" x2="12" y2="3"/>
-                  </svg>
-                </div>
-                <p style={{ fontSize: 15, fontWeight: 600, color: "#0d1f1a", marginBottom: 10 }}>Revisás y descargás</p>
-                <p style={{ fontSize: 13, color: "#4a5550", lineHeight: 1.65 }}>
-                  Podés{" "}
-                  <strong style={{ color: "#004733", fontWeight: 700 }}>ajustar</strong>
-                  {" "}el contenido y{" "}
-                  <strong style={{ color: "#004733", fontWeight: 700 }}>descargar</strong>
-                  {" "}la ficha lista para imprimir o compartir.
-                </p>
-              </div>
-
-            </div>
-          </div>
-
-          {/* Tagline */}
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, marginTop: 48 }}>
-            <span style={{ fontSize: 13, color: "#4a5550", fontWeight: 500 }}>Contenido verificado</span>
-            <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#00c48c" }} />
-            <span style={{ fontSize: 13, color: "#4a5550", fontWeight: 500 }}>Alineado al DC</span>
-            <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#00c48c" }} />
-            <span style={{ fontSize: 13, color: "#4a5550", fontWeight: 500 }}>Listo para el aula</span>
-          </div>
-
+          {/* Columna derecha: demo interactiva */}
+          <DemoInteractiva />
         </div>
       </section>
 
