@@ -98,15 +98,15 @@ function PasoWrap({ children, onMount }) {
       { autoAlpha: 0, y: 16 },
       { autoAlpha: 1, y: 0, duration: 0.4, ease: "power3.out" }
     );
-    // Stagger cards
+    // Stagger cards — usar opacity (no autoAlpha) para no aplicar visibility:hidden al resto
     const cards = ref.current.querySelectorAll("[data-card]");
     if (cards.length > 0) {
-      gsap.from(cards, { autoAlpha: 0, y: 10, duration: 0.35, stagger: 0.06, ease: "power2.out", delay: 0.15 });
+      gsap.from(cards, { opacity: 0, y: 10, duration: 0.35, stagger: 0.06, ease: "power2.out", delay: 0.15 });
     }
     // Botón generar
     const boton = ref.current.querySelector("[data-boton]");
     if (boton) {
-      gsap.from(boton, { autoAlpha: 0, scale: 0.97, duration: 0.4, ease: "back.out(1.7)", delay: 0.2 });
+      gsap.from(boton, { opacity: 0, scale: 0.97, duration: 0.4, ease: "back.out(1.7)", delay: 0.2 });
     }
     if (onMount) onMount(ref.current);
   }, []);
