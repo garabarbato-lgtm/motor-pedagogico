@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="7" fill="#004733"/>
-  <text font-family="'Nunito', sans-serif" font-weight="900" font-size="15" letter-spacing="-0.5">
-    <tspan x="5" y="17" fill="#ffffff">t</tspan><tspan fill="#00c48c">i</tspan>
-  </text>
-  <text font-family="'Nunito', sans-serif" font-weight="900" font-size="15" letter-spacing="-0.5">
-    <tspan x="5" y="30" fill="#ffffff">z</tspan><tspan fill="#00c48c">a.</tspan>
-  </text>
-</svg>
