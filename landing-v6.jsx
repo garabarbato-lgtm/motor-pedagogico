@@ -445,6 +445,7 @@ export default function Landing({ onEmpezar }) {
         <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
           <button
             onClick={onEmpezar}
+            className="min-h-[44px] min-w-[44px]"
             style={{
               fontSize: 13, fontWeight: 500, padding: "8px 20px",
               borderRadius: 7, border: `1.5px solid ${C.acento}`,
@@ -456,20 +457,11 @@ export default function Landing({ onEmpezar }) {
       </nav>
 
       {/* ── HERO ── */}
-      <section style={{
-        background: "#ffffff",
-        padding: "40px 0",
-        flex: 1,
-        display: "flex",
-        alignItems: "center",
-      }}>
-        <div style={{
-          display: "grid", gridTemplateColumns: "1fr 1fr",
-          gap: 80, alignItems: "center",
-          maxWidth: 1280, margin: "0 auto", padding: "0 48px",
-        }}>
+      <section style={{ background: "#ffffff", flex: 1, display: "flex", alignItems: "center" }}
+        className="py-8 md:py-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 items-center max-w-[1280px] mx-auto px-6 md:px-12 w-full">
           {/* Columna izquierda */}
-          <div>
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <div ref={heroBadgeRef} style={{
               display: "inline-block", background: "#e0faf2", color: "#004733",
               fontSize: 11, fontWeight: 500, letterSpacing: "0.08em",
@@ -481,9 +473,11 @@ export default function Landing({ onEmpezar }) {
               Basado en el Diseño Curricular · PBA
             </div>
 
-            <h1 ref={heroTitleRef} style={{
+            <h1 ref={heroTitleRef}
+              className="text-3xl md:text-[42px]"
+              style={{
               fontFamily: "'Lexend', sans-serif",
-              fontSize: "clamp(28px, 3.2vw, 42px)", fontWeight: 400,
+              fontWeight: 400,
               color: C.texto, lineHeight: 1.2, marginBottom: 20,
               letterSpacing: "-0.025em", opacity: 1,
             }}>
@@ -495,11 +489,12 @@ export default function Landing({ onEmpezar }) {
               El Diseño Curricular, convertido en recursos listos para el aula.
             </p>
 
-            <div ref={heroBtnRef} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 10, opacity: 1 }}>
+            <div ref={heroBtnRef} className="flex flex-col items-center md:items-start gap-2.5" style={{ opacity: 1 }}>
               <button
                 onClick={onEmpezar}
                 onMouseEnter={() => setBtnHover(true)}
                 onMouseLeave={() => setBtnHover(false)}
+                className="min-h-[44px]"
                 style={{
                   fontSize: 15, fontWeight: 600, padding: "14px 28px",
                   borderRadius: 12, border: "none",
