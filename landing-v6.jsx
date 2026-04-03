@@ -424,7 +424,7 @@ export default function Landing({ onEmpezar }) {
   }, []);
 
   return (
-    <div style={{ fontFamily: "'Lexend', sans-serif", width: "100%", background: C.fondo, minHeight: "100vh" }}>
+    <div style={{ fontFamily: "'Lexend', sans-serif", width: "100%", background: C.fondo, minHeight: "100vh", display: "flex", flexDirection: "column" }}>
 
       {/* ── NAV ── */}
       <nav style={{
@@ -456,6 +456,10 @@ export default function Landing({ onEmpezar }) {
       <section style={{
         background: "#ffffff",
         padding: "80px 0 88px",
+        flex: 1,
+        minHeight: "calc(100vh - 60px)",
+        display: "flex",
+        alignItems: "center",
       }}>
         <div style={{
           display: "grid", gridTemplateColumns: "1fr 1fr",
@@ -499,7 +503,7 @@ export default function Landing({ onEmpezar }) {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{ background: C.btn, padding: "14px 48px", textAlign: "center", marginBottom: 0 }}>
+      <footer style={{ background: C.btn, padding: "14px 48px", textAlign: "center", marginTop: "auto", marginBottom: 0 }}>
         <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", margin: 0 }}>
           Basado en el{" "}
           <a
