@@ -372,7 +372,7 @@ function SidebarPreview({ gradoData, area, registro, tipoFicha, genero, incluirE
         <div style={{ display: "flex", gap: 4, marginBottom: 6, flexWrap: "wrap" }}>
           {[gradoData?.num, area, hasContent ? "contenido" : null].map((val, i) => (
             <span key={i} style={{
-              fontSize: 9, padding: "2px 7px", borderRadius: 99,
+              fontSize: 11, padding: "2px 8px", borderRadius: 99,
               background: val ? C.verdeAcento : "rgba(255,255,255,0.15)",
               color: val ? C.verdeOscuro : "rgba(255,255,255,0.3)", fontWeight: 700,
             }}>{val || "···"}</span>
@@ -395,8 +395,8 @@ function SidebarPreview({ gradoData, area, registro, tipoFicha, genero, incluirE
               display: "flex", alignItems: "center", gap: 4,
               background: C.verdeClaroBg, borderRadius: "4px 4px 0 0", padding: "3px 7px",
             }}>
-              <span style={{ fontSize: 8, fontWeight: 700, color: C.verdeTexto }}>{block.num}</span>
-              <span style={{ fontSize: 8, color: C.textoMuted }}>{block.name}</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: C.verdeTexto }}>{block.num}</span>
+              <span style={{ fontSize: 11, color: C.textoMuted }}>{block.name}</span>
             </div>
             <div style={{
               background: "#fafafa", borderRadius: "0 0 4px 4px",
@@ -759,7 +759,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
           <PasoWrap onMount={(el) => { pasoWrapEl.current = el; }}>
             {/* Logo */}
             <div style={{ marginBottom: 40, textAlign: "center" }}>
-              <Logo size={36} />
+              <Logo size={32} />
             </div>
 
             {/* Buscador grande */}
@@ -840,7 +840,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
             position: "sticky", top: 0, zIndex: 10,
           }}>
             <button onClick={paso <= 1 ? () => cambiarDesde(0) : onVolver} style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-              <Logo size={28} color="#ffffff" />
+              <Logo size={32} color="#ffffff" />
             </button>
             <button
               onClick={() => cambiarDesde(paso - 1)}
@@ -870,7 +870,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
           {/* Grid */}
           <div style={{
             display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "1fr 280px",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
             minHeight: "calc(100vh - 60px)",
           }}>
             {/* Main */}
@@ -946,6 +946,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
               {/* ── PASO 2: Área ── */}
               {paso === 2 && (
                 <PasoWrap onMount={(el) => { pasoWrapEl.current = el; }}>
+                  <button onClick={() => cambiarDesde(1)} style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: 13, color: C.textoMuted, padding: 0, marginBottom: 16, fontFamily: "'Lexend', sans-serif" }}>‹ Volver</button>
                   <PreguntaHeader pregunta="¿Qué área trabajamos?" sub={`${gradoData?.num} · elegí la materia`} />
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                     {areasDisponibles.map((a) => (
@@ -965,6 +966,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
               {/* ── PASO 3: Contenido — áreas no-PDL ── */}
               {paso === 3 && area !== "Prácticas del Lenguaje" && (
                 <PasoWrap onMount={(el) => { pasoWrapEl.current = el; }}>
+                  <button onClick={() => cambiarDesde(2)} style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: 13, color: C.textoMuted, padding: 0, marginBottom: 16, fontFamily: "'Lexend', sans-serif" }}>‹ Volver</button>
                   <PreguntaHeader
                     pregunta={`¿Qué contenido de ${area}?`}
                     sub="Diseño Curricular PBA · elegí el bloque y el objetivo"
@@ -981,6 +983,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
               {/* ── PASO 3: PDL cascada ── */}
               {paso === 3 && area === "Prácticas del Lenguaje" && (
                 <PasoWrap onMount={(el) => { pasoWrapEl.current = el; }}>
+                  <button onClick={() => cambiarDesde(2)} style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: 13, color: C.textoMuted, padding: 0, marginBottom: 16, fontFamily: "'Lexend', sans-serif" }}>‹ Volver</button>
                   {!tipoFicha ? (
                     <>
                       <PreguntaHeader pregunta="¿Qué tipo de ficha?" sub={`Prácticas del Lenguaje · ${gradoData?.num}`} />
@@ -1039,6 +1042,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
               {/* ── PASO 4: Opciones + Generar ── */}
               {paso === 4 && !generando && (
                 <PasoWrap onMount={(el) => { pasoWrapEl.current = el; }}>
+                  <button onClick={() => cambiarDesde(3)} style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: 13, color: C.textoMuted, padding: 0, marginBottom: 16, fontFamily: "'Lexend', sans-serif" }}>‹ Volver</button>
                   <Toggle
                     on={incluirExplicacion}
                     onChange={(v) => { setIncluirExplicacion(v); if (!v) setIncluirEjemplo(false); }}

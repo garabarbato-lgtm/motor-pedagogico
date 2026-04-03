@@ -404,9 +404,12 @@ function DemoInteractiva() {
 export default function Landing({ onEmpezar }) {
   const [scrolled, setScrolled] = useState(false);
 
+  const [btnHover, setBtnHover] = useState(false);
+
   const heroBadgeRef = useRef(null);
   const heroTitleRef = useRef(null);
   const heroSubRef = useRef(null);
+  const heroBtnRef  = useRef(null);
   const heroDemoRef = useRef(null);
 
   useEffect(() => {
@@ -416,7 +419,7 @@ export default function Landing({ onEmpezar }) {
   }, []);
 
   useEffect(() => {
-    const targets = [heroBadgeRef, heroTitleRef, heroSubRef, heroDemoRef].map(r => r.current).filter(Boolean);
+    const targets = [heroBadgeRef, heroTitleRef, heroSubRef, heroBtnRef, heroDemoRef].map(r => r.current).filter(Boolean);
     gsap.from(targets, {
       opacity: 0, y: 20, duration: 0.6,
       ease: "power3.out", stagger: 0.12,
@@ -455,9 +458,8 @@ export default function Landing({ onEmpezar }) {
       {/* ── HERO ── */}
       <section style={{
         background: "#ffffff",
-        padding: "80px 0 88px",
+        padding: "40px 0",
         flex: 1,
-        minHeight: "calc(100vh - 60px)",
         display: "flex",
         alignItems: "center",
       }}>
@@ -489,9 +491,29 @@ export default function Landing({ onEmpezar }) {
               <span style={{ color: C.acento, fontStyle: "italic" }}>diez minutos.</span>
             </h1>
 
-            <p ref={heroSubRef} style={{ fontSize: 17, color: C.muted, lineHeight: 1.65, marginBottom: 40, maxWidth: 400, opacity: 1 }}>
+            <p ref={heroSubRef} style={{ fontSize: 17, color: C.muted, lineHeight: 1.65, marginBottom: 32, maxWidth: 400, opacity: 1 }}>
               El Diseño Curricular, convertido en recursos listos para el aula.
             </p>
+
+            <div ref={heroBtnRef} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 10, opacity: 1 }}>
+              <button
+                onClick={onEmpezar}
+                onMouseEnter={() => setBtnHover(true)}
+                onMouseLeave={() => setBtnHover(false)}
+                style={{
+                  fontSize: 15, fontWeight: 600, padding: "14px 28px",
+                  borderRadius: 12, border: "none",
+                  background: btnHover ? "#00603d" : "#004733",
+                  color: "#fff", cursor: "pointer",
+                  boxShadow: btnHover ? "0 8px 24px rgba(0,71,51,0.3)" : "0 2px 8px rgba(0,71,51,0.12)",
+                  transition: "background 0.2s, box-shadow 0.2s",
+                }}>
+                Generar mi primer recurso
+              </button>
+              <span style={{ fontSize: 12, color: "#6B8C7D" }}>
+                Contenido verificado · Alineado al DC · Listo para el aula
+              </span>
+            </div>
 
           </div>
 
