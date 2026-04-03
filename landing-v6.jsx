@@ -30,89 +30,157 @@ function LupaIcon({ active }) {
   );
 }
 
-function SearchBar({ text, focused }) {
-  return (
-    <div style={{
-      display: "flex", alignItems: "center", gap: 10,
-      borderRadius: 12,
-      border: `1.5px solid ${focused ? "#00c48c" : "#D4E6DE"}`,
-      boxShadow: focused ? "0 0 0 3px rgba(0,196,140,0.12)" : "none",
-      padding: "14px 18px",
-      background: "#fff",
-      fontFamily: "'Lexend', sans-serif",
-      transition: "border-color 0.2s, box-shadow 0.2s",
-    }}>
-      <LupaIcon active={focused} />
-      <span style={{
-        fontSize: 14, color: "#004733", flex: 1, minHeight: 20,
-        fontFamily: "'Lexend', sans-serif",
-        letterSpacing: "-0.01em",
-      }}>
-        {text}
-        {focused && (
-          <span style={{
-            display: "inline-block", width: 1.5, height: 14,
-            background: "#004733", marginLeft: 1, verticalAlign: "middle", opacity: 1,
-          }} />
-        )}
-      </span>
-    </div>
-  );
-}
+// ── STEP 0: BUSCADOR ANIMADO ──────────────────────────────────────────────────
 
 function StepSearch({ typedText, searchFocused }) {
+  const isTyping = typedText.length > 0;
+
   return (
-    <div style={{ padding: "20px 18px" }}>
-      <p style={{
-        fontSize: 10, color: "#6B8C7D", marginBottom: 10,
-        letterSpacing: "0.05em", textTransform: "uppercase", fontWeight: 600,
+    <div style={{ padding: "20px 18px", background: "#F0F4F2" }}>
+      {/* Input */}
+      <div style={{
+        display: "flex", alignItems: "center", gap: 10,
+        borderRadius: 12,
+        border: `1.5px solid ${searchFocused ? "#00c48c" : "#D4E6DE"}`,
+        boxShadow: searchFocused ? "0 0 0 3px rgba(0,196,140,0.12)" : "none",
+        padding: "14px 18px",
+        background: "#fff",
         fontFamily: "'Lexend', sans-serif",
+        transition: "border-color 0.2s, box-shadow 0.2s",
       }}>
-        Buscá un contenido
-      </p>
-      <SearchBar text={typedText} focused={searchFocused} />
+        <LupaIcon active={searchFocused} />
+        <span style={{
+          fontSize: 14, flex: 1, minHeight: 20,
+          color: isTyping ? "#004733" : "#A0BDB5",
+          fontFamily: "'Lexend', sans-serif",
+          letterSpacing: "-0.01em",
+        }}>
+          {isTyping ? typedText : "Ej: fracciones 5to, sistema digestivo..."}
+          {searchFocused && isTyping && (
+            <span style={{
+              display: "inline-block", width: 1.5, height: 14,
+              background: "#004733", marginLeft: 1, verticalAlign: "middle", opacity: 1,
+            }} />
+          )}
+        </span>
+      </div>
+
+      {/* Chips — ocultos al escribir */}
+      {!isTyping && (
+        <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+          {["Fracciones 4°", "Multiplicación 3°", "Sistema digestivo 6°"].map(chip => (
+            <span key={chip} style={{
+              border: "1px solid #00c48c",
+              borderRadius: 99,
+              color: "#004733",
+              background: "transparent",
+              fontSize: 12,
+              padding: "6px 14px",
+              fontFamily: "'Lexend', sans-serif",
+              cursor: "pointer",
+            }}>{chip}</span>
+          ))}
+        </div>
+      )}
+
+      {/* Pie */}
+      {!isTyping && (
+        <p style={{
+          textAlign: "center", fontSize: 12, color: "#6B8C7D",
+          marginTop: 12, marginBottom: 0, fontFamily: "'Lexend', sans-serif",
+        }}>
+          O explorá por grado y área →
+        </p>
+      )}
     </div>
   );
 }
 
+// ── STEP 1: RESULTADOS CON DROPDOWN + CURSOR ──────────────────────────────────
+
 function StepResults() {
+  const [phase, setPhase] = useState(0);
+  // phase 0: resultados visibles
+  // phase 1: cursor aparece y se mueve al primer resultado
+  // phase 2: cursor hace click — primer resultado seleccionado
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase(1), 500);
+    const t2 = setTimeout(() => setPhase(2), 1100);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+
   const results = [
-    { name: "Fracciones equivalentes", meta: "5° grado · Matemática · Números Racionales" },
-    { name: "Fracciones: partes del entero", meta: "5° grado · Matemática · Números Racionales" },
+    { name: "Fracciones equivalentes", meta: "Matemática · 5° · Números Racionales" },
+    { name: "Fracciones: partes del entero", meta: "Matemática · 5° · Números Racionales" },
+    { name: "Fracciones propias e impropias", meta: "Matemática · 6° · Números Racionales" },
   ];
+
   return (
-    <div style={{ padding: "20px 18px", display: "flex", flexDirection: "column", gap: 10 }}>
-      <SearchBar text={QUERY} focused={false} />
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 2 }}>
+    <div style={{ padding: "20px 18px", background: "#F0F4F2", position: "relative" }}>
+      {/* Barra de búsqueda — estado activo */}
+      <div style={{
+        display: "flex", alignItems: "center", gap: 10,
+        borderRadius: 12, border: "1.5px solid #00c48c",
+        boxShadow: "0 0 0 3px rgba(0,196,140,0.12)",
+        padding: "14px 18px", background: "#fff",
+      }}>
+        <LupaIcon active={true} />
+        <span style={{ fontSize: 14, color: "#004733", flex: 1, fontFamily: "'Lexend', sans-serif" }}>
+          {QUERY}
+          <span style={{
+            display: "inline-block", width: 1.5, height: 14,
+            background: "#004733", marginLeft: 1, verticalAlign: "middle",
+          }} />
+        </span>
+      </div>
+
+      {/* Dropdown */}
+      <div style={{
+        background: "#fff", borderRadius: 12,
+        boxShadow: "0 4px 16px rgba(0,71,51,0.08)",
+        marginTop: 6,
+      }}>
         {results.map((r, i) => (
           <div key={i} style={{
-            background: i === 0 ? "#E6FAF3" : "#fff",
-            border: `${i === 0 ? "2px" : "1px"} solid ${i === 0 ? "#004733" : "#D4E6DE"}`,
-            borderRadius: 10, padding: "10px 14px",
-            display: "flex", alignItems: "center", justifyContent: "space-between",
+            padding: "12px 16px",
+            background: i === 2 ? "#E6FAF3" : "#fff",
+            boxShadow: (i === 0 && phase >= 2) ? "inset 0 0 0 2px #004733" : "none",
+            borderRadius: i === 0 ? "12px 12px 0 0" : i === results.length - 1 ? "0 0 12px 12px" : "0",
+            borderBottom: i < results.length - 1 ? "0.5px solid #EBF2EE" : "none",
+            transition: "box-shadow 0.15s",
           }}>
-            <div>
-              <div style={{ fontSize: 11, color: "#6B8C7D", fontFamily: "'Lexend', sans-serif", marginBottom: 2 }}>
-                {r.meta}
-              </div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#004733", fontFamily: "'Lexend', sans-serif" }}>
-                {r.name}
-              </div>
+            <div style={{ fontSize: 11, color: "#6B8C7D", fontFamily: "'Lexend', sans-serif", marginBottom: 3 }}>
+              {r.meta}
             </div>
-            {i === 0 && (
-              <span style={{
-                width: 20, height: 20, borderRadius: "50%",
-                background: "#00c48c", color: "#fff",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 11, fontWeight: 700, flexShrink: 0, marginLeft: 8,
-              }}>✓</span>
-            )}
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#004733", fontFamily: "'Lexend', sans-serif" }}>
+              {r.name}
+            </div>
           </div>
         ))}
+      </div>
+
+      {/* Cursor SVG animado */}
+      <div style={{
+        position: "absolute",
+        top: phase >= 1 ? 118 : 72,
+        left: phase >= 1 ? 30 : 170,
+        opacity: phase >= 1 ? 1 : 0,
+        transform: phase >= 2 ? "scale(0.85)" : "scale(1)",
+        transformOrigin: "4px 2px",
+        transition: "top 0.5s cubic-bezier(0.22,0.61,0.36,1), left 0.5s cubic-bezier(0.22,0.61,0.36,1), opacity 0.3s, transform 0.1s",
+        pointerEvents: "none",
+        zIndex: 10,
+      }}>
+        <svg width="16" height="20" viewBox="0 0 16 20" fill="none">
+          <path d="M1 1L1 15L5 11L8 18L10 17L7 10L13 10Z" fill="#004733" stroke="white" strokeWidth="1.5" strokeLinejoin="round" />
+        </svg>
       </div>
     </div>
   );
 }
+
+// ── STEP 2: CONFIRMACIÓN ──────────────────────────────────────────────────────
 
 function StepConfirm() {
   return (
@@ -177,6 +245,8 @@ function StepConfirm() {
   );
 }
 
+// ── STEP 3: FICHA ─────────────────────────────────────────────────────────────
+
 function GrayBar({ width = "100%" }) {
   return <div style={{ height: 7, background: "#D4E6DE", borderRadius: 4, marginBottom: 4, width }} />;
 }
@@ -240,6 +310,8 @@ function StepFicha() {
   );
 }
 
+// ── ORQUESTADOR ───────────────────────────────────────────────────────────────
+
 function DemoInteractiva() {
   const [step, setStep] = useState(0);
   const [fading, setFading] = useState(false);
@@ -256,7 +328,7 @@ function DemoInteractiva() {
         i++;
         setTypedText(QUERY.slice(0, i));
         if (i >= QUERY.length) clearInterval(interval);
-      }, 75);
+      }, 90);
     }, FADE_IN + 200);
     return () => { clearTimeout(startTimer); if (interval) clearInterval(interval); };
   }, [step]);
@@ -350,7 +422,7 @@ export default function Landing() {
       {/* ── HERO DOS COLUMNAS ── */}
       <section style={{ width: "100%", flex: 1, padding: "80px 0 88px", background: C.fondo }}>
         <div style={{
-          maxWidth: 1280, margin: "0 auto", padding: "0 24px",
+          maxWidth: 1280, margin: "0 auto", padding: "0 48px",
           display: "grid", gridTemplateColumns: "1fr 1fr",
           gap: 80, alignItems: "center",
         }}>
@@ -389,9 +461,9 @@ export default function Landing() {
       <footer style={{
         width: "100%", background: "#004733",
         padding: "14px 24px", textAlign: "center",
-        marginTop: 0,
+        marginTop: 0, marginBottom: 0,
       }}>
-        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.55)", margin: 0 }}>
+        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.55)", margin: 0, padding: 0 }}>
           Basado en el{" "}
           <span style={{ color: C.acento, fontWeight: 500 }}>Diseño Curricular PBA</span>
           {" "}· DGCyE 2018 · Resolución N° 1482/17
