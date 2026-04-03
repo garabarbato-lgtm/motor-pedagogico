@@ -21,82 +21,137 @@ const STEP_DURATIONS = [2000, 1500, 1500, 3500];
 const FADE_OUT = 250;
 const FADE_IN = 350;
 
-function SearchIcon() {
+function LupaIcon({ active }) {
+  const col = active ? "#00c48c" : "#6B8C7D";
   return (
-    <svg viewBox="0 0 20 20" fill="none" stroke="#6B8C7D" strokeWidth="1.8"
-      strokeLinecap="round" width="14" height="14" style={{ flexShrink: 0 }}>
-      <circle cx="8.5" cy="8.5" r="5.5" />
-      <line x1="13" y1="13" x2="17" y2="17" />
+    <svg viewBox="0 0 16 16" fill="none" width="16" height="16" style={{ flexShrink: 0 }}>
+      <circle cx="7" cy="7" r="5" stroke={col} strokeWidth="1.5" />
+      <path d="M11 11l3 3" stroke={col} strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }
 
-function SearchBar({ text, focused }) {
-  return (
-    <div style={{
-      display: "flex", alignItems: "center", gap: 8,
-      borderRadius: 12, background: "#fff",
-      border: `1.5px solid ${focused ? "#00c48c" : "#D4E6DE"}`,
-      boxShadow: focused ? "0 0 0 3px rgba(0,196,140,0.12)" : "none",
-      padding: "9px 12px",
-      transition: "border-color 0.2s, box-shadow 0.2s",
-    }}>
-      <SearchIcon />
-      <span style={{ fontSize: 12, color: "#004733", flex: 1, minHeight: 16, letterSpacing: "-0.01em" }}>
-        {text}
-        {focused && (
-          <span style={{
-            display: "inline-block", width: 1.5, height: 13,
-            background: "#004733", marginLeft: 1, verticalAlign: "middle",
-            animation: "none", opacity: 1,
-          }} />
-        )}
-      </span>
-    </div>
-  );
-}
-
 function StepSearch({ typedText, searchFocused }) {
+  const isTyping = typedText.length > 0;
   return (
-    <div style={{ padding: "16px 14px" }}>
-      <p style={{ fontSize: 10, color: "#6B8C7D", marginBottom: 8, letterSpacing: "0.04em", textTransform: "uppercase", fontWeight: 600 }}>
-        Buscá un contenido
-      </p>
-      <SearchBar text={typedText} focused={searchFocused} />
+    <div style={{ padding: "20px 18px", background: "#F0F4F2" }}>
+      {/* Input */}
+      <div style={{
+        display: "flex", alignItems: "center", gap: 10,
+        borderRadius: 12,
+        border: `1.5px solid ${searchFocused ? "#00c48c" : "#D4E6DE"}`,
+        boxShadow: searchFocused ? "0 0 0 3px rgba(0,196,140,0.12)" : "none",
+        padding: "14px 18px", background: "#fff",
+        transition: "border-color 0.2s, box-shadow 0.2s",
+      }}>
+        <LupaIcon active={searchFocused} />
+        <span style={{
+          fontSize: 14, flex: 1, minHeight: 20,
+          color: isTyping ? "#004733" : "#A0BDB5",
+          letterSpacing: "-0.01em",
+        }}>
+          {isTyping ? typedText : "Ej: fracciones 5to, sistema digestivo..."}
+          {searchFocused && isTyping && (
+            <span style={{
+              display: "inline-block", width: 1.5, height: 14,
+              background: "#004733", marginLeft: 1, verticalAlign: "middle",
+            }} />
+          )}
+        </span>
+      </div>
+      {/* Chips — se ocultan al escribir */}
+      {!isTyping && (
+        <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+          {["Fracciones 4°", "Multiplicación 3°", "Sistema digestivo 6°"].map(chip => (
+            <span key={chip} style={{
+              border: "1px solid #00c48c", borderRadius: 99,
+              color: "#004733", background: "transparent",
+              fontSize: 12, padding: "6px 14px", cursor: "pointer",
+            }}>{chip}</span>
+          ))}
+        </div>
+      )}
+      {/* Pie */}
+      {!isTyping && (
+        <p style={{
+          textAlign: "center", fontSize: 12, color: "#6B8C7D",
+          marginTop: 12, marginBottom: 0,
+        }}>
+          O explorá por grado y área →
+        </p>
+      )}
     </div>
   );
 }
 
 function StepResults() {
+  const [phase, setPhase] = useState(0);
+  // 0: dropdown visible · 1: cursor aparece y se mueve · 2: click — resultado seleccionado
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase(1), 500);
+    const t2 = setTimeout(() => setPhase(2), 1100);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+
   const results = [
-    { name: "Fracciones equivalentes", meta: "5° grado · Matemática · Números Racionales" },
-    { name: "Fracciones: partes del entero", meta: "5° grado · Matemática · Números Racionales" },
+    { name: "Fracciones equivalentes",      meta: "Matemática · 5° · Números Racionales" },
+    { name: "Fracciones: partes del entero", meta: "Matemática · 5° · Números Racionales" },
+    { name: "Fracciones propias e impropias", meta: "Matemática · 6° · Números Racionales" },
   ];
+
   return (
-    <div style={{ padding: "16px 14px", display: "flex", flexDirection: "column", gap: 8 }}>
-      <SearchBar text={QUERY} focused={false} />
-      <div style={{ display: "flex", flexDirection: "column", gap: 7, marginTop: 4 }}>
+    <div style={{ padding: "20px 18px", background: "#F0F4F2", position: "relative" }}>
+      {/* Barra — estado activo */}
+      <div style={{
+        display: "flex", alignItems: "center", gap: 10,
+        borderRadius: 12, border: "1.5px solid #00c48c",
+        boxShadow: "0 0 0 3px rgba(0,196,140,0.12)",
+        padding: "14px 18px", background: "#fff",
+      }}>
+        <LupaIcon active={true} />
+        <span style={{ fontSize: 14, color: "#004733", flex: 1 }}>
+          {QUERY}
+          <span style={{
+            display: "inline-block", width: 1.5, height: 14,
+            background: "#004733", marginLeft: 1, verticalAlign: "middle",
+          }} />
+        </span>
+      </div>
+      {/* Dropdown */}
+      <div style={{
+        background: "#fff", borderRadius: 12,
+        boxShadow: "0 4px 16px rgba(0,71,51,0.08)",
+        marginTop: 6,
+      }}>
         {results.map((r, i) => (
           <div key={i} style={{
-            background: i === 0 ? "#E6FAF3" : "#fff",
-            border: `${i === 0 ? "2px" : "1px"} solid ${i === 0 ? "#004733" : "#D4E6DE"}`,
-            borderRadius: 10, padding: "9px 12px",
-            display: "flex", alignItems: "center", justifyContent: "space-between",
+            padding: "12px 16px",
+            background: i === 2 ? "#E6FAF3" : "#fff",
+            boxShadow: (i === 0 && phase >= 2) ? "inset 0 0 0 2px #004733" : "none",
+            borderRadius: i === 0 ? "12px 12px 0 0" : i === results.length - 1 ? "0 0 12px 12px" : "0",
+            borderBottom: i < results.length - 1 ? "0.5px solid #EBF2EE" : "none",
+            transition: "box-shadow 0.15s",
           }}>
-            <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#004733" }}>{r.name}</div>
-              <div style={{ fontSize: 10, color: "#6B8C7D", marginTop: 2 }}>{r.meta}</div>
-            </div>
-            {i === 0 && (
-              <span style={{
-                width: 18, height: 18, borderRadius: "50%",
-                background: "#00c48c", color: "#fff",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 10, fontWeight: 700, flexShrink: 0,
-              }}>✓</span>
-            )}
+            <div style={{ fontSize: 11, color: "#6B8C7D", marginBottom: 3 }}>{r.meta}</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#004733" }}>{r.name}</div>
           </div>
         ))}
+      </div>
+      {/* Cursor SVG animado */}
+      <div style={{
+        position: "absolute",
+        top: phase >= 1 ? 122 : 74,
+        left: phase >= 1 ? 30 : 170,
+        opacity: phase >= 1 ? 1 : 0,
+        transform: phase >= 2 ? "scale(0.85)" : "scale(1)",
+        transformOrigin: "4px 2px",
+        transition: "top 0.5s cubic-bezier(0.22,0.61,0.36,1), left 0.5s cubic-bezier(0.22,0.61,0.36,1), opacity 0.3s, transform 0.1s",
+        pointerEvents: "none", zIndex: 10,
+      }}>
+        <svg width="16" height="20" viewBox="0 0 16 20" fill="none">
+          <path d="M1 1L1 15L5 11L8 18L10 17L7 10L13 10Z" fill="#004733" stroke="white" strokeWidth="1.5" strokeLinejoin="round" />
+        </svg>
       </div>
     </div>
   );
@@ -278,7 +333,7 @@ function DemoInteractiva() {
         i++;
         setTypedText(QUERY.slice(0, i));
         if (i >= QUERY.length) clearInterval(interval);
-      }, 75);
+      }, 90);
     }, FADE_IN + 200);
     return () => {
       clearTimeout(startTimer);
@@ -347,13 +402,11 @@ function DemoInteractiva() {
 /* ── LANDING ── */
 
 export default function Landing({ onEmpezar }) {
-  const [btnHover, setBtnHover] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   const heroBadgeRef = useRef(null);
   const heroTitleRef = useRef(null);
   const heroSubRef = useRef(null);
-  const heroBtnRef = useRef(null);
   const heroDemoRef = useRef(null);
 
   useEffect(() => {
@@ -363,7 +416,7 @@ export default function Landing({ onEmpezar }) {
   }, []);
 
   useEffect(() => {
-    const targets = [heroBadgeRef, heroTitleRef, heroSubRef, heroBtnRef, heroDemoRef].map(r => r.current).filter(Boolean);
+    const targets = [heroBadgeRef, heroTitleRef, heroSubRef, heroDemoRef].map(r => r.current).filter(Boolean);
     gsap.from(targets, {
       opacity: 0, y: 20, duration: 0.6,
       ease: "power3.out", stagger: 0.12,
@@ -402,12 +455,12 @@ export default function Landing({ onEmpezar }) {
       {/* ── HERO ── */}
       <section style={{
         background: "#ffffff",
-        padding: "80px 40px 88px",
+        padding: "80px 0 88px",
       }}>
         <div style={{
           display: "grid", gridTemplateColumns: "1fr 1fr",
-          gap: 56, alignItems: "center",
-          maxWidth: 1100, margin: "0 auto",
+          gap: 80, alignItems: "center",
+          maxWidth: 1280, margin: "0 auto", padding: "0 48px",
         }}>
           {/* Columna izquierda */}
           <div>
@@ -436,24 +489,6 @@ export default function Landing({ onEmpezar }) {
               El Diseño Curricular, convertido en recursos listos para el aula.
             </p>
 
-            <div ref={heroBtnRef} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 12, opacity: 1 }}>
-              <button
-                onClick={onEmpezar}
-                onMouseEnter={() => setBtnHover(true)}
-                onMouseLeave={() => setBtnHover(false)}
-                style={{
-                  fontSize: 15, fontWeight: 600, padding: "14px 32px",
-                  borderRadius: 8, border: "none",
-                  background: btnHover ? "#00603d" : C.btn,
-                  color: "#ffffff", cursor: "pointer",
-                  transform: btnHover ? "translateY(-2px)" : "none",
-                  boxShadow: btnHover ? "0 8px 24px rgba(0,71,51,0.3)" : "0 2px 8px rgba(0,71,51,0.12)",
-                  transition: "all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                }}>
-                Generar mi primer recurso
-              </button>
-              <span style={{ fontSize: 12, color: C.muted }}>Contenido verificado · Alineado al DC · Listo para el aula</span>
-            </div>
           </div>
 
           {/* Columna derecha: demo interactiva */}
@@ -464,8 +499,8 @@ export default function Landing({ onEmpezar }) {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{ background: C.btn, padding: "10px 48px", textAlign: "center" }}>
-        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)" }}>
+      <footer style={{ background: C.btn, padding: "14px 48px", textAlign: "center", marginBottom: 0 }}>
+        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", margin: 0 }}>
           Basado en el{" "}
           <a
             href={DC_URL}
