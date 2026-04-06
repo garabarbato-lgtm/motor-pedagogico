@@ -230,7 +230,6 @@ Bloque: ${contenido.bloque}
 Tema: ${contenido.subtema}
 Objetivo de aprendizaje: ${contenido.objetivo_especifico}
 ${contenido.item_original ? `Referencia del bloque: ${contenido.item_original}` : ""}
-${contenido.contexto_pedagogico ? `Contexto adicional: ${contenido.contexto_pedagogico}` : ""}
 ${feedbackSection}
 
 CONTEXTO CURRICULAR:
@@ -289,6 +288,33 @@ ${camposOpcionales}
   ],
   "reflexion": "pregunta para conectar con la vida cotidiana del alumno"
 }
+
+${(() => {
+  const ctx = contenido.contexto_pedagogico;
+  if (!ctx || (!ctx.momento && !ctx.nivelGrupo && !ctx.proposito && !ctx.textoLibre)) return "";
+  const lineas = ["---CONTEXTO PEDAGÓGICO---"];
+  if (ctx.momento)    lineas.push(`Momento didáctico: ${ctx.momento}`);
+  if (ctx.nivelGrupo) lineas.push(`Nivel del grupo: ${ctx.nivelGrupo}`);
+  if (ctx.proposito)  lineas.push(`Propósito: ${ctx.proposito}`);
+  if (ctx.textoLibre) lineas.push(`Tener en cuenta que: ${ctx.textoLibre}`);
+  lineas.push(`
+Aplicar estas reglas según el momento didáctico:
+- "Introducción": incluir siempre explicación conceptual + ejemplo concreto antes de las actividades
+- "Práctica": incluir breve recordatorio del concepto, luego actividades
+- "Cierre": ir directo a las actividades, sin explicación ni ejemplo introductorio
+
+Aplicar estas reglas según el nivel del grupo:
+- "Necesita más apoyo": consignas más guiadas, con pasos intermedios
+- "Sigue el ritmo del grupo": consignas normales
+- "Puede ir más lejos": consignas con mayor complejidad o que inviten a ir más lejos
+
+Aplicar estas reglas según el propósito:
+- "en clase": actividades colaborativas o de discusión son válidas
+- "para casa": actividades autónomas, sin necesidad de materiales especiales
+- "evaluación": actividades individuales, sin ejemplos resueltos en la ficha
+---FIN CONTEXTO PEDAGÓGICO---`);
+  return lineas.join("\n");
+})()}
 
 Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdown.`;
 }
