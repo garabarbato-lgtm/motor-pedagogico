@@ -342,7 +342,7 @@ function AcordeonBloques({ bloques, contenidosPorBloque, registroSeleccionado, o
   );
 }
 
-function SidebarPreview({ gradoData, area, registro, tipoFicha, genero, incluirExplicacion, incluirEjemplo }) {
+function SidebarPreview({ gradoData, area, registro, tipoFicha, genero }) {
   const tituloFicha = registro
     ? (registro.subtema || registro.item_original)
     : genero
@@ -354,13 +354,11 @@ function SidebarPreview({ gradoData, area, registro, tipoFicha, genero, incluirE
     : null;
 
   const hasContent = !!(registro || genero);
-  let blockNum = 1;
   const blocks = [
-    incluirExplicacion ? { num: blockNum++, name: "Explicación", type: "explanation" } : null,
-    incluirEjemplo     ? { num: blockNum++, name: "Ejemplo",     type: "example" }     : null,
-    { num: blockNum++, name: "Actividad",  type: "activity" },
-    { num: blockNum,   name: "Reflexión",  type: "reflection" },
-  ].filter(Boolean);
+    { num: 1, name: "Explicación", type: "explanation" },
+    { num: 2, name: "Actividad",   type: "activity" },
+    { num: 3, name: "Reflexión",   type: "reflection" },
+  ];
 
   return (
     <div style={{
@@ -483,8 +481,9 @@ export default function Generador({ onFichaGenerada, onVolver }) {
   const [area, setArea] = useState(null);
   const [areaConfig, setAreaConfig] = useState(null);
   const [registro, setRegistro] = useState(null);
-  const [incluirExplicacion, setIncluirExplicacion] = useState(true);
-  const [incluirEjemplo, setIncluirEjemplo] = useState(true);
+  const [momento, setMomento] = useState(null);
+  const [nivelGrupo, setNivelGrupo] = useState(null);
+  const [contextoLibre, setContextoLibre] = useState("");
   const [busqueda, setBusqueda] = useState("");
   const [busquedaFocused, setBusquedaFocused] = useState(false);
   const [busquedaGrado, setBusquedaGrado] = useState(null);
@@ -664,7 +663,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
     if (isPDL) {
       payload = {
         contenido: { grado: gradoNum, area, tipoTexto: genero },
-        tipoFicha, incluirExplicacion, incluirEjemplo,
+        tipoFicha,
       };
       registroParaFicha = {
         id: `pdl_${gradoNum}_${tipoFicha}_${genero}`,
@@ -672,15 +671,22 @@ export default function Generador({ onFichaGenerada, onVolver }) {
         bloque: tipoFicha, item_original: genero,
       };
     } else {
+      const partes = [];
+      if (momento) partes.push(`Momento didáctico: ${momento}`);
+      if (nivelGrupo) partes.push(`Nivel del grupo: ${nivelGrupo}`);
+      if (contextoLibre.trim()) partes.push(`Tener en cuenta que: ${contextoLibre.trim()}`);
+      const contexto_pedagogico = partes.length > 0 ? partes.join(". ") : "";
+
       payload = {
         contenido: {
           grado: registro.grado, area: registro.area, bloque: registro.bloque,
           item_original: registro.item_original,
           subtema: registro.subtema || registro.item_original,
           objetivo_especifico: registro.objetivo_especifico,
-          contexto_pedagogico: `Incluir explicación: ${incluirExplicacion}. Incluir ejemplo: ${incluirEjemplo}.`,
+          indicadores_de_avance: registro.indicadores_de_avance || [],
+          contexto_pedagogico,
         },
-        tipoFicha: "ficha de trabajo", incluirExplicacion, incluirEjemplo,
+        tipoFicha: "ficha de trabajo",
       };
       registroParaFicha = registro;
     }
@@ -1043,20 +1049,72 @@ export default function Generador({ onFichaGenerada, onVolver }) {
               {paso === 4 && !generando && (
                 <PasoWrap onMount={(el) => { pasoWrapEl.current = el; }}>
                   <button onClick={() => cambiarDesde(3)} style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: 13, color: C.textoMuted, padding: 0, marginBottom: 16, fontFamily: "'Lexend', sans-serif" }}>‹ Volver</button>
-                  <Toggle
-                    on={incluirExplicacion}
-                    onChange={(v) => { setIncluirExplicacion(v); if (!v) setIncluirEjemplo(false); }}
-                    title="Incluir explicación del tema"
-                    desc="Agrega un párrafo explicativo antes de las actividades"
-                  />
-                  <div style={{ opacity: incluirExplicacion ? 1 : 0.45, transition: "opacity 0.2s" }}>
-                    <Toggle
-                      on={incluirEjemplo && incluirExplicacion}
-                      onChange={(v) => { if (incluirExplicacion) setIncluirEjemplo(v); }}
-                      title="Incluir ejemplo concreto"
-                      desc="Agrega un ejemplo cercano a la experiencia del alumno"
-                    />
+
+                  {/* Momento didáctico */}
+                  <p style={{ fontSize: 11, fontWeight: 700, color: C.textoMuted, textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 10px" }}>Momento didáctico</p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
+                    {["Introducción", "Práctica", "Cierre"].map((op) => (
+                      <button key={op} onClick={() => setMomento(momento === op ? null : op)} style={{
+                        border: `1.5px solid ${momento === op ? "#004733" : "#D4E6DE"}`,
+                        background: momento === op ? "#004733" : "#fff",
+                        color: momento === op ? "#fff" : "#004733",
+                        borderRadius: 999, padding: "7px 16px", fontSize: 14, cursor: "pointer",
+                        transition: "all 0.15s", fontFamily: "'Lexend', sans-serif",
+                      }}
+                        onMouseEnter={e => { if (momento !== op) { e.currentTarget.style.background = "#E6FAF3"; e.currentTarget.style.borderColor = "#00c48c"; } }}
+                        onMouseLeave={e => { if (momento !== op) { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "#D4E6DE"; } }}
+                      >{op}</button>
+                    ))}
                   </div>
+
+                  {/* Nivel del grupo */}
+                  <p style={{ fontSize: 11, fontWeight: 700, color: C.textoMuted, textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 10px" }}>Nivel del grupo</p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
+                    {["Necesita más apoyo", "Sigue el ritmo del grupo", "Puede ir más lejos"].map((op) => (
+                      <button key={op} onClick={() => setNivelGrupo(nivelGrupo === op ? null : op)} style={{
+                        border: `1.5px solid ${nivelGrupo === op ? "#004733" : "#D4E6DE"}`,
+                        background: nivelGrupo === op ? "#004733" : "#fff",
+                        color: nivelGrupo === op ? "#fff" : "#004733",
+                        borderRadius: 999, padding: "7px 16px", fontSize: 14, cursor: "pointer",
+                        transition: "all 0.15s", fontFamily: "'Lexend', sans-serif",
+                      }}
+                        onMouseEnter={e => { if (nivelGrupo !== op) { e.currentTarget.style.background = "#E6FAF3"; e.currentTarget.style.borderColor = "#00c48c"; } }}
+                        onMouseLeave={e => { if (nivelGrupo !== op) { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "#D4E6DE"; } }}
+                      >{op}</button>
+                    ))}
+                  </div>
+
+                  {/* Separador */}
+                  <hr style={{ border: "none", borderTop: "1px solid #D4E6DE", margin: "20px 0" }} />
+
+                  {/* Campo libre */}
+                  <div style={{ marginBottom: 20 }}>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: C.textoPrincipal, margin: "0 0 8px" }}>
+                      Algo más a tener en cuenta{" "}
+                      <span style={{ fontSize: 11, color: C.textoSec, fontWeight: 400 }}>(opcional)</span>
+                    </p>
+                    <div style={{ border: "1.5px solid #D4E6DE", borderRadius: 10, overflow: "hidden", display: "flex" }}>
+                      <div style={{ background: "#F0F4F2", padding: "10px 12px", fontSize: 13, color: "#4a6b60", borderRight: "1.5px solid #D4E6DE", flexShrink: 0, whiteSpace: "nowrap" }}>
+                        Tener en cuenta que:
+                      </div>
+                      <textarea
+                        value={contextoLibre}
+                        onChange={e => setContextoLibre(e.target.value)}
+                        maxLength={150}
+                        placeholder="hay alumnos con dislexia, el grupo no terminó el tema anterior…"
+                        style={{
+                          border: "none", outline: "none", width: "100%",
+                          padding: "10px 12px", fontSize: 13, color: "#004733",
+                          height: 60, resize: "none", fontFamily: "'Lexend', sans-serif",
+                          background: "#fff",
+                        }}
+                      />
+                    </div>
+                    <p style={{ fontSize: 11, color: contextoLibre.length > 120 ? "#F5A623" : "#4a6b60", textAlign: "right", margin: "4px 0 0" }}>
+                      {contextoLibre.length} / 150
+                    </p>
+                  </div>
+
                   <button
                     data-boton
                     onClick={generar}
@@ -1151,7 +1209,6 @@ export default function Generador({ onFichaGenerada, onVolver }) {
               <SidebarPreview
                 gradoData={gradoData} area={area} areaConfig={areaConfig}
                 registro={registro} tipoFicha={tipoFicha} genero={genero}
-                incluirExplicacion={incluirExplicacion} incluirEjemplo={incluirEjemplo}
               />
 
               <div style={{ background: C.fondoApp, borderRadius: 12, padding: "14px 16px" }}>

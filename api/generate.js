@@ -158,7 +158,7 @@ Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdow
 // ─────────────────────────────────────────────
 // PROMPT GENERADOR (general + PDL)
 // ─────────────────────────────────────────────
-function buildGeneratorPrompt(contenido, tipoFicha, incluirExplicacion, incluirEjemplo, feedback = null) {
+function buildGeneratorPrompt(contenido, tipoFicha, feedback = null, indicadores = []) {
   // Derivar a prompts PDL cuando corresponde
   if (contenido.area === "Prácticas del Lenguaje") {
     if (tipoFicha === "Lectura de textos") return buildPDLLecturaPrompt(contenido, feedback);
@@ -172,12 +172,11 @@ function buildGeneratorPrompt(contenido, tipoFicha, incluirExplicacion, incluirE
     : "";
 
   const camposOpcionales = [
-    incluirExplicacion ? '  "concepto_clave": "definición del concepto en una oración",' : null,
-    incluirExplicacion ? '  "explicacion": "explicación breve en lenguaje claro para el grado",' : null,
-  ].filter(Boolean).join("\n");
+    '  "concepto_clave": "definición del concepto en una oración",',
+    '  "explicacion": "explicación breve en lenguaje claro para el grado",',
+  ].join("\n");
 
-  console.log(`[generate] incluirExplicacion=${incluirExplicacion} incluirEjemplo=${incluirEjemplo}`);
-  const cantidadEjercicios = (!incluirExplicacion && !incluirEjemplo) ? 4 : 3;
+  const cantidadEjercicios = 3;
 
   const bloqueLC = (contenido.bloque || "").toLowerCase();
   const itemLC = (contenido.subtema || contenido.item_original || "").toLowerCase();
@@ -234,12 +233,25 @@ ${contenido.item_original ? `Referencia del bloque: ${contenido.item_original}` 
 ${contenido.contexto_pedagogico ? `Contexto adicional: ${contenido.contexto_pedagogico}` : ""}
 ${feedbackSection}
 
-CRITERIOS:
-1. Lenguaje claro para niños de primaria — sin términos académicos
-2. IMPORTANTE: Generá EXACTAMENTE ${cantidadEjercicios} ejercicios, ni más ni menos. Si generás uno de más el sistema lo va a ignorar y quedará incompleto. Máximo ${cantidadEjercicios}.
-3. Marcá con **doble asterisco** números, datos y conceptos clave en la explicación
-4. Título: dos partes separadas por dos puntos, mayúscula solo en la primera letra
-5. Elegí 1 o 2 emojis para "emojis": SOLO objetos cotidianos concretos relacionados al contexto (comida, animales, objetos escolares, deportes, naturaleza). NUNCA usar símbolos matemáticos o abstractos como ❌ ✖️ ➗ ➕ ➖ 🔢 📐 📏 o similares.
+CONTEXTO CURRICULAR:
+${indicadores && indicadores.length > 0 ? `Los siguientes indicadores de avance del DC PBA describen lo que se espera que los alumnos logren. Usalos como referencia para calibrar el nivel y el enfoque de la actividad, no como consignas a cumplir literalmente:\n${indicadores.map(i => `- ${i}`).join('\n')}` : ''}
+
+CRITERIOS OBLIGATORIOS:
+1. Lenguaje claro y adecuado para niños de primaria (evitá términos académicos complejos)
+2. El ejemplo debe ser cercano a la experiencia del alumno (comida, objetos cotidianos, situaciones simples)
+3. La actividad debe promover comprensión real, no ejercicios mecánicos sin sentido
+4. Todo el contenido debe responder al objetivo curricular específico, no al tema general
+5. Ajustá la complejidad y extensión según el contexto pedagógico recibido:
+   - "Introducción": incluí explicación detallada y ejemplo muy concreto, actividad de reconocimiento simple
+   - "Práctica": explicación breve que recuerde lo visto, actividad que consolide lo aprendido
+   - "Cierre": sin explicación ni ejemplo, solo actividad integradora
+   - "Necesita más apoyo": consignas cortas, vocabulario simple, pasos bien separados
+   - "Puede ir más lejos": consignas abiertas, mayor demanda cognitiva
+   - Si no hay contexto definido, usá un nivel estándar equilibrado
+6. IMPORTANTE: Generá EXACTAMENTE ${cantidadEjercicios} ejercicios, ni más ni menos. Si generás uno de más el sistema lo va a ignorar y quedará incompleto. Máximo ${cantidadEjercicios}.
+7. Marcá con **doble asterisco** números, datos y conceptos clave en la explicación
+8. Título: dos partes separadas por dos puntos, mayúscula solo en la primera letra
+9. Elegí 1 o 2 emojis para "emojis": SOLO objetos cotidianos concretos relacionados al contexto (comida, animales, objetos escolares, deportes, naturaleza). NUNCA usar símbolos matemáticos o abstractos como ❌ ✖️ ➗ ➕ ➖ 🔢 📐 📏 o similares.
 
 ${tiposPool}
 
@@ -351,7 +363,7 @@ Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdow
 // ─────────────────────────────────────────────
 // PROMPT VALIDADOR (general + PDL)
 // ─────────────────────────────────────────────
-function buildValidatorPrompt(fichaGenerada, contenido, tipoFicha, incluirExplicacion, incluirEjemplo) {
+function buildValidatorPrompt(fichaGenerada, contenido, tipoFicha) {
   // Derivar a validador PDL cuando corresponde
   if (contenido.area === "Prácticas del Lenguaje") {
     return buildPDLValidatorPrompt(fichaGenerada, contenido, tipoFicha);
@@ -359,19 +371,14 @@ function buildValidatorPrompt(fichaGenerada, contenido, tipoFicha, incluirExplic
 
   const elementosFicha = [
     `Título: ${fichaGenerada.titulo}`,
-    incluirExplicacion ? `Explicación: ${fichaGenerada.explicacion}` : null,
+    fichaGenerada.explicacion ? `Explicación: ${fichaGenerada.explicacion}` : null,
     `Ejercicios: ${Array.isArray(fichaGenerada.ejercicios)
       ? fichaGenerada.ejercicios.map(e => `[${e.tipo}] ${e.enunciado}`).join(" | ")
       : fichaGenerada.ejercicios}`,
     `Reflexión: ${fichaGenerada.reflexion}`,
   ].filter(Boolean).join("\n");
 
-  const estructuraEsperada = [
-    "título",
-    incluirExplicacion ? "explicación" : null,
-    "ejercicios tipados (texto_libre, completar_oraciones, tabla, verdadero_falso)",
-    "pregunta de reflexión",
-  ].filter(Boolean).join(", ");
+  const estructuraEsperada = "título, explicación, ejercicios tipados (texto_libre, completar_oraciones, tabla, verdadero_falso), pregunta de reflexión";
 
   return `Sos un revisor pedagógico experto en educación primaria. Analizá esta ficha educativa y determiná si cumple los criterios de calidad.
 
@@ -383,7 +390,7 @@ DATOS CURRICULARES:
 - Objetivo de aprendizaje: ${contenido.objetivo_especifico}
 - Tipo de ficha solicitada: ${tipoFicha}
 
-FICHA A REVISAR:
+${contenido.indicadores_de_avance?.length > 0 ? `INDICADORES DE AVANCE DE REFERENCIA:\n${contenido.indicadores_de_avance.map(i => `- ${i}`).join('\n')}\n` : ''}FICHA A REVISAR:
 ${elementosFicha}
 
 SISTEMA DE PUNTAJE (total 100 puntos):
@@ -458,7 +465,7 @@ async function callAPI(prompt, maxTokens = 1500) {
 // ─────────────────────────────────────────────
 // PIPELINE PRINCIPAL
 // ─────────────────────────────────────────────
-async function runPipeline(contenido, tipoFicha, incluirExplicacion, incluirEjemplo) {
+async function runPipeline(contenido, tipoFicha) {
   const isPDL = contenido.area === "Prácticas del Lenguaje";
   // Lectura PDL genera texto completo + preguntas → más tokens
   // Resto de generadores subidos a 1500 para soportar HTML de tablas/fracciones
@@ -466,13 +473,13 @@ async function runPipeline(contenido, tipoFicha, incluirExplicacion, incluirEjem
 
   // INTENTO 1: Generar
   let ficha = await callAPI(
-    buildGeneratorPrompt(contenido, tipoFicha, incluirExplicacion, incluirEjemplo),
+    buildGeneratorPrompt(contenido, tipoFicha, null, contenido.indicadores_de_avance || []),
     maxTokens
   );
 
   // VALIDAR el primer intento
   let validacion = await callAPI(
-    buildValidatorPrompt(ficha, contenido, tipoFicha, incluirExplicacion, incluirEjemplo)
+    buildValidatorPrompt(ficha, contenido, tipoFicha)
   );
 
   // Si aprobó, devolvemos directo
@@ -489,13 +496,13 @@ async function runPipeline(contenido, tipoFicha, incluirExplicacion, incluirEjem
     .join("\n");
 
   ficha = await callAPI(
-    buildGeneratorPrompt(contenido, tipoFicha, incluirExplicacion, incluirEjemplo, feedback),
+    buildGeneratorPrompt(contenido, tipoFicha, feedback, contenido.indicadores_de_avance || []),
     maxTokens
   );
 
   // Validar el segundo intento
   validacion = await callAPI(
-    buildValidatorPrompt(ficha, contenido, tipoFicha, incluirExplicacion, incluirEjemplo)
+    buildValidatorPrompt(ficha, contenido, tipoFicha)
   );
 
   return {
@@ -517,14 +524,14 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Método no permitido" });
   }
 
-  const { contenido, tipoFicha, incluirExplicacion = false, incluirEjemplo = false } = req.body;
+  const { contenido, tipoFicha } = req.body;
 
   if (!contenido || !tipoFicha) {
     return res.status(400).json({ error: "Faltan datos del contenido curricular" });
   }
 
   try {
-    const resultado = await runPipeline(contenido, tipoFicha, incluirExplicacion, incluirEjemplo);
+    const resultado = await runPipeline(contenido, tipoFicha);
 
     // DIAGNÓSTICO: ver estructura completa antes de enviar al frontend
     console.log("[DIAGNÓSTICO] JSON completo que se envía al frontend:");
