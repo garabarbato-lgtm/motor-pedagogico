@@ -156,6 +156,242 @@ Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdow
 }
 
 // ─────────────────────────────────────────────
+// BUILDERS POR MOMENTO DIDÁCTICO
+// ─────────────────────────────────────────────
+function buildPresentacionPrompt(contenido, ctx, feedback, indicadores) {
+  const nivel = ctx.nivelGrupo || "Sin adaptación";
+  const incluirConcepto = nivel === "Necesita más apoyo";
+  const feedbackSection = feedback
+    ? `\n\nATENCIÓN: El intento anterior fue rechazado por las siguientes razones:\n${feedback}\nCorregí estos problemas en esta nueva versión.`
+    : "";
+
+  const instruccionNivel = nivel === "Necesita más apoyo"
+    ? `Nivel del grupo: Necesita más apoyo → explicación simple, ejemplo muy concreto, actividad de reconocimiento. Incluir el campo "concepto_clave".`
+    : nivel === "Puede más"
+    ? `Nivel del grupo: Puede más → explicación más profunda, actividad con mayor demanda conceptual. Omitir el campo "concepto_clave".`
+    : `Nivel del grupo: Sin adaptación → explicación estándar, actividad normal. Omitir el campo "concepto_clave".`;
+
+  const conceptoClaveSchema = incluirConcepto
+    ? `  "concepto_clave": "definición en una oración — solo incluir si nivelGrupo es 'Necesita más apoyo'",\n`
+    : "";
+
+  const textoLibre = ctx.textoLibre ? `\nTener en cuenta que: ${ctx.textoLibre}` : "";
+
+  return `Sos un docente experto en nivel primario de la Provincia de Buenos Aires.
+Generá una ficha de PRESENTACIÓN de contenido nuevo para:
+
+Grado: ${contenido.grado}°
+Área: ${contenido.area}
+Bloque: ${contenido.bloque}
+Tema: ${contenido.subtema}
+Objetivo de aprendizaje: ${contenido.objetivo_especifico}
+${contenido.item_original ? `Referencia del bloque: ${contenido.item_original}` : ""}
+${feedbackSection}
+
+CONTEXTO CURRICULAR:
+${indicadores && indicadores.length > 0 ? `Los siguientes indicadores de avance del DC PBA describen lo que se espera que los alumnos logren. Usalos como referencia para calibrar el nivel y el enfoque de la actividad, no como consignas a cumplir literalmente:\n${indicadores.map(i => `- ${i}`).join("\n")}` : ""}
+
+${instruccionNivel}
+
+CRITERIOS:
+- Esta es una ficha de presentación: el objetivo es introducir el concepto por primera vez
+- Explicación clara, en lenguaje para primaria, sin tecnicismos
+- La actividad debe ser de reconocimiento o exploración inicial, no de aplicación compleja
+- Marcá con **doble asterisco** conceptos clave en la explicación
+- Título: dos partes separadas por dos puntos, mayúscula solo en la primera letra
+- Elegí 1 o 2 emojis cotidianos concretos relacionados al tema (NUNCA símbolos matemáticos abstractos como ❌ ✖️ ➗ ➕ ➖ 🔢 📐 📏)
+${textoLibre}
+
+FORMATO (JSON estricto, sin markdown):
+{
+  "tipo_ficha": "presentacion",
+  "emojis": ["emoji"],
+  "titulo": "primera parte: segunda parte",
+  "subtitulo": "frase corta que contextualiza el tema",
+${conceptoClaveSchema}  "explicacion": {
+    "parrafos": ["párrafo 1", "párrafo 2"],
+    "bullets": ["punto clave 1", "punto clave 2"]
+  },
+  "actividad": {
+    "consigna": "consigna de la actividad inicial",
+    "ejercicios": ["ejercicio 1", "ejercicio 2"]
+  }
+}
+
+Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdown.`;
+}
+
+function buildPracticaPrompt(contenido, ctx, feedback, indicadores) {
+  const nivel = ctx.nivelGrupo || "Sin adaptación";
+  const cantidadEjercicios = nivel === "Necesita más apoyo" ? 2 : 3;
+  const feedbackSection = feedback
+    ? `\n\nATENCIÓN: El intento anterior fue rechazado por las siguientes razones:\n${feedback}\nCorregí estos problemas en esta nueva versión.`
+    : "";
+
+  const instruccionNivel = nivel === "Necesita más apoyo"
+    ? "Nivel del grupo: Necesita más apoyo → 2 ejercicios, consignas guiadas paso a paso, vocabulario simple."
+    : nivel === "Puede más"
+    ? "Nivel del grupo: Puede más → 3 ejercicios con mayor complejidad. concepto_clave presente pero muy breve."
+    : "Nivel del grupo: Sin adaptación → 3 ejercicios normales.";
+
+  const bloqueLC = (contenido.bloque || "").toLowerCase();
+  const itemLC = (contenido.subtema || contenido.item_original || "").toLowerCase();
+  const esHistoria = bloqueLC.includes("tiempo") || bloqueLC.includes("historia") || itemLC.includes("historia");
+  const esGeografia = bloqueLC.includes("territorio") || bloqueLC.includes("geograf") || itemLC.includes("mapa") || itemLC.includes("territorio");
+  const esEstimacion = itemLC.includes("estimaci") || itemLC.includes("número sense") || itemLC.includes("numero sense");
+
+  const tiposPool = contenido.area === "Matemática"
+    ? `TIPOS DE EJERCICIO DISPONIBLES (elegir con variedad):
+- "completar_oraciones": completar espacios con números, términos o resultados. Array "oraciones" con _______ (5+ guiones).
+- "situacion_problematica": problema contextualizado para resolver. Solo "enunciado".
+- "tabla": tabla para completar. "columnas" + "filas" (string vacío "" = celda a completar). NUNCA concatenar columnas.
+- "verdadero_falso": afirmaciones para evaluar con V/F. Array "afirmaciones".
+- "dibujar_y_explicar": consigna para dibujar y/o explicar con palabras. Solo "enunciado".
+- "resolver_operaciones": operaciones o cuentas para resolver. Solo "enunciado".
+- "completar_la_cuenta": operaciones incompletas para completar. Solo "enunciado".${esEstimacion ? `
+- "estimacion": consigna de estimación o número sense. Solo "enunciado".` : ""}`
+
+    : contenido.area === "Ciencias Naturales"
+    ? `TIPOS DE EJERCICIO DISPONIBLES (elegir con variedad):
+- "completar_oraciones": completar espacios con términos o conceptos. Array "oraciones" con _______ (5+ guiones).
+- "tabla": tabla para completar o clasificar. "columnas" + "filas" (string vacío "" = celda vacía). NUNCA concatenar columnas.
+- "verdadero_falso": afirmaciones para evaluar con V/F. Array "afirmaciones".
+- "preguntas_comprension": preguntas abiertas de comprensión. Campo "enunciado" (intro opcional) + array "preguntas" con cada pregunta como string. NUNCA pongas las preguntas dentro del enunciado — deben ir en el array "preguntas".
+- "ordenar_secuencia": consigna para ordenar pasos o etapas de un proceso. Solo "enunciado".
+- "describir_con_palabras": consigna de descripción libre. Solo "enunciado".`
+
+    : contenido.area === "Ciencias Sociales"
+    ? `TIPOS DE EJERCICIO DISPONIBLES (elegir con variedad):
+- "completar_oraciones": completar espacios con términos o datos. Array "oraciones" con _______ (5+ guiones).
+- "tabla": tabla para completar o comparar. "columnas" + "filas" (string vacío "" = celda vacía). NUNCA concatenar columnas.
+- "verdadero_falso": afirmaciones para evaluar con V/F. Array "afirmaciones".
+- "preguntas_comprension": preguntas abiertas de comprensión. Campo "enunciado" (intro opcional) + array "preguntas" con cada pregunta como string. NUNCA pongas las preguntas dentro del enunciado — deben ir en el array "preguntas".
+- "ordenar_secuencia": consigna para ordenar hechos o etapas. Solo "enunciado".${esHistoria ? `
+- "linea_de_tiempo": consigna para ubicar hechos en una línea de tiempo. Solo si el contenido es de Historia. Solo "enunciado".` : ""}${esGeografia ? `
+- "ubicar_en_mapa": consigna para ubicar elementos usando un mapa. La consigna debe aclarar "usando un mapa". Solo si el contenido es de Geografía. Solo "enunciado".` : ""}`
+
+    : `TIPOS DE EJERCICIO DISPONIBLES:
+- "completar_oraciones": array "oraciones" con _______ (5+ guiones).
+- "tabla": "columnas" + "filas" con "" para celdas vacías. NUNCA concatenar columnas.
+- "verdadero_falso": array "afirmaciones" para V/F.
+- "preguntas_comprension": array "preguntas" con cada pregunta como string. NUNCA pongas las preguntas dentro del enunciado.`;
+
+  const obligatorio = contenido.area === "Matemática"
+    ? "- OBLIGATORIO: incluí al menos 1 ejercicio de tipo situacion_problematica. Este ejercicio obligatorio cuenta dentro del total indicado arriba."
+    : (contenido.area === "Ciencias Naturales" || contenido.area === "Ciencias Sociales")
+    ? "- OBLIGATORIO: incluí al menos 1 ejercicio de tipo preguntas_comprension. Este ejercicio obligatorio cuenta dentro del total indicado arriba."
+    : "";
+
+  const fraccionesMat = contenido.area === "Matemática"
+    ? `\nFRACCIONES: Cuando escribas fracciones en cualquier campo del JSON (enunciado, oraciones, concepto_clave), usá siempre el formato: <frac>numerador/denominador</frac>. Ejemplo: <frac>1/2</frac>, <frac>3/4</frac>`
+    : "";
+
+  const textoLibre = ctx.textoLibre ? `\nTener en cuenta que: ${ctx.textoLibre}` : "";
+
+  return `Sos un docente experto en nivel primario de la Provincia de Buenos Aires.
+Generá una ficha de PRÁCTICA para:
+
+Grado: ${contenido.grado}°
+Área: ${contenido.area}
+Bloque: ${contenido.bloque}
+Tema: ${contenido.subtema}
+Objetivo de aprendizaje: ${contenido.objetivo_especifico}
+${contenido.item_original ? `Referencia del bloque: ${contenido.item_original}` : ""}
+${feedbackSection}
+
+CONTEXTO CURRICULAR:
+${indicadores && indicadores.length > 0 ? `Los siguientes indicadores de avance del DC PBA describen lo que se espera que los alumnos logren. Usalos como referencia para calibrar el nivel y el enfoque de la actividad, no como consignas a cumplir literalmente:\n${indicadores.map(i => `- ${i}`).join("\n")}` : ""}
+
+${instruccionNivel}
+
+CRITERIOS:
+- Esta es una ficha de práctica: el concepto ya fue presentado, ahora los alumnos lo consolidan
+- El concepto_clave es un recordatorio breve, escrito directamente al alumno, sin tecnicismos, máximo 3 líneas
+- Los ejercicios deben promover aplicación real, no repetición mecánica
+- Marcá con **doble asterisco** conceptos clave en el concepto_clave
+- Título: dos partes separadas por dos puntos, mayúscula solo en la primera letra
+- Elegí 1 o 2 emojis cotidianos concretos relacionados al tema (NUNCA símbolos matemáticos abstractos como ❌ ✖️ ➗ ➕ ➖ 🔢 📐 📏)
+- IMPORTANTE: Generá EXACTAMENTE ${cantidadEjercicios} ejercicios, ni más ni menos.
+${textoLibre}
+
+${tiposPool}
+
+REGLAS DE SELECCIÓN:
+- Elegí los tipos con variedad. No uses tabla y verdadero_falso en la misma ficha si hay otras opciones disponibles.
+- Máximo 1 tabla y máximo 1 verdadero_falso por ficha.
+- LÍMITE DE ITEMS: cada ejercicio puede tener como máximo 4 items (oraciones, afirmaciones o filas). Nunca más de 4.
+${obligatorio}${fraccionesMat}
+
+FORMATO (JSON estricto, sin markdown):
+{
+  "tipo_ficha": "practica",
+  "emojis": ["emoji"],
+  "titulo": "primera parte: segunda parte",
+  "concepto_clave": "recordatorio breve del concepto, escrito directamente al alumno, sin tecnicismos, máximo 3 líneas",
+  "ejercicios": [
+    { "tipo": "...", "enunciado": "...", "oraciones": [] }
+  ]
+}
+
+Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdown.`;
+}
+
+function buildCierrePrompt(contenido, ctx, feedback, indicadores) {
+  const nivel = ctx.nivelGrupo || "Sin adaptación";
+  const incluirAndamiaje = nivel === "Necesita más apoyo";
+  const feedbackSection = feedback
+    ? `\n\nATENCIÓN: El intento anterior fue rechazado por las siguientes razones:\n${feedback}\nCorregí estos problemas en esta nueva versión.`
+    : "";
+
+  const instruccionNivel = nivel === "Necesita más apoyo"
+    ? "Nivel del grupo: Necesita más apoyo → escalera más suave, incluir andamiaje (pista breve para el alumno, sin tecnicismos, máximo 3 líneas)."
+    : nivel === "Puede más"
+    ? "Nivel del grupo: Puede más → desafío con alta demanda cognitiva, andamiaje: null."
+    : "Nivel del grupo: Sin adaptación → escalera estándar, andamiaje: null.";
+
+  const textoLibre = ctx.textoLibre ? `\nTener en cuenta que: ${ctx.textoLibre}` : "";
+
+  return `Sos un docente experto en nivel primario de la Provincia de Buenos Aires.
+Generá una ficha de CIERRE / INTEGRACIÓN para:
+
+Grado: ${contenido.grado}°
+Área: ${contenido.area}
+Bloque: ${contenido.bloque}
+Tema: ${contenido.subtema}
+Objetivo de aprendizaje: ${contenido.objetivo_especifico}
+${contenido.item_original ? `Referencia del bloque: ${contenido.item_original}` : ""}
+${feedbackSection}
+
+CONTEXTO CURRICULAR:
+${indicadores && indicadores.length > 0 ? `Los siguientes indicadores de avance del DC PBA describen lo que se espera que los alumnos logren. Usalos como referencia para calibrar el nivel y el enfoque de la actividad, no como consignas a cumplir literalmente:\n${indicadores.map(i => `- ${i}`).join("\n")}` : ""}
+
+${instruccionNivel}
+
+CRITERIOS:
+- Esta es una ficha de cierre: los alumnos ya aprendieron el concepto y ahora lo integran
+- La escalera tiene tres niveles de demanda cognitiva creciente con rótulos fijos
+- Si nivel es "Necesita más apoyo": andamiaje es una pista escrita directamente al alumno, sin tecnicismos, máximo 3 líneas. En los demás casos, andamiaje: null.
+- Título: dos partes separadas por dos puntos, mayúscula solo en la primera letra
+- Elegí 1 o 2 emojis cotidianos concretos relacionados al tema (NUNCA símbolos matemáticos abstractos como ❌ ✖️ ➗ ➕ ➖ 🔢 📐 📏)
+${textoLibre}
+
+FORMATO (JSON estricto, sin markdown):
+{
+  "tipo_ficha": "cierre",
+  "emojis": ["emoji"],
+  "titulo": "primera parte: segunda parte",
+  "andamiaje": ${incluirAndamiaje ? '"pista breve escrita directamente al alumno, sin tecnicismos, máximo 3 líneas"' : "null"},
+  "escalera": [
+    { "rotulo": "Para arrancar", "consigna": "...", "ejercicio": "..." },
+    { "rotulo": "Un poco más", "consigna": "...", "ejercicio": "..." },
+    { "rotulo": "El desafío", "consigna": "...", "ejercicio": "..." }
+  ]
+}
+
+Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdown.`;
+}
+
+// ─────────────────────────────────────────────
 // PROMPT GENERADOR (general + PDL)
 // ─────────────────────────────────────────────
 function buildGeneratorPrompt(contenido, tipoFicha, feedback = null, indicadores = []) {
@@ -165,6 +401,12 @@ function buildGeneratorPrompt(contenido, tipoFicha, feedback = null, indicadores
     if (tipoFicha === "Escritura de textos") return buildPDLEscrituraPrompt(contenido, feedback);
     if (tipoFicha === "Ortografía") return buildPDLOrtografiaPrompt(contenido, feedback);
   }
+
+  // Routing por momento didáctico
+  const ctxMomento = contenido.contexto_pedagogico?.momento;
+  if (ctxMomento === "Presentación") return buildPresentacionPrompt(contenido, contenido.contexto_pedagogico, feedback, indicadores);
+  if (ctxMomento === "Práctica") return buildPracticaPrompt(contenido, contenido.contexto_pedagogico, feedback, indicadores);
+  if (ctxMomento === "Cierre / Integración") return buildCierrePrompt(contenido, contenido.contexto_pedagogico, feedback, indicadores);
 
   // Prompt general (Matemática, Ciencias, etc.)
   const feedbackSection = feedback

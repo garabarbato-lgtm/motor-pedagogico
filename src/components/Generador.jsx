@@ -483,7 +483,6 @@ export default function Generador({ onFichaGenerada, onVolver }) {
   const [registro, setRegistro] = useState(null);
   const [momento, setMomento] = useState(null);
   const [nivelGrupo, setNivelGrupo] = useState(null);
-  const [proposito, setProposito] = useState(null);
   const [contextoLibre, setContextoLibre] = useState("");
   const [busqueda, setBusqueda] = useState("");
   const [busquedaFocused, setBusquedaFocused] = useState(false);
@@ -675,7 +674,6 @@ export default function Generador({ onFichaGenerada, onVolver }) {
       const contexto_pedagogico = {
         momento: momento || null,
         nivelGrupo: nivelGrupo || null,
-        proposito: proposito || null,
         textoLibre: contextoLibre.trim() || null,
       };
 
@@ -1055,7 +1053,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                   {/* Momento didáctico */}
                   <p style={{ fontSize: 11, fontWeight: 700, color: C.textoMuted, textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 10px" }}>Momento didáctico</p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
-                    {["Introducción", "Práctica", "Cierre"].map((op) => (
+                    {["Presentación", "Práctica", "Cierre / Integración"].map((op) => (
                       <button key={op} onClick={() => setMomento(momento === op ? null : op)} style={{
                         border: `1.5px solid ${momento === op ? "#004733" : "#D4E6DE"}`,
                         background: momento === op ? "#004733" : "#fff",
@@ -1072,7 +1070,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                   {/* Nivel del grupo */}
                   <p style={{ fontSize: 11, fontWeight: 700, color: C.textoMuted, textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 10px" }}>Nivel del grupo</p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
-                    {["Necesita más apoyo", "Sigue el ritmo del grupo", "Puede ir más lejos"].map((op) => (
+                    {["Necesita más apoyo", "Sin adaptación", "Puede ir más lejos"].map((op) => (
                       <button key={op} onClick={() => setNivelGrupo(nivelGrupo === op ? null : op)} style={{
                         border: `1.5px solid ${nivelGrupo === op ? "#004733" : "#D4E6DE"}`,
                         background: nivelGrupo === op ? "#004733" : "#fff",
@@ -1086,22 +1084,6 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                     ))}
                   </div>
 
-                  {/* Propósito */}
-                  <p style={{ fontSize: 11, fontWeight: 700, color: C.textoMuted, textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 10px" }}>Propósito</p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
-                    {["en clase", "para casa", "evaluación"].map((op) => (
-                      <button key={op} onClick={() => setProposito(proposito === op ? null : op)} style={{
-                        border: `1.5px solid ${proposito === op ? "#004733" : "#D4E6DE"}`,
-                        background: proposito === op ? "#004733" : "#fff",
-                        color: proposito === op ? "#fff" : "#004733",
-                        borderRadius: 999, padding: "7px 16px", fontSize: 14, cursor: "pointer",
-                        transition: "all 0.15s", fontFamily: "'Lexend', sans-serif",
-                      }}
-                        onMouseEnter={e => { if (proposito !== op) { e.currentTarget.style.background = "#E6FAF3"; e.currentTarget.style.borderColor = "#00c48c"; } }}
-                        onMouseLeave={e => { if (proposito !== op) { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "#D4E6DE"; } }}
-                      >{op}</button>
-                    ))}
-                  </div>
 
                   {/* Separador */}
                   <hr style={{ border: "none", borderTop: "1px solid #D4E6DE", margin: "20px 0" }} />
