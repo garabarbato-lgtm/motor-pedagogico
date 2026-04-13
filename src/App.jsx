@@ -2,12 +2,17 @@ import { useState } from 'react'
 import Landing from '../landing-v6.jsx'
 import Generador from './components/Generador.jsx'
 import FichaTrabajo from './components/FichaTrabajo.jsx'
+import DevTestFichas from './components/DevTestFichas.jsx'
 
 export default function App() {
   const [vista, setVista] = useState('landing')
   const [fichaData, setFichaData] = useState(null)
   const [registroData, setRegistroData] = useState(null)
   const [validacionData, setValidacionData] = useState(null)
+
+  if (new URLSearchParams(window.location.search).get("dev") === "fichas") {
+    return <DevTestFichas />;
+  }
 
   if (vista === 'generador') {
     return (

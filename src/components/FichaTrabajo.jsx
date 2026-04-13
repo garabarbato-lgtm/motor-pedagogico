@@ -2,6 +2,9 @@ import { useState, useRef, useEffect } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import Logo from "./Logo.jsx";
+import FichaPresenta from "./FichaPresenta.jsx";
+import FichaPractica from "./FichaPractica.jsx";
+import FichaCierre from "./FichaCierre.jsx";
 
 const C = {
   fondo: "#ffffff",
@@ -670,7 +673,88 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     pdf.save(filename);
   };
 
-  // ── Render ──
+  // ── Routing por tipo_ficha ──
+
+  const renderFichaEspecializada = (FichaComponent) => (
+    <div className="contenedor-pagina" style={{ fontFamily: "system-ui, sans-serif", background: C.fondoApp, minHeight: "100vh" }}>
+      <nav style={{
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "16px 32px", borderBottom: `0.5px solid ${C.btnBorder}`,
+        background: "rgba(248,248,244,0.95)", backdropFilter: "blur(8px)",
+        position: "sticky", top: 0, zIndex: 10
+      }} id="nav-ficha">
+        <button onClick={onInicio} style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+          <Logo size={22} />
+        </button>
+        <div style={{ display: "flex", gap: 10 }}>
+          <button
+            onClick={handleImprimir}
+            disabled={imprimiendo}
+            style={{
+              fontSize: 13, fontWeight: 600, padding: "8px 18px",
+              borderRadius: 7, border: `2px solid ${C.borderFuerte}`,
+              background: C.borderFuerte, color: C.acento, cursor: "pointer"
+            }}>
+            🖨 Imprimir ficha
+          </button>
+          <button
+            onClick={handleDescargarPDF}
+            style={{
+              fontSize: 13, fontWeight: 600, padding: "8px 18px",
+              borderRadius: 7, border: `2px solid ${C.acento}`,
+              background: C.acento, color: "#ffffff", cursor: "pointer"
+            }}>
+            ⬇ Descargar PDF
+          </button>
+          <button
+            onClick={onNueva}
+            style={{
+              fontSize: 13, fontWeight: 500, padding: "8px 18px",
+              borderRadius: 7, border: `1.5px solid ${C.btnBorder}`,
+              background: "transparent", color: "#0d1f1a", cursor: "pointer"
+            }}>
+            ✦ Crear otra
+          </button>
+        </div>
+      </nav>
+
+      <div className="contenedor-wrapper" style={{ maxWidth: 760, margin: "0 auto", padding: "28px 16px 60px" }}>
+        {validacion?.observaciones?.length > 0 && (
+          <div className="validacion-badge" style={{
+            background: "#fffbeb", border: "1px solid #f59e0b",
+            borderRadius: 8, padding: "12px 16px", marginBottom: 16,
+          }}>
+            <p style={{ fontSize: 13, fontWeight: 700, color: "#92400e", marginBottom: 8 }}>
+              ⚠ Revisá esta ficha antes de usar
+            </p>
+            <ul style={{ paddingLeft: 18, margin: 0, display: "flex", flexDirection: "column", gap: 4 }}>
+              {validacion.observaciones.map((obs, i) => (
+                <li key={i} style={{ fontSize: 12, color: "#92400e", lineHeight: 1.5 }}>
+                  <strong>{obs.criterio}:</strong> {obs.descripcion}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {ficha._mock && (
+          <div className="mock-banner" style={{
+            background: "#fffbeb", border: "1px solid #f6ad55",
+            borderRadius: 8, padding: "8px 14px", marginBottom: 16,
+            fontSize: 12, color: "#92400e"
+          }}>
+            ⚠️ Modo de prueba — ficha de ejemplo. Configurá ANTHROPIC_API_KEY para generar fichas reales.
+          </div>
+        )}
+        <FichaComponent ficha={ficha} registro={registro} />
+      </div>
+    </div>
+  );
+
+  if (ficha.tipo_ficha === "presentacion") return renderFichaEspecializada(FichaPresenta);
+  if (ficha.tipo_ficha === "practica") return renderFichaEspecializada(FichaPractica);
+  if (ficha.tipo_ficha === "cierre") return renderFichaEspecializada(FichaCierre);
+
+  // ── Render (fallback para fichas sin tipo_ficha) ──
 
   return (
     <div className="contenedor-pagina" style={{ fontFamily: "system-ui, sans-serif", background: C.fondoApp, minHeight: "100vh" }}>

@@ -160,20 +160,16 @@ Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdow
 // ─────────────────────────────────────────────
 function buildPresentacionPrompt(contenido, ctx, feedback, indicadores) {
   const nivel = ctx.nivelGrupo || "Sin adaptación";
-  const incluirConcepto = nivel === "Necesita más apoyo";
+  const incluirAndamiaje = nivel === "Necesita más apoyo";
   const feedbackSection = feedback
     ? `\n\nATENCIÓN: El intento anterior fue rechazado por las siguientes razones:\n${feedback}\nCorregí estos problemas en esta nueva versión.`
     : "";
 
   const instruccionNivel = nivel === "Necesita más apoyo"
-    ? `Nivel del grupo: Necesita más apoyo → explicación simple, ejemplo muy concreto, actividad de reconocimiento. Incluir el campo "concepto_clave".`
+    ? `Nivel del grupo: Necesita más apoyo → explicación simple, ejercicio de reconocimiento con andamiaje (pista breve escrita directamente al alumno, sin tecnicismos, máximo 3 líneas).`
     : nivel === "Puede más"
-    ? `Nivel del grupo: Puede más → explicación más profunda, actividad con mayor demanda conceptual. Omitir el campo "concepto_clave".`
-    : `Nivel del grupo: Sin adaptación → explicación estándar, actividad normal. Omitir el campo "concepto_clave".`;
-
-  const conceptoClaveSchema = incluirConcepto
-    ? `  "concepto_clave": "definición en una oración — solo incluir si nivelGrupo es 'Necesita más apoyo'",\n`
-    : "";
+    ? `Nivel del grupo: Puede más → explicación más profunda, ejercicio con mayor demanda conceptual. andamiaje: null.`
+    : `Nivel del grupo: Sin adaptación → explicación estándar, ejercicio normal. andamiaje: null.`;
 
   const textoLibre = ctx.textoLibre ? `\nTener en cuenta que: ${ctx.textoLibre}` : "";
 
@@ -200,22 +196,27 @@ CRITERIOS:
 - Marcá con **doble asterisco** conceptos clave en la explicación
 - Título: dos partes separadas por dos puntos, mayúscula solo en la primera letra
 - Elegí 1 o 2 emojis cotidianos concretos relacionados al tema (NUNCA símbolos matemáticos abstractos como ❌ ✖️ ➗ ➕ ➖ 🔢 📐 📏)
+- La "pill" en explicacion es un dato curioso o pregunta disparadora muy breve relacionada al tema
+- El primer ejercicio es de reconocimiento o exploración inicial; el segundo es null
+- El campo "andamiaje" va dentro de cada ejercicio: solo el primero puede tener valor (si nivel es "Necesita más apoyo"), el resto null
+- IMPORTANTE: Generá EXACTAMENTE 2 ejercicios en el array ejercicios. Si solo tenés un ejercicio relevante, el segundo debe ser null. Nunca generes más de 2 ejercicios. El array siempre tiene longitud 2.
 ${textoLibre}
+
+FRACCIONES: Cuando escribas fracciones en cualquier campo del JSON, usá siempre el formato <frac>numerador/denominador</frac>. Ejemplo: <frac>1/2</frac>, <frac>3/4</frac>. NUNCA escribas fracciones como texto plano (ej: nunca '1/2').
 
 FORMATO (JSON estricto, sin markdown):
 {
   "tipo_ficha": "presentacion",
-  "emojis": ["emoji"],
+  "emojis": ["emoji1", "emoji2"],
   "titulo": "primera parte: segunda parte",
-  "subtitulo": "frase corta que contextualiza el tema",
-${conceptoClaveSchema}  "explicacion": {
-    "parrafos": ["párrafo 1", "párrafo 2"],
-    "bullets": ["punto clave 1", "punto clave 2"]
+  "explicacion": {
+    "parrafos": ["párrafo 1 con **concepto clave** en negrita", "párrafo 2"],
+    "pill": { "tipo": "dato_curioso", "contenido": "dato breve o pregunta disparadora relacionada al tema" }
   },
-  "actividad": {
-    "consigna": "consigna de la actividad inicial",
-    "ejercicios": ["ejercicio 1", "ejercicio 2"]
-  }
+  "ejercicios": [
+    { "tipo": "situacion_problematica", "enunciado": "consigna del ejercicio de exploración inicial", "andamiaje": ${incluirAndamiaje ? '"pista breve escrita directamente al alumno, sin tecnicismos, máximo 3 líneas"' : "null"} },
+    null
+  ]
 }
 
 Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdown.`;
@@ -282,9 +283,7 @@ function buildPracticaPrompt(contenido, ctx, feedback, indicadores) {
     ? "- OBLIGATORIO: incluí al menos 1 ejercicio de tipo preguntas_comprension. Este ejercicio obligatorio cuenta dentro del total indicado arriba."
     : "";
 
-  const fraccionesMat = contenido.area === "Matemática"
-    ? `\nFRACCIONES: Cuando escribas fracciones en cualquier campo del JSON (enunciado, oraciones, concepto_clave), usá siempre el formato: <frac>numerador/denominador</frac>. Ejemplo: <frac>1/2</frac>, <frac>3/4</frac>`
-    : "";
+  const fraccionesMat = `\nFRACCIONES: Cuando escribas fracciones en cualquier campo del JSON, usá siempre el formato <frac>numerador/denominador</frac>. Ejemplo: <frac>1/2</frac>, <frac>3/4</frac>. NUNCA escribas fracciones como texto plano (ej: nunca '1/2').`;
 
   const textoLibre = ctx.textoLibre ? `\nTener en cuenta que: ${ctx.textoLibre}` : "";
 
@@ -320,16 +319,20 @@ REGLAS DE SELECCIÓN:
 - Elegí los tipos con variedad. No uses tabla y verdadero_falso en la misma ficha si hay otras opciones disponibles.
 - Máximo 1 tabla y máximo 1 verdadero_falso por ficha.
 - LÍMITE DE ITEMS: cada ejercicio puede tener como máximo 4 items (oraciones, afirmaciones o filas). Nunca más de 4.
+- El campo "andamiaje" va dentro de cada ejercicio: máximo uno por ficha puede ser no-null (solo si nivel es "Necesita más apoyo"), el resto: null.
 ${obligatorio}${fraccionesMat}
 
 FORMATO (JSON estricto, sin markdown):
 {
   "tipo_ficha": "practica",
-  "emojis": ["emoji"],
+  "emojis": ["emoji1", "emoji2"],
   "titulo": "primera parte: segunda parte",
   "concepto_clave": "recordatorio breve del concepto, escrito directamente al alumno, sin tecnicismos, máximo 3 líneas",
   "ejercicios": [
-    { "tipo": "...", "enunciado": "...", "oraciones": [] }
+    { "tipo": "completar_oraciones", "enunciado": "...", "oraciones": ["..."], "andamiaje": ${nivel === "Necesita más apoyo" ? '"pista breve escrita directamente al alumno, sin tecnicismos, máximo 3 líneas"' : "null"} },
+    { "tipo": "situacion_problematica", "enunciado": "...", "andamiaje": null },
+    { "tipo": "verdadero_falso", "enunciado": "...", "afirmaciones": ["..."], "andamiaje": null },
+    null
   ]
 }
 
@@ -351,6 +354,33 @@ function buildCierrePrompt(contenido, ctx, feedback, indicadores) {
 
   const textoLibre = ctx.textoLibre ? `\nTener en cuenta que: ${ctx.textoLibre}` : "";
 
+  const bloqueLC = (contenido.bloque || "").toLowerCase();
+  const itemLC = (contenido.subtema || contenido.item_original || "").toLowerCase();
+  const esHistoria = bloqueLC.includes("tiempo") || bloqueLC.includes("historia") || itemLC.includes("historia");
+  const esGeografia = bloqueLC.includes("territorio") || bloqueLC.includes("geograf") || itemLC.includes("mapa") || itemLC.includes("territorio");
+  const esEstimacion = itemLC.includes("estimaci") || itemLC.includes("número sense") || itemLC.includes("numero sense");
+
+  const tiposPool = contenido.area === "Matemática"
+    ? `TIPOS DE EJERCICIO DISPONIBLES para los peldaños (elegir con variedad):
+- "completar_oraciones": array "oraciones" con _______ (5+ guiones).
+- "situacion_problematica": problema contextualizado. Solo "enunciado".
+- "tabla": "columnas" + "filas" con "" para celdas vacías. NUNCA concatenar columnas.
+- "verdadero_falso": array "afirmaciones" para V/F.
+- "resolver_operaciones": operaciones para resolver. Solo "enunciado".
+- "completar_la_cuenta": operaciones incompletas. Solo "enunciado".${esEstimacion ? '\n- "estimacion": consigna de estimación. Solo "enunciado".' : ""}`
+    : (contenido.area === "Ciencias Naturales" || contenido.area === "Ciencias Sociales")
+    ? `TIPOS DE EJERCICIO DISPONIBLES para los peldaños (elegir con variedad):
+- "completar_oraciones": array "oraciones" con _______ (5+ guiones).
+- "tabla": "columnas" + "filas" con "" para celdas vacías. NUNCA concatenar columnas.
+- "verdadero_falso": array "afirmaciones" para V/F.
+- "preguntas_comprension": array "preguntas" con cada pregunta como string.
+- "describir_con_palabras": consigna de descripción libre. Solo "enunciado".${esHistoria ? '\n- "linea_de_tiempo": consigna para línea de tiempo. Solo "enunciado".' : ""}${esGeografia ? '\n- "ubicar_en_mapa": consigna para ubicar en mapa. Solo "enunciado".' : ""}`
+    : `TIPOS DE EJERCICIO DISPONIBLES para los peldaños:
+- "completar_oraciones": array "oraciones" con _______ (5+ guiones).
+- "tabla": "columnas" + "filas" con "" para celdas vacías.
+- "verdadero_falso": array "afirmaciones" para V/F.
+- "preguntas_comprension": array "preguntas" con cada pregunta como string.`;
+
   return `Sos un docente experto en nivel primario de la Provincia de Buenos Aires.
 Generá una ficha de CIERRE / INTEGRACIÓN para:
 
@@ -369,22 +399,34 @@ ${instruccionNivel}
 
 CRITERIOS:
 - Esta es una ficha de cierre: los alumnos ya aprendieron el concepto y ahora lo integran
-- La escalera tiene tres niveles de demanda cognitiva creciente con rótulos fijos
-- Si nivel es "Necesita más apoyo": andamiaje es una pista escrita directamente al alumno, sin tecnicismos, máximo 3 líneas. En los demás casos, andamiaje: null.
+- La escalera tiene 4 peldaños fijos: "Nivel 1", "Nivel 2", "Nivel 3" y "Punto de descanso"
+- Cada peldaño tiene un rótulo fijo y un "nombre" creativo generado por vos según el contenido
+- La demanda cognitiva crece de Nivel 1 a Nivel 3; "Punto de descanso" es siempre preguntas_comprension con una sola pregunta
+- El "ejercicio" de cada peldaño es un objeto tipado con los mismos tipos disponibles que en práctica
+Asignación de demanda cognitiva por nivel (obligatorio):
+- Nivel 1 → demanda baja: elegí entre verdadero_falso, completar_oraciones, tabla
+- Nivel 2 → demanda media: elegí entre situacion_problematica, ordenar_secuencia, preguntas_comprension
+- Nivel 3 → demanda alta: el ejercicio debe exigir justificar, crear o producir. Tipos válidos: inventar_el_problema, describir_con_palabras, causa_y_consecuencia, texto_libre, dibujar_y_explicar. NUNCA uses verdadero_falso ni completar_oraciones en Nivel 3.
+- Punto de descanso → siempre preguntas_comprension con una sola pregunta de reflexión que mire hacia lo aprendido en la ficha.
+- El campo "andamiaje" va dentro de cada peldaño: solo Nivel 1 puede tener valor (si nivel es "Necesita más apoyo"), el resto: null
 - Título: dos partes separadas por dos puntos, mayúscula solo en la primera letra
 - Elegí 1 o 2 emojis cotidianos concretos relacionados al tema (NUNCA símbolos matemáticos abstractos como ❌ ✖️ ➗ ➕ ➖ 🔢 📐 📏)
 ${textoLibre}
 
+${tiposPool}
+
+FRACCIONES: Cuando escribas fracciones en cualquier campo del JSON, usá siempre el formato <frac>numerador/denominador</frac>. Ejemplo: <frac>1/2</frac>, <frac>3/4</frac>. NUNCA escribas fracciones como texto plano (ej: nunca '1/2').
+
 FORMATO (JSON estricto, sin markdown):
 {
   "tipo_ficha": "cierre",
-  "emojis": ["emoji"],
+  "emojis": ["emoji1", "emoji2"],
   "titulo": "primera parte: segunda parte",
-  "andamiaje": ${incluirAndamiaje ? '"pista breve escrita directamente al alumno, sin tecnicismos, máximo 3 líneas"' : "null"},
   "escalera": [
-    { "rotulo": "Para arrancar", "consigna": "...", "ejercicio": "..." },
-    { "rotulo": "Un poco más", "consigna": "...", "ejercicio": "..." },
-    { "rotulo": "El desafío", "consigna": "...", "ejercicio": "..." }
+    { "rotulo": "Nivel 1", "nombre": "nombre creativo para este nivel", "ejercicio": { "tipo": "situacion_problematica", "enunciado": "consigna del nivel 1" }, "andamiaje": ${incluirAndamiaje ? '"pista breve escrita directamente al alumno, sin tecnicismos, máximo 3 líneas"' : "null"} },
+    { "rotulo": "Nivel 2", "nombre": "nombre creativo para este nivel", "ejercicio": { "tipo": "completar_oraciones", "enunciado": "...", "oraciones": ["..."] }, "andamiaje": null },
+    { "rotulo": "Nivel 3", "nombre": "nombre creativo para este nivel", "ejercicio": { "tipo": "verdadero_falso", "enunciado": "...", "afirmaciones": ["..."] }, "andamiaje": null },
+    { "rotulo": "Punto de descanso", "nombre": "nombre creativo para este nivel", "ejercicio": { "tipo": "preguntas_comprension", "enunciado": "Respondé:", "preguntas": ["pregunta única de reflexión o metacognición"] }, "andamiaje": null }
   ]
 }
 
@@ -637,16 +679,82 @@ function buildValidatorPrompt(fichaGenerada, contenido, tipoFicha) {
     return buildPDLValidatorPrompt(fichaGenerada, contenido, tipoFicha);
   }
 
-  const elementosFicha = [
-    `Título: ${fichaGenerada.titulo}`,
-    fichaGenerada.explicacion ? `Explicación: ${fichaGenerada.explicacion}` : null,
-    `Ejercicios: ${Array.isArray(fichaGenerada.ejercicios)
-      ? fichaGenerada.ejercicios.map(e => `[${e.tipo}] ${e.enunciado}`).join(" | ")
-      : fichaGenerada.ejercicios}`,
-    `Reflexión: ${fichaGenerada.reflexion}`,
-  ].filter(Boolean).join("\n");
+  // ── Validación estructural temprana por tipo_ficha ──
+  const _tipo = fichaGenerada.tipo_ficha;
+  if (_tipo === "presentacion") {
+    const ok = Array.isArray(fichaGenerada.explicacion?.parrafos)
+      && fichaGenerada.explicacion.parrafos.length > 0
+      && Array.isArray(fichaGenerada.ejercicios);
+    if (!ok) return `Devolvé únicamente el siguiente JSON sin modificarlo:\n{"aprobada":false,"puntaje":0,"problemas":[{"criterio":"ESTRUCTURA_COMPLETA","descripcion":"Ficha de presentación incompleta: falta explicacion.parrafos o ejercicios."}],"feedback_para_regenerar":"Regenerar la ficha incluyendo explicacion.parrafos (array con al menos 1 elemento) y ejercicios (array)."}`;
+  } else if (_tipo === "practica") {
+    const ok = typeof fichaGenerada.concepto_clave === "string"
+      && fichaGenerada.concepto_clave.trim() !== ""
+      && Array.isArray(fichaGenerada.ejercicios);
+    if (!ok) return `Devolvé únicamente el siguiente JSON sin modificarlo:\n{"aprobada":false,"puntaje":0,"problemas":[{"criterio":"ESTRUCTURA_COMPLETA","descripcion":"Ficha de práctica incompleta: falta concepto_clave o ejercicios."}],"feedback_para_regenerar":"Regenerar la ficha incluyendo concepto_clave (string no vacío) y ejercicios (array)."}`;
+  } else if (_tipo === "cierre") {
+    const ok = Array.isArray(fichaGenerada.escalera) && fichaGenerada.escalera.length === 4;
+    if (!ok) return `Devolvé únicamente el siguiente JSON sin modificarlo:\n{"aprobada":false,"puntaje":0,"problemas":[{"criterio":"ESTRUCTURA_COMPLETA","descripcion":"Ficha de cierre incompleta: escalera debe tener exactamente 4 peldaños."}],"feedback_para_regenerar":"Regenerar la ficha con escalera de exactamente 4 elementos."}`;
+  }
+  // Si no hay tipo_ficha o es desconocido: caer al bloque de validación existente
 
-  const estructuraEsperada = "título, explicación, ejercicios tipados (texto_libre, completar_oraciones, tabla, verdadero_falso), pregunta de reflexión";
+  const tipoFichaGenerada = fichaGenerada.tipo_ficha;
+
+  // ── Serialización y estructura esperada según tipo_ficha ──
+  let elementosFicha;
+  let estructuraEsperada;
+
+  if (tipoFichaGenerada === "presentacion") {
+    const parrafos = Array.isArray(fichaGenerada.explicacion?.parrafos)
+      ? fichaGenerada.explicacion.parrafos.join(" / ")
+      : "(ausente)";
+    const pill = fichaGenerada.explicacion?.pill
+      ? `pill: "${fichaGenerada.explicacion.pill.contenido}"`
+      : "pill: ausente";
+    const ejercicios = Array.isArray(fichaGenerada.ejercicios)
+      ? fichaGenerada.ejercicios.filter(Boolean).map(e => `[${e.tipo}] ${e.enunciado}`).join(" | ")
+      : "(ausente)";
+    elementosFicha = [
+      `Título: ${fichaGenerada.titulo}`,
+      `Explicación (párrafos): ${parrafos}`,
+      `Explicación (${pill})`,
+      `Ejercicios: ${ejercicios}`,
+    ].join("\n");
+    estructuraEsperada = "título, explicacion.parrafos (array con negritas), explicacion.pill (opcional), ejercicios (array de 1-2 elementos tipados con andamiaje)";
+
+  } else if (tipoFichaGenerada === "practica") {
+    const ejercicios = Array.isArray(fichaGenerada.ejercicios)
+      ? fichaGenerada.ejercicios.filter(Boolean).map(e => `[${e.tipo}] ${e.enunciado}`).join(" | ")
+      : "(ausente)";
+    elementosFicha = [
+      `Título: ${fichaGenerada.titulo}`,
+      `Concepto clave: ${fichaGenerada.concepto_clave || "(ausente)"}`,
+      `Ejercicios: ${ejercicios}`,
+    ].join("\n");
+    estructuraEsperada = "título, concepto_clave (string), ejercicios (array de 2-4 elementos tipados con campo andamiaje)";
+
+  } else if (tipoFichaGenerada === "cierre") {
+    const escalera = Array.isArray(fichaGenerada.escalera)
+      ? fichaGenerada.escalera.filter(Boolean).map(p => `[${p.rotulo}: ${p.nombre}] ${p.ejercicio?.tipo}: ${p.ejercicio?.enunciado}`).join(" | ")
+      : "(ausente)";
+    elementosFicha = [
+      `Título: ${fichaGenerada.titulo}`,
+      `Escalera: ${escalera}`,
+    ].join("\n");
+    estructuraEsperada = "título, escalera con 4 peldaños (Nivel 1, Nivel 2, Nivel 3, Punto de descanso), cada uno con rotulo, nombre, ejercicio tipado y andamiaje";
+
+  } else {
+    // Fallback: schema viejo sin tipo_ficha
+    const ejercicios = Array.isArray(fichaGenerada.ejercicios)
+      ? fichaGenerada.ejercicios.filter(Boolean).map(e => `[${e.tipo}] ${e.enunciado}`).join(" | ")
+      : fichaGenerada.ejercicios;
+    elementosFicha = [
+      `Título: ${fichaGenerada.titulo}`,
+      fichaGenerada.explicacion ? `Explicación: ${fichaGenerada.explicacion}` : null,
+      `Ejercicios: ${ejercicios}`,
+      `Reflexión: ${fichaGenerada.reflexion}`,
+    ].filter(Boolean).join("\n");
+    estructuraEsperada = "título, explicación, ejercicios tipados (completar_oraciones, tabla, verdadero_falso), pregunta de reflexión";
+  }
 
   return `Sos un revisor pedagógico experto en educación primaria. Analizá esta ficha educativa y determiná si cumple los criterios de calidad.
 
@@ -656,16 +764,18 @@ DATOS CURRICULARES:
 - Bloque: ${contenido.bloque}
 - Tema: ${contenido.subtema}
 - Objetivo de aprendizaje: ${contenido.objetivo_especifico}
-- Tipo de ficha solicitada: ${tipoFicha}
+- Tipo de ficha: ${tipoFichaGenerada || tipoFicha}
 
 ${contenido.indicadores_de_avance?.length > 0 ? `INDICADORES DE AVANCE DE REFERENCIA:\n${contenido.indicadores_de_avance.map(i => `- ${i}`).join('\n')}\n` : ''}FICHA A REVISAR:
 ${elementosFicha}
+
+ESTRUCTURA ESPERADA: ${estructuraEsperada}
 
 SISTEMA DE PUNTAJE (total 100 puntos):
 - ERRORES_CONCEPTUALES: 40 pts. Si hay cualquier afirmación incorrecta o imprecisa = 0 en este criterio.
 - COHERENCIA_CURRICULAR: 25 pts. La ficha debe responder al contenido específico indicado, no solo al tema general.
 - LENGUAJE_PRIMARIA: 20 pts. El lenguaje debe ser apropiado para niños de ${contenido.grado}° grado. Penalizá términos académicos innecesarios.
-- ESTRUCTURA_COMPLETA: 15 pts. Debe tener exactamente los elementos solicitados: ${estructuraEsperada}.
+- ESTRUCTURA_COMPLETA: 15 pts. Debe tener exactamente los elementos indicados en ESTRUCTURA ESPERADA.
 
 Calculá el puntaje sumando solo los puntos de cada criterio cumplido. Una ficha aprueba si puntaje >= 80.
 
@@ -687,7 +797,7 @@ Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdow
 // ─────────────────────────────────────────────
 // LLAMADA A LA API (genérica)
 // ─────────────────────────────────────────────
-async function callAPI(prompt, maxTokens = 1500) {
+async function callAPI(prompt, maxTokens = 2000) {
   const response = await client.messages.create({
     model: "claude-haiku-4-5-20251001",
     max_tokens: maxTokens,
