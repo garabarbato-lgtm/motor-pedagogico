@@ -662,6 +662,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
   const handleDescargarPDF = async () => {
     const element = document.getElementById("ficha-imprimible");
+    if (!element) { console.error("No se encontró #ficha-imprimible"); return; }
     const areaSlug = registro.area.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
     const filename = `tiza-${areaSlug}-${registro.grado}.pdf`;
 

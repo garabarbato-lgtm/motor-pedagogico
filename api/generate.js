@@ -211,10 +211,10 @@ FORMATO (JSON estricto, sin markdown):
   "titulo": "primera parte: segunda parte",
   "explicacion": {
     "parrafos": ["párrafo 1 con **concepto clave** en negrita", "párrafo 2"],
-    "pill": { "tipo": "dato_curioso", "contenido": "dato breve o pregunta disparadora relacionada al tema" }
+    "pill": { "tipo": "dato_curioso", "contenido": "UNA sola oración, máximo 15 palabras. Sin punto final." }
   },
   "ejercicios": [
-    { "tipo": "situacion_problematica", "enunciado": "consigna del ejercicio de exploración inicial", "andamiaje": ${incluirAndamiaje ? '"pista breve escrita directamente al alumno, sin tecnicismos, máximo 3 líneas"' : "null"} },
+    { "tipo": "situacion_problematica", "enunciado": "consigna del ejercicio de exploración inicial", "andamiaje": ${incluirAndamiaje ? '"UNA sola oración, máximo 15 palabras. Sin punto final."' : "null"} },
     null
   ]
 }
