@@ -223,7 +223,15 @@ function LineaDoble() {
 
 export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onInicio }) {
   const [imprimiendo, setImprimiendo] = useState(false);
-  const [fichaLocal, setFichaLocal] = useState(() => ({ ...ficha }));
+  const [fichaLocal, setFichaLocal] = useState(() => {
+    const f = { ...ficha };
+    if (f.explicacion && typeof f.explicacion === 'object') {
+      f.explicacion = Array.isArray(f.explicacion.parrafos)
+        ? f.explicacion.parrafos.join('\n\n')
+        : '';
+    }
+    return f;
+  });
   const [itemsLocal, setItemsLocal] = useState(() => parsearActividad(ficha.actividad).items);
   const [editandoCampo, setEditandoCampo] = useState(null);
   const [planosLocal, setPlanosLocal] = useState(() => initFieldData(ficha).planos);
@@ -617,6 +625,19 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
               }
             </div>
           </div>
+        </div>
+      );
+    }
+
+    // Tipos desconocidos con enunciado (ej: exploracion_inicial, construccion_modelo, etc.)
+    if (!['completar_oraciones','tabla','verdadero_falso','preguntas_comprension',
+          'resolver_operaciones','completar_la_cuenta'].includes(ejercicio.tipo)) {
+      return (
+        <div key={idx} ref={setRef(keyEjercicio)}>
+          <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
+            {numLabel}{enunciadoEl}
+          </div>
+          <RecuadroRespuesta />
         </div>
       );
     }
