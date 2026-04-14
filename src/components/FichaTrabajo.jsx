@@ -81,6 +81,7 @@ function initFieldData(ficha) {
 
   // Ejercicios tipados (nuevo formato) o strings (PDL Ortografía viejo)
   (ficha.ejercicios || []).forEach((ejercicio, i) => {
+    if (!ejercicio) return;
     if (typeof ejercicio === 'string') {
       planos[`ejercicio_${i}`] = htmlATextoPlano(ejercicio);
     } else {
@@ -437,7 +438,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   };
 
   const renderEjercicioItem = (ejercicio, idx) => {
-    if (!ejercicioTieneContenido(ejercicio)) return null;
+    if (!ejercicio || !ejercicioTieneContenido(ejercicio)) return null;
     const keyEjercicio = `ejercicio_${idx}`;
     const editando = editandoCampo === keyEjercicio && editDraft;
     const numLabel = (
