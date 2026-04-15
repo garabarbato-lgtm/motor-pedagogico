@@ -507,14 +507,10 @@ export default function FichaPresenta({ ficha, registro, validacion, onNueva, on
     element.style.boxShadow = prevBoxShadow;
     const imgData = canvas.toDataURL("image/jpeg", 0.98);
     const pdf = new jsPDF("p", "mm", "a4");
+    // Siempre ancho completo A4, altura proporcional al canvas
     const anchoImg = 210;
-    const altoPagina = 297;
-    const altoImgProp = (canvas.height * anchoImg) / canvas.width;
-    // Si la imagen proporcional excede A4, escalar para que entre en alto
-    const escala = altoImgProp > altoPagina ? altoPagina / altoImgProp : 1;
-    const finalAncho = anchoImg * escala;
-    const finalAlto = altoImgProp * escala;
-    pdf.addImage(imgData, "JPEG", 0, 0, finalAncho, finalAlto);
+    const altoImg = (canvas.height * anchoImg) / canvas.width;
+    pdf.addImage(imgData, "JPEG", 0, 0, anchoImg, altoImg);
     pdf.save(filename);
   };
 
