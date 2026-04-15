@@ -191,10 +191,13 @@ ${instruccionNivel}
 
 CRITERIOS:
 - Esta es una ficha de presentación: el objetivo es introducir el concepto por primera vez
-- Explicación clara, en lenguaje para primaria, sin tecnicismos
+- Explicación clara, en lenguaje para primaria, sin tecnicismos innecesarios
 - La actividad debe ser de reconocimiento o exploración inicial, no de aplicación compleja
 - Título: dos partes separadas por dos puntos, mayúscula solo en la primera letra
-- Elegí 1 o 2 emojis cotidianos concretos relacionados al tema (NUNCA símbolos matemáticos abstractos como ❌ ✖️ ➗ ➕ ➖ 🔢 📐 📏)
+- Elegí 1 o 2 emojis cotidianos concretos relacionados al tema (NUNCA símbolos matemáticos abstractos como ❌ ✖️ ➗ ➕ ➖ 🔢 📐 📏; NUNCA emojis de banderas como 🇦🇷 🇧🇷 🇪🇸)
+- La pill debe ser UNA SOLA oración corta (máximo 15 palabras, sin punto final)
+${contenido.area === "Ciencias Sociales" ? `- IMPORTANTE para Ciencias Sociales: la explicación debe incluir actores históricos concretos (nombres, grupos sociales), períodos o fechas específicas, causas y consecuencias reales. No simplificar al punto de perder rigor histórico.` : ""}
+${contenido.area === "Ciencias Naturales" ? `- IMPORTANTE para Ciencias Naturales: la explicación debe incluir conceptos científicos concretos con ejemplos del mundo natural observables por el alumno.` : ""}
 ${textoLibre}
 
 En los párrafos de explicación podés usar:
@@ -207,7 +210,7 @@ En los párrafos de explicación podés usar:
 Los párrafos deben tener vida propia — no texto académico plano.
 Entre 3 y 5 párrafos. Nunca un bloque único de texto.
 
-La pill es obligatoria. Elegí entre dato_curioso o pregunta_disparadora según lo que mejor funcione para el tema.
+La pill es obligatoria. Elegí entre dato_curioso o pregunta_disparadora según lo que mejor funcione para el tema. Debe ser UNA SOLA oración corta, máximo 15 palabras, sin punto final.
 
 El campo andamiaje en los ejercicios es opcional.
 Incluilo solo si el ejercicio genuinamente lo necesita.
@@ -215,6 +218,11 @@ Si no hay andamiaje, omitir el campo completamente (no mandar null ni string vac
 
 Para escribir fracciones usá siempre el formato <frac>numerador/denominador</frac>.
 Nunca escribas fracciones inline como 1/2.
+
+EJERCICIOS para esta ficha (1 o 2 ejercicios de reconocimiento inicial):
+${contenido.area === "Matemática"
+  ? `- Usá tipo "situacion_problematica": una situación cotidiana breve que invite a explorar el concepto.`
+  : `- Usá tipo "preguntas_comprension": entre 2 y 3 preguntas abiertas cortas sobre el contenido explicado. El campo "enunciado" es una introducción breve (ej: "Respondé:"). Las preguntas van en el array "preguntas", cada una como string separado. NUNCA pongas las preguntas dentro del enunciado.`}
 
 FORMATO (JSON estricto, sin markdown):
 {
@@ -229,11 +237,12 @@ FORMATO (JSON estricto, sin markdown):
     ],
     "pill": {
       "tipo": "dato_curioso",
-      "contenido": "Dato breve, concreto y sorprendente relacionado con el tema. Máximo 1 oración."
+      "contenido": "Una sola oración corta. Máximo 15 palabras sin punto final"
     }
   },
   "ejercicios": [
-    {
+    ${contenido.area === "Matemática"
+      ? `{
       "tipo": "situacion_problematica",
       "enunciado": "Situación problemática con contexto cotidiano.",
       "andamiaje": "Texto breve de apoyo — solo si el ejercicio lo necesita. Si no hay andamiaje, omitir este campo completamente."
@@ -241,7 +250,12 @@ FORMATO (JSON estricto, sin markdown):
     {
       "tipo": "situacion_problematica",
       "enunciado": "Segundo ejercicio opcional. Si no entra en el espacio, mandá null en esta posición."
-    }
+    }`
+      : `{
+      "tipo": "preguntas_comprension",
+      "enunciado": "Respondé:",
+      "preguntas": ["Primera pregunta sobre el contenido explicado.", "Segunda pregunta sobre el contenido explicado.", "Tercera pregunta (opcional)."]
+    }`}
   ]
 }
 

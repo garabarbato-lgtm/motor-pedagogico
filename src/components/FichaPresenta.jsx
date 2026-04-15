@@ -170,7 +170,7 @@ function renderEjercicioItem(ejercicio, idx) {
   );
   const enunciadoEl = (
     <div style={{ flex: 1 }}>
-      <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }}
+      <div className="ejercicio-enunciado" style={{ fontSize: 13, color: C.texto, lineHeight: 1.55, margin: 0 }}
         dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio.enunciado)} />
     </div>
   );
@@ -214,7 +214,7 @@ function renderEjercicioItem(ejercicio, idx) {
           <div style={{ marginLeft: 24 }}>
             {(ejercicio.oraciones || []).map((oracion, j) => (
               <div key={j} style={{ marginBottom: 8 }}>
-                <div style={{ fontSize: 12, lineHeight: 1.6 }} dangerouslySetInnerHTML={renderHTMLConNegrita(oracion)} />
+                <div style={{ fontSize: 13, lineHeight: 1.6 }} dangerouslySetInnerHTML={renderHTMLConNegrita(oracion)} />
               </div>
             ))}
           </div>
@@ -272,7 +272,7 @@ function renderEjercicioItem(ejercicio, idx) {
           <div style={{ marginLeft: 24, display: "flex", flexDirection: "column", gap: 6 }}>
             {(ejercicio.afirmaciones || []).map((afirmacion, j) => (
               <div key={j} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ fontSize: 12, lineHeight: 1.5, flex: 1 }} dangerouslySetInnerHTML={renderHTMLConNegrita(afirmacion)} />
+                <span style={{ fontSize: 13, lineHeight: 1.5, flex: 1 }} dangerouslySetInnerHTML={renderHTMLConNegrita(afirmacion)} />
                 <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
                   {["V", "F"].map(l => (
                     <span key={l} style={{ border: `1px solid ${C.border}`, padding: "2px 7px", fontSize: 11, fontWeight: 700, borderRadius: 3 }}>{l}</span>
@@ -297,7 +297,7 @@ function renderEjercicioItem(ejercicio, idx) {
           <div style={{ marginLeft: 24, display: "flex", flexDirection: "column", gap: 10 }}>
             {(ejercicio.preguntas || []).map((pregunta, j) => (
               <div key={j}>
-                <div style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, marginBottom: 4 }}
+                <div style={{ fontSize: 13, color: C.texto, lineHeight: 1.55, marginBottom: 4 }}
                   dangerouslySetInnerHTML={renderHTMLConNegrita(`${j + 1}. ${pregunta}`)} />
                 <LineasRespuesta n={3} />
               </div>
@@ -319,10 +319,10 @@ function renderEjercicioItem(ejercicio, idx) {
             <div style={{ flex: 1 }}>
               {lineas.length > 1
                 ? lineas.map((linea, j) => (
-                    <div key={j} style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, marginBottom: 12 }}
+                    <div key={j} style={{ fontSize: 13, color: C.texto, lineHeight: 1.6, marginBottom: 12 }}
                       dangerouslySetInnerHTML={renderHTMLConNegrita(linea)} />
                   ))
-                : <div style={{ fontSize: 12, color: C.texto, lineHeight: 1.6 }}
+                : <div style={{ fontSize: 13, color: C.texto, lineHeight: 1.6 }}
                     dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio.enunciado)} />
               }
             </div>
@@ -333,14 +333,14 @@ function renderEjercicioItem(ejercicio, idx) {
     );
   }
 
-  // Tipos desconocidos + situacion_problematica + default → enunciado + recuadro
+  // Tipos desconocidos + situacion_problematica + default → enunciado + renglones
   return (
     <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
       <div style={{ flex: 1 }}>
         <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
           {numLabel}{enunciadoEl}
         </div>
-        <RecuadroRespuesta />
+        <LineasRespuesta n={4} />
       </div>
       {andamiajeEl}
     </div>
@@ -683,7 +683,7 @@ export default function FichaPresenta({ ficha, registro, validacion, onNueva, on
                           ? renderTextarea(3)
                           : (
                             <div
-                              style={{ fontSize: 12, color: C.texto, lineHeight: 1.75 }}
+                              style={{ fontSize: 13, color: C.texto, lineHeight: 1.75 }}
                               dangerouslySetInnerHTML={renderHTMLConNegrita(p)}
                             />
                           )
@@ -875,6 +875,9 @@ export default function FichaPresenta({ ficha, registro, validacion, onNueva, on
 
           .ejercicio-enunciado,
           .dato-label { font-size: 13px !important; }
+
+          .ficha-contenido { font-family: 'Lexend Deca', sans-serif !important; font-size: 13px !important; }
+          .ficha-contenido div, .ficha-contenido span, .ficha-contenido p { font-family: 'Lexend Deca', sans-serif !important; }
 
           .seccion:last-of-type { flex: 1; }
         }
