@@ -193,29 +193,55 @@ CRITERIOS:
 - Esta es una ficha de presentación: el objetivo es introducir el concepto por primera vez
 - Explicación clara, en lenguaje para primaria, sin tecnicismos
 - La actividad debe ser de reconocimiento o exploración inicial, no de aplicación compleja
-- Marcá con **doble asterisco** conceptos clave en la explicación
 - Título: dos partes separadas por dos puntos, mayúscula solo en la primera letra
 - Elegí 1 o 2 emojis cotidianos concretos relacionados al tema (NUNCA símbolos matemáticos abstractos como ❌ ✖️ ➗ ➕ ➖ 🔢 📐 📏)
-- La "pill" en explicacion es un dato curioso o pregunta disparadora muy breve relacionada al tema
-- El primer ejercicio es de reconocimiento o exploración inicial; el segundo es null
-- El campo "andamiaje" va dentro de cada ejercicio: solo el primero puede tener valor (si nivel es "Necesita más apoyo"), el resto null
-- IMPORTANTE: Generá EXACTAMENTE 2 ejercicios en el array ejercicios. Si solo tenés un ejercicio relevante, el segundo debe ser null. Nunca generes más de 2 ejercicios. El array siempre tiene longitud 2.
 ${textoLibre}
 
-FRACCIONES: Cuando escribas fracciones en cualquier campo del JSON, usá siempre el formato <frac>numerador/denominador</frac>. Ejemplo: <frac>1/2</frac>, <frac>3/4</frac>. NUNCA escribas fracciones como texto plano (ej: nunca '1/2').
+En los párrafos de explicación podés usar:
+- **negrita** para conceptos clave
+- → para conectar ideas o pasos en secuencia
+- · para separar ejemplos dentro de un mismo párrafo
+- emojis cotidianos concretos (no abstractos) para anclar en la realidad
+- mini-secuencias inline: paso A → paso B → paso C
+
+Los párrafos deben tener vida propia — no texto académico plano.
+Entre 3 y 5 párrafos. Nunca un bloque único de texto.
+
+La pill es obligatoria. Elegí entre dato_curioso o pregunta_disparadora según lo que mejor funcione para el tema.
+
+El campo andamiaje en los ejercicios es opcional.
+Incluilo solo si el ejercicio genuinamente lo necesita.
+Si no hay andamiaje, omitir el campo completamente (no mandar null ni string vacío).
+
+Para escribir fracciones usá siempre el formato <frac>numerador/denominador</frac>.
+Nunca escribas fracciones inline como 1/2.
 
 FORMATO (JSON estricto, sin markdown):
 {
   "tipo_ficha": "presentacion",
-  "emojis": ["emoji1", "emoji2"],
-  "titulo": "primera parte: segunda parte",
+  "titulo": "Tema: subtema concreto",
+  "emojis": ["🍕", "🍫"],
   "explicacion": {
-    "parrafos": ["párrafo 1 con **concepto clave** en negrita", "párrafo 2"],
-    "pill": { "tipo": "dato_curioso", "contenido": "UNA sola oración, máximo 15 palabras. Sin punto final." }
+    "parrafos": [
+      "Párrafo 1 — usá **negrita** para conceptos clave, → para conectar ideas, · para separar ejemplos inline, y emojis cotidianos concretos para anclar en la realidad.",
+      "Párrafo 2 — podés incluir mini-secuencias dentro del párrafo: paso A → paso B → paso C.",
+      "Párrafo 3 — entre 3 y 5 párrafos en total. Nunca un bloque único de texto."
+    ],
+    "pill": {
+      "tipo": "dato_curioso",
+      "contenido": "Dato breve, concreto y sorprendente relacionado con el tema. Máximo 1 oración."
+    }
   },
   "ejercicios": [
-    { "tipo": "situacion_problematica", "enunciado": "consigna del ejercicio de exploración inicial", "andamiaje": ${incluirAndamiaje ? '"UNA sola oración, máximo 15 palabras. Sin punto final."' : "null"} },
-    null
+    {
+      "tipo": "situacion_problematica",
+      "enunciado": "Situación problemática con contexto cotidiano.",
+      "andamiaje": "Texto breve de apoyo — solo si el ejercicio lo necesita. Si no hay andamiaje, omitir este campo completamente."
+    },
+    {
+      "tipo": "situacion_problematica",
+      "enunciado": "Segundo ejercicio opcional. Si no entra en el espacio, mandá null en esta posición."
+    }
   ]
 }
 

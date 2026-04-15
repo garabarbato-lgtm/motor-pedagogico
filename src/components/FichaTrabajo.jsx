@@ -247,6 +247,18 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
   if (!ficha || !registro) return null;
 
+  if (ficha?.tipo_ficha === 'presentacion') {
+    return (
+      <FichaPresenta
+        ficha={ficha}
+        registro={registro}
+        validacion={validacion}
+        onNueva={onNueva}
+        onInicio={onInicio}
+      />
+    );
+  }
+
   const isPDL = registro.area === "Prácticas del Lenguaje";
   const esDosHojas = isPDL || registro.area === "Ciencias Sociales";
   const tituloTexto = (() => {
@@ -773,7 +785,6 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     </div>
   );
 
-  if (ficha.tipo_ficha === "presentacion") return <FichaPresenta ficha={ficha} registro={registro} validacion={validacion} onNueva={onNueva} onInicio={onInicio} />;
   if (ficha.tipo_ficha === "practica") return renderFichaEspecializada(FichaPractica);
   if (ficha.tipo_ficha === "cierre") return renderFichaEspecializada(FichaCierre);
 

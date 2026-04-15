@@ -507,15 +507,14 @@ export default function FichaPresenta({ ficha, registro, validacion, onNueva, on
     element.style.boxShadow = prevBoxShadow;
     const imgData = canvas.toDataURL("image/jpeg", 0.98);
     const pdf = new jsPDF("p", "mm", "a4");
-    const altoPagina = 297;
     const anchoImg = 210;
-    const altoImg = (canvas.height * anchoImg) / canvas.width;
-    let posY = 0;
-    while (posY < altoImg) {
-      if (posY > 0) pdf.addPage();
-      pdf.addImage(imgData, "JPEG", 0, -posY, anchoImg, altoImg);
-      posY += altoPagina;
-    }
+    const altoPagina = 297;
+    const altoImgProp = (canvas.height * anchoImg) / canvas.width;
+    // Si la imagen proporcional excede A4, escalar para que entre en alto
+    const escala = altoImgProp > altoPagina ? altoPagina / altoImgProp : 1;
+    const finalAncho = anchoImg * escala;
+    const finalAlto = altoImgProp * escala;
+    pdf.addImage(imgData, "JPEG", 0, 0, finalAncho, finalAlto);
     pdf.save(filename);
   };
 
@@ -830,7 +829,7 @@ export default function FichaPresenta({ ficha, registro, validacion, onNueva, on
       <style>{`
         @media print {
           * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          @page { size: A4; margin: 5mm; }
+          @page { size: A4; margin: 10mm; }
           html, body { margin: 0; padding: 0; width: 190mm; }
 
           #nav-ficha,
