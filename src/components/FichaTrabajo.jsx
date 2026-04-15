@@ -773,7 +773,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     </div>
   );
 
-  if (ficha.tipo_ficha === "presentacion") return renderFichaEspecializada(FichaPresenta);
+  if (ficha.tipo_ficha === "presentacion") return <FichaPresenta ficha={ficha} registro={registro} validacion={validacion} onNueva={onNueva} onInicio={onInicio} />;
   if (ficha.tipo_ficha === "practica") return renderFichaEspecializada(FichaPractica);
   if (ficha.tipo_ficha === "cierre") return renderFichaEspecializada(FichaCierre);
 
