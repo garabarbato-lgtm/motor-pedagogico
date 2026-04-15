@@ -94,10 +94,10 @@ export function SeccionHeader({ numero, titulo, icono }) {
       }}>
         {numero}
       </div>
-      <span style={{ fontSize: 12, fontWeight: 700, color: C.texto, letterSpacing: "0.01em" }}>
+      <span style={{ fontSize: 13, fontWeight: 700, color: C.texto, letterSpacing: "0.01em" }}>
         {titulo}
       </span>
-      <span style={{ fontSize: 12, marginLeft: "auto", opacity: 0.4 }}>{icono}</span>
+      <span style={{ fontSize: 13, marginLeft: "auto", opacity: 0.4 }}>{icono}</span>
     </div>
   );
 }
@@ -243,12 +243,12 @@ export function renderEjercicioItem(ejercicio, idx, { hideNum = false } = {}) {
   if (!hasContent) return null;
 
   const numLabel = hideNum ? null : (
-    <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
+    <span style={{ fontSize: 13, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
   );
 
   const enunciadoEl = (
     <div style={{ flex: 1 }}>
-      <div style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }}
+      <div style={{ fontSize: 13, color: C.texto, lineHeight: 1.55, margin: 0 }}
         dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio.enunciado)} />
     </div>
   );
@@ -265,7 +265,7 @@ export function renderEjercicioItem(ejercicio, idx, { hideNum = false } = {}) {
           <div style={{ marginLeft: hideNum ? 0 : 24 }}>
             {(ejercicio.oraciones || []).map((oracion, j) => (
               <div key={j} style={{ marginBottom: 8 }}>
-                <div style={{ fontSize: 12, lineHeight: 1.6 }} dangerouslySetInnerHTML={renderHTMLConNegrita(oracion)} />
+                <div style={{ fontSize: 13, lineHeight: 1.6 }} dangerouslySetInnerHTML={renderHTMLConNegrita(oracion)} />
               </div>
             ))}
           </div>
@@ -323,7 +323,7 @@ export function renderEjercicioItem(ejercicio, idx, { hideNum = false } = {}) {
           <div style={{ marginLeft: hideNum ? 0 : 24, display: "flex", flexDirection: "column", gap: 6 }}>
             {(ejercicio.afirmaciones || []).map((afirmacion, j) => (
               <div key={j} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ fontSize: 12, lineHeight: 1.5, flex: 1 }} dangerouslySetInnerHTML={renderHTMLConNegrita(afirmacion)} />
+                <span style={{ fontSize: 13, lineHeight: 1.5, flex: 1 }} dangerouslySetInnerHTML={renderHTMLConNegrita(afirmacion)} />
                 <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
                   {["V", "F"].map(l => (
                     <span key={l} style={{ border: `1px solid ${C.border}`, padding: "2px 7px", fontSize: 11, fontWeight: 700, borderRadius: 3 }}>{l}</span>
@@ -348,7 +348,7 @@ export function renderEjercicioItem(ejercicio, idx, { hideNum = false } = {}) {
           <div style={{ marginLeft: hideNum ? 0 : 24, display: "flex", flexDirection: "column", gap: 10 }}>
             {(ejercicio.preguntas || []).map((pregunta, j) => (
               <div key={j}>
-                <div style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, marginBottom: 4 }}
+                <div style={{ fontSize: 13, color: C.texto, lineHeight: 1.55, marginBottom: 4 }}
                   dangerouslySetInnerHTML={renderHTMLConNegrita(`${j + 1}. ${pregunta}`)} />
                 <LineasRespuesta n={3} />
               </div>
@@ -370,10 +370,10 @@ export function renderEjercicioItem(ejercicio, idx, { hideNum = false } = {}) {
             <div style={{ flex: 1 }}>
               {lineas.length > 1
                 ? lineas.map((linea, j) => (
-                    <div key={j} style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, marginBottom: 12 }}
+                    <div key={j} style={{ fontSize: 13, color: C.texto, lineHeight: 1.6, marginBottom: 12 }}
                       dangerouslySetInnerHTML={renderHTMLConNegrita(linea)} />
                   ))
-                : <div style={{ fontSize: 12, color: C.texto, lineHeight: 1.6 }}
+                : <div style={{ fontSize: 13, color: C.texto, lineHeight: 1.6 }}
                     dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio.enunciado)} />
               }
             </div>
@@ -384,14 +384,14 @@ export function renderEjercicioItem(ejercicio, idx, { hideNum = false } = {}) {
     );
   }
 
-  // Default: enunciado + recuadro de respuesta
+  // Default: enunciado + renglones
   return (
     <div key={idx} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
       <div style={{ flex: 1 }}>
         <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
           {numLabel}{enunciadoEl}
         </div>
-        <RecuadroRespuesta />
+        <LineasRespuesta n={4} />
       </div>
       {andamiajeEl}
     </div>
