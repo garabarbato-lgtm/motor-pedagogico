@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import {
   C, renderTitulo,
   Andamiaje,
@@ -27,6 +28,7 @@ const BADGE_COLORS = {
 };
 
 export default function FichaCierre({ ficha, registro }) {
+  const refFicha = useRef(null);
   if (!ficha || !registro) return null;
 
   const emojis = Array.isArray(ficha.emojis) && ficha.emojis.length ? ficha.emojis : ["📝"];
