@@ -39,7 +39,7 @@ Criterios:
 - Si el tipo de texto es noticia: respetar estructura periodística (título, copete, cuerpo)
 - Si el tipo de texto es obra de teatro: incluir al menos dos personajes y acotaciones
 - Si el tipo de texto es historieta: describir las viñetas con texto ya que no hay imágenes
-- Si un ejercicio requiere una tabla para completar, generarla en HTML dentro del recuadro de respuesta con este estilo: bordes finos (border: 0.5px solid #ddddd8), encabezados de columna en negrita con fondo #f5f5f0, celdas vacías con height: 32px para que el alumno escriba, width: 100%. La tabla va DENTRO del recuadro de respuesta, debajo del enunciado.
+- Si un ejercicio requiere una tabla para completar, generarla en HTML dentro del recuadro de respuesta con este estilo: bordes finos (border: 0.5px solid #ddddd8), encabezados de columna en negrita con fondo #f5f5f0, celdas vacías con height: 32px para que el alumno escriba, width: 100%. IMPORTANTE: Las celdas que el alumno debe completar DEBEN estar vacías (sin texto, solo el espacio). La tabla va DENTRO del recuadro de respuesta, debajo del enunciado.
 - Marcá con **doble asterisco** los nombres propios, datos importantes y conceptos clave del texto
 - El título debe tener dos partes separadas por dos puntos cuando sea posible. Mayúscula solo en la primera letra.
 - Elegí 1 o 2 emojis relevantes al tipo de texto para decorar el título.
@@ -126,7 +126,7 @@ CRITERIOS:
 TIPOS DE EJERCICIO:
 - "texto_libre": corrección, escritura libre o respuestas abiertas
 - "completar_oraciones": array "oraciones" con strings con _______ (5+ guiones) en el espacio
-- "tabla": "columnas" = encabezados. "filas" = array de arrays donde cada sub-array tiene un valor por columna (string vacío "" para celda vacía). NUNCA concatenar varias columnas en un solo string.
+- "tabla": "columnas" = encabezados. "filas" = array de arrays donde cada sub-array tiene un valor por columna. IMPORTANTE: Las celdas que el alumno debe completar DEBEN ser strings vacíos (""). NUNCA concatenar varias columnas en un solo string.
 - "verdadero_falso": array "afirmaciones" para evaluar con V/F
 LÍMITE DE ITEMS: Cada ejercicio puede tener como máximo 4 items (oraciones, afirmaciones o filas). Nunca más de 4.
 
@@ -285,7 +285,7 @@ function buildPracticaPrompt(contenido, ctx, feedback, indicadores) {
     ? `TIPOS DE EJERCICIO DISPONIBLES (elegir con variedad):
 - "completar_oraciones": completar espacios con números, términos o resultados. Array "oraciones" con _______ (5+ guiones).
 - "situacion_problematica": problema contextualizado para resolver. Solo "enunciado".
-- "tabla": tabla para completar. "columnas" + "filas" (string vacío "" = celda a completar). NUNCA concatenar columnas.
+- "tabla": tabla para completar. "columnas" + "filas". IMPORTANTE: Las celdas que el alumno debe completar DEBEN ser strings vacíos (""). NUNCA concatenar columnas.
 - "verdadero_falso": afirmaciones para evaluar con V/F. Array "afirmaciones".
 - "dibujar_y_explicar": consigna para dibujar y/o explicar con palabras. Solo "enunciado".
 - "resolver_operaciones": operaciones o cuentas para resolver. Solo "enunciado".
@@ -295,27 +295,27 @@ function buildPracticaPrompt(contenido, ctx, feedback, indicadores) {
     : contenido.area === "Ciencias Naturales"
     ? `TIPOS DE EJERCICIO DISPONIBLES (elegir con variedad):
 - "completar_oraciones": completar espacios con términos o conceptos. Array "oraciones" con _______ (5+ guiones).
-- "tabla": tabla para completar o clasificar. "columnas" + "filas" (string vacío "" = celda vacía). NUNCA concatenar columnas.
+- "tabla": tabla para completar o clasificar. "columnas" + "filas". IMPORTANTE: Las celdas que el alumno debe completar DEBEN ser strings vacíos (""). NUNCA concatenar columnas.
 - "verdadero_falso": afirmaciones para evaluar con V/F. Array "afirmaciones".
-- "preguntas_comprension": preguntas abiertas de comprensión. Campo "enunciado" (intro opcional) + array "preguntas" con cada pregunta como string. NUNCA pongas las preguntas dentro del enunciado — deben ir en el array "preguntas".
-- "ordenar_secuencia": consigna para ordenar pasos o etapas de un proceso. Solo "enunciado".
+- "preguntas_comprension": preguntas abiertas de comprensión. Campo "enunciado" (intro opcional, ej: "Respondé:"). Las preguntas van en el array "preguntas", cada una como string. PROHIBIDO poner las preguntas dentro del enunciado.
+- "ordenar_secuencia": consigna para ordenar pasos o etapas de un proceso. IMPORTANTE: El "enunciado" DEBE incluir la lista de elementos a ordenar (ej: "Ordená estos pasos: A, B, C").
 - "describir_con_palabras": consigna de descripción libre. Solo "enunciado".`
 
     : contenido.area === "Ciencias Sociales"
     ? `TIPOS DE EJERCICIO DISPONIBLES (elegir con variedad):
 - "completar_oraciones": completar espacios con términos o datos. Array "oraciones" con _______ (5+ guiones).
-- "tabla": tabla para completar o comparar. "columnas" + "filas" (string vacío "" = celda vacía). NUNCA concatenar columnas.
+- "tabla": tabla para completar o comparar. "columnas" + "filas". IMPORTANTE: Las celdas que el alumno debe completar DEBEN ser strings vacíos (""). NUNCA concatenar columnas.
 - "verdadero_falso": afirmaciones para evaluar con V/F. Array "afirmaciones".
-- "preguntas_comprension": preguntas abiertas de comprensión. Campo "enunciado" (intro opcional) + array "preguntas" con cada pregunta como string. NUNCA pongas las preguntas dentro del enunciado — deben ir en el array "preguntas".
-- "ordenar_secuencia": consigna para ordenar hechos o etapas. Solo "enunciado".${esHistoria ? `
+- "preguntas_comprension": preguntas abiertas de comprensión. Campo "enunciado" (intro opcional, ej: "Respondé:"). Las preguntas van en el array "preguntas", cada una como string. PROHIBIDO poner las preguntas dentro del enunciado.
+- "ordenar_secuencia": consigna para ordenar hechos o etapas. IMPORTANTE: El "enunciado" DEBE incluir la lista de elementos a ordenar (ej: "Ordená estos hechos: A, B, C").${esHistoria ? `
 - "linea_de_tiempo": consigna para ubicar hechos en una línea de tiempo. Solo si el contenido es de Historia. Solo "enunciado".` : ""}${esGeografia ? `
 - "ubicar_en_mapa": consigna para ubicar elementos usando un mapa. La consigna debe aclarar "usando un mapa". Solo si el contenido es de Geografía. Solo "enunciado".` : ""}`
 
     : `TIPOS DE EJERCICIO DISPONIBLES:
 - "completar_oraciones": array "oraciones" con _______ (5+ guiones).
-- "tabla": "columnas" + "filas" con "" para celdas vacías. NUNCA concatenar columnas.
+- "tabla": "columnas" + "filas". IMPORTANTE: Las celdas que el alumno debe completar DEBEN ser strings vacíos (""). NUNCA concatenar columnas.
 - "verdadero_falso": array "afirmaciones" para V/F.
-- "preguntas_comprension": array "preguntas" con cada pregunta como string. NUNCA pongas las preguntas dentro del enunciado.`;
+- "preguntas_comprension": array "preguntas" con cada pregunta como string. PROHIBIDO poner las preguntas dentro del enunciado.`;
 
   const obligatorio = contenido.area === "Matemática"
     ? "- OBLIGATORIO: incluí al menos 1 ejercicio de tipo situacion_problematica. Este ejercicio obligatorio cuenta dentro del total indicado arriba."
@@ -404,22 +404,24 @@ function buildCierrePrompt(contenido, ctx, feedback, indicadores) {
     ? `TIPOS DE EJERCICIO DISPONIBLES para los peldaños (elegir con variedad):
 - "completar_oraciones": array "oraciones" con _______ (5+ guiones).
 - "situacion_problematica": problema contextualizado. Solo "enunciado".
-- "tabla": "columnas" + "filas" con "" para celdas vacías. NUNCA concatenar columnas.
+- "tabla": "columnas" + "filas". IMPORTANTE: Las celdas que el alumno debe completar DEBEN ser strings vacíos (""). NUNCA concatenar columnas.
 - "verdadero_falso": array "afirmaciones" para V/F.
 - "resolver_operaciones": operaciones para resolver. Solo "enunciado".
 - "completar_la_cuenta": operaciones incompletas. Solo "enunciado".${esEstimacion ? '\n- "estimacion": consigna de estimación. Solo "enunciado".' : ""}`
     : (contenido.area === "Ciencias Naturales" || contenido.area === "Ciencias Sociales")
     ? `TIPOS DE EJERCICIO DISPONIBLES para los peldaños (elegir con variedad):
 - "completar_oraciones": array "oraciones" con _______ (5+ guiones).
-- "tabla": "columnas" + "filas" con "" para celdas vacías. NUNCA concatenar columnas.
+- "tabla": "columnas" + "filas". IMPORTANTE: Las celdas que el alumno debe completar DEBEN ser strings vacíos (""). NUNCA concatenar columnas.
 - "verdadero_falso": array "afirmaciones" para V/F.
-- "preguntas_comprension": array "preguntas" con cada pregunta como string.
+- "preguntas_comprension": array "preguntas" con cada pregunta como string. PROHIBIDO poner las preguntas dentro del enunciado.
+- "ordenar_secuencia": consigna para ordenar pasos o hechos. IMPORTANTE: El "enunciado" DEBE incluir la lista de elementos a ordenar (ej: "Ordená estos pasos: A, B, C").
 - "describir_con_palabras": consigna de descripción libre. Solo "enunciado".${esHistoria ? '\n- "linea_de_tiempo": consigna para línea de tiempo. Solo "enunciado".' : ""}${esGeografia ? '\n- "ubicar_en_mapa": consigna para ubicar en mapa. Solo "enunciado".' : ""}`
     : `TIPOS DE EJERCICIO DISPONIBLES para los peldaños:
 - "completar_oraciones": array "oraciones" con _______ (5+ guiones).
-- "tabla": "columnas" + "filas" con "" para celdas vacías.
+- "tabla": "columnas" + "filas". IMPORTANTE: Las celdas que el alumno debe completar DEBEN ser strings vacíos ("").
 - "verdadero_falso": array "afirmaciones" para V/F.
-- "preguntas_comprension": array "preguntas" con cada pregunta como string.`;
+- "preguntas_comprension": array "preguntas" con cada pregunta como string. PROHIBIDO poner las preguntas dentro del enunciado.
+- "ordenar_secuencia": consigna para ordenar pasos o hechos. IMPORTANTE: El "enunciado" DEBE incluir la lista de elementos a ordenar (ej: "Ordená estos pasos: A, B, C").`;
 
   return `Sos un docente experto en nivel primario de la Provincia de Buenos Aires.
 Generá una ficha de CIERRE / INTEGRACIÓN para:
@@ -445,7 +447,7 @@ CRITERIOS:
 - El "ejercicio" de cada peldaño es un objeto tipado con los mismos tipos disponibles que en práctica
 Asignación de demanda cognitiva por nivel (obligatorio):
 - Nivel 1 → demanda baja: elegí entre verdadero_falso, completar_oraciones, tabla
-- Nivel 2 → demanda media: elegí entre situacion_problematica, ordenar_secuencia, preguntas_comprension
+- Nivel 2 → demanda media: elegí entre situacion_problematica, ordenar_secuencia, preguntas_comprension. Para ordenar_secuencia, el "enunciado" DEBE incluir la lista de elementos a ordenar (ej: "Ordená estos pasos: A, B, C").
 - Nivel 3 → demanda alta: el ejercicio debe exigir justificar, crear o producir. Tipos válidos: inventar_el_problema, describir_con_palabras, causa_y_consecuencia, texto_libre, dibujar_y_explicar. NUNCA uses verdadero_falso ni completar_oraciones en Nivel 3.
 - Punto de descanso → siempre preguntas_comprension con una sola pregunta de reflexión que mire hacia lo aprendido en la ficha.
 - El campo "andamiaje" va dentro de cada peldaño: solo Nivel 1 puede tener valor (si nivel es "Necesita más apoyo"), el resto: null
@@ -522,28 +524,29 @@ function buildGeneratorPrompt(contenido, tipoFicha, feedback = null, indicadores
     : contenido.area === "Ciencias Naturales"
     ? `TIPOS DE EJERCICIO DISPONIBLES (elegir con variedad):
 - "completar_oraciones": completar espacios con términos o conceptos. Array "oraciones" con _______ (5+ guiones).
-- "tabla": tabla para completar o clasificar. "columnas" + "filas" (string vacío "" = celda vacía). NUNCA concatenar columnas.
+- "tabla": tabla para completar o clasificar. "columnas" + "filas". IMPORTANTE: Las celdas que el alumno debe completar DEBEN ser strings vacíos (""). NUNCA concatenar columnas.
 - "verdadero_falso": afirmaciones para evaluar con V/F. Array "afirmaciones".
-- "preguntas_comprension": preguntas abiertas de comprensión. Campo "enunciado" (intro opcional) + array "preguntas" con cada pregunta como string. NUNCA pongas las preguntas dentro del enunciado — deben ir en el array "preguntas".
-- "ordenar_secuencia": consigna para ordenar pasos o etapas de un proceso. Solo "enunciado".
+- "preguntas_comprension": preguntas abiertas de comprensión. Campo "enunciado" (intro opcional, ej: "Respondé:"). Las preguntas van en el array "preguntas", cada una como string. PROHIBIDO poner las preguntas dentro del enunciado.
+- "ordenar_secuencia": consigna para ordenar pasos o etapas de un proceso. IMPORTANTE: El "enunciado" DEBE incluir la lista de elementos a ordenar (ej: "Ordená estos pasos: A, B, C").
 - "describir_con_palabras": consigna de descripción libre. Solo "enunciado".`
 
     : contenido.area === "Ciencias Sociales"
     ? `TIPOS DE EJERCICIO DISPONIBLES (elegir con variedad):
 - "completar_oraciones": completar espacios con términos o datos. Array "oraciones" con _______ (5+ guiones).
-- "tabla": tabla para completar o comparar. "columnas" + "filas" (string vacío "" = celda vacía). NUNCA concatenar columnas.
+- "tabla": tabla para completar o comparar. "columnas" + "filas". IMPORTANTE: Las celdas que el alumno debe completar DEBEN ser strings vacíos (""). NUNCA concatenar columnas.
 - "verdadero_falso": afirmaciones para evaluar con V/F. Array "afirmaciones".
-- "preguntas_comprension": preguntas abiertas de comprensión. Campo "enunciado" (intro opcional) + array "preguntas" con cada pregunta como string. NUNCA pongas las preguntas dentro del enunciado — deben ir en el array "preguntas".
-- "ordenar_secuencia": consigna para ordenar hechos o etapas. Solo "enunciado".${esHistoria ? `
+- "preguntas_comprension": preguntas abiertas de comprensión. Campo "enunciado" (intro opcional, ej: "Respondé:"). Las preguntas van en el array "preguntas", cada una como string. PROHIBIDO poner las preguntas dentro del enunciado.
+- "ordenar_secuencia": consigna para ordenar hechos o etapas. IMPORTANTE: El "enunciado" DEBE incluir la lista de elementos a ordenar (ej: "Ordená estos hechos: A, B, C").${esHistoria ? `
 - "linea_de_tiempo": consigna para ubicar hechos en una línea de tiempo. Solo si el contenido es de Historia. Solo "enunciado".` : ""}${esGeografia ? `
 - "ubicar_en_mapa": consigna para ubicar elementos usando un mapa. La consigna debe aclarar "usando un mapa". Solo si el contenido es de Geografía. Solo "enunciado".` : ""}`
 
     // Fallback genérico para otras áreas
     : `TIPOS DE EJERCICIO DISPONIBLES:
 - "completar_oraciones": array "oraciones" con _______ (5+ guiones).
-- "tabla": "columnas" + "filas" con "" para celdas vacías. NUNCA concatenar columnas.
+- "tabla": "columnas" + "filas". IMPORTANTE: Las celdas que el alumno debe completar DEBEN ser strings vacíos (""). NUNCA concatenar columnas.
 - "verdadero_falso": array "afirmaciones" para V/F.
-- "preguntas_comprension": array "preguntas" con cada pregunta como string. NUNCA pongas las preguntas dentro del enunciado.`;
+- "preguntas_comprension": array "preguntas" con cada pregunta como string. PROHIBIDO poner las preguntas dentro del enunciado.
+- "ordenar_secuencia": consigna para ordenar pasos o hechos. IMPORTANTE: El "enunciado" DEBE incluir la lista de elementos a ordenar (ej: "Ordená estos pasos: A, B, C").`;
 
   return `Sos un docente experto en nivel primario de la Provincia de Buenos Aires.
 Generá un recurso educativo para:

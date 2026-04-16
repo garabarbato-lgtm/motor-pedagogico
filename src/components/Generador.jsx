@@ -686,7 +686,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
           indicadores_de_avance: registro.indicadores_de_avance || [],
           contexto_pedagogico,
         },
-        tipoFicha: "ficha de trabajo",
+        tipoFicha: momento === "Cierre / Integración" ? "ficha de cierre" : "ficha de trabajo",
       };
       registroParaFicha = registro;
     }

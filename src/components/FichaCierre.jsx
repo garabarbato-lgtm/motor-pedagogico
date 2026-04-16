@@ -41,6 +41,8 @@ export default function FichaCierre({ ficha, registro }) {
 
   return (
     <div
+      ref={refFicha}
+      id="ficha-imprimible"
       className="ficha"
       style={{
         display: "flex",
