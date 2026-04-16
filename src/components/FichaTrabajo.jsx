@@ -247,7 +247,15 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
   if (!ficha || !registro) return null;
 
-  if (ficha?.tipo_ficha === 'presentacion') {
+  const esDosHojasObligatorio =
+    ficha.tipo_ficha === "presentacion" &&
+    (
+      registro.area === "Ciencias Sociales" ||
+      registro.area === "Ciencias Naturales" ||
+      (registro.area === "Prácticas del Lenguaje" && registro.bloque === "Lectura de textos")
+    );
+
+  if (ficha?.tipo_ficha === 'presentacion' && !esDosHojasObligatorio) {
     return (
       <FichaPresenta
         ficha={ficha}
@@ -260,7 +268,6 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   }
 
   const isPDL = registro.area === "Prácticas del Lenguaje";
-  const esDosHojas = isPDL || registro.area === "Ciencias Sociales";
   const tituloTexto = (() => {
     const limpio = (fichaLocal.titulo || "")
       .replace(/\*\*(.*?)\*\*/g, "$1")
@@ -300,7 +307,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
 
   // ── Detección de overflow y recorte automático ──
   useEffect(() => {
-    if (esDosHojas) return;
+    if (esDosHojasObligatorio) return;
     const el = refFicha.current;
     if (!el) return;
 
@@ -318,7 +325,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     if (!ejerciciosOcultos.has(1)) {
       setEjerciciosOcultos(prev => new Set([...prev, 1]));
     }
-  }, [fichaLocal, mostrarReflexion, ejerciciosOcultos, esDosHojas]);
+  }, [fichaLocal, mostrarReflexion, ejerciciosOcultos, esDosHojasObligatorio]);
 
   const setRef = (key) => (el) => { sectionRefs.current[key] = el; };
 
@@ -449,7 +456,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
     return !!ejercicio.enunciado;
   };
 
-  const renderEjercicioItem = (ejercicio, idx) => {
+  const renderEjercicioItem = (ejercicio, idx, nRespuesta = 3) => {
     if (!ejercicio || !ejercicioTieneContenido(ejercicio)) return null;
     const keyEjercicio = `ejercicio_${idx}`;
     const editando = editandoCampo === keyEjercicio && editDraft;
@@ -612,7 +619,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
               <div key={j}>
                 <div style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, marginBottom: 4 }}
                   dangerouslySetInnerHTML={renderHTMLConNegrita(`${j + 1}. ${pregunta}`)} />
-                <LineasRespuesta n={3} />
+                <LineasRespuesta n={nRespuesta} />
               </div>
             ))}
           </div>
@@ -883,15 +890,168 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
         {/* ── FICHA + BARRA LATERAL ── */}
         <div style={{ display: "flex", alignItems: "flex-start", gap: 0 }}>
 
-          {/* Ficha imprimible */}
+          {esDosHojasObligatorio ? (
+            <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+              {/* ── Hoja 1 ── */}
+              <div ref={refFicha} id="ficha-imprimible" className="ficha hoja-uno" style={{
+                background: C.fondo,
+                border: `2.5px solid ${C.borderFuerte}`,
+                borderRadius: 10,
+                width: "190mm",
+                minHeight: "277mm",
+                marginBottom: "10mm",
+                overflow: "visible",
+                fontFamily: "'Lexend Deca', sans-serif",
+                display: "flex",
+                flexDirection: "column",
+              }}>
+                {/* Encabezado Hoja 1: título + emojis + campos */}
+                <div style={{ background: C.fondoHeader, borderBottom: `2.5px solid ${C.borderFuerte}`, borderRadius: "8px 8px 0 0", padding: "10px 16px" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 10 }}>
+                    <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojiLeft}</span>
+                    <h2 style={{ fontSize: 26, fontWeight: 800, margin: 0, lineHeight: 1.25, letterSpacing: "-0.01em", textAlign: "center" }}>
+                      {renderTitulo(tituloTexto)}
+                    </h2>
+                    <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojiRight}</span>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
+                    {["Nombre y apellido", "Fecha", "Grado / Sección"].map(label => (
+                      <div key={label}>
+                        <p className="dato-label" style={{ fontSize: 9, color: C.muted, fontWeight: 700, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</p>
+                        <div style={{ borderBottom: `2px solid ${C.borderFuerte}`, height: 20 }} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* Cuerpo Hoja 1: solo explicación/texto */}
+                <div className="cuerpo-ficha ficha-contenido" style={{ padding: "10px 16px", flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
+                  {isPDL && registro.bloque === "Lectura de textos" ? (
+                    <div className="seccion">
+                      <SeccionHeader numero="1" titulo="Leemos" icono="📖" />
+                      <div ref={setRef("texto")}>
+                        {editandoCampo === "texto"
+                          ? renderTextarea(6)
+                          : <div className="explicacion" style={{ fontSize: 11, color: C.texto, lineHeight: 1.65, margin: 0, whiteSpace: "pre-line" }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.texto)} />
+                        }
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="seccion">
+                      <SeccionHeader numero="1" titulo={pregExplicacion || "Leemos juntos"} icono="📖" />
+                      {fichaLocal.concepto_clave && (
+                        <div style={{ background: "#eafaf4", borderLeft: "3px solid #00c48c", borderRadius: "0 6px 6px 0", padding: "8px 12px", marginBottom: 8 }}>
+                          <div ref={setRef("concepto_clave")}>
+                            {editandoCampo === "concepto_clave"
+                              ? renderTextarea(2)
+                              : <div className="concepto-clave-texto" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0, fontWeight: 500 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.concepto_clave)} />
+                            }
+                          </div>
+                        </div>
+                      )}
+                      <div ref={setRef("explicacion")}>
+                        {editandoCampo === "explicacion"
+                          ? renderTextarea(3)
+                          : <div className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.explicacion)} />
+                        }
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {/* Footer Hoja 1 */}
+                <div style={{ borderTop: `2px solid ${C.borderFuerte}`, borderRadius: "0 0 8px 8px", padding: "6px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: C.fondoHeader }}>
+                  <span style={{ fontSize: 13, fontFamily: "'Lexend Deca', sans-serif", color: C.muted }}>1</span>
+                  <span style={{ fontSize: 13, fontFamily: "'Lexend Deca', sans-serif", color: C.muted }}>{gradoDisplay} · {registro.area} · {registro.bloque}</span>
+                </div>
+              </div>
+
+              {/* ── Hoja 2 ── */}
+              <div className="ficha hoja-dos" style={{
+                background: C.fondo,
+                border: `2.5px solid ${C.borderFuerte}`,
+                borderRadius: 10,
+                width: "190mm",
+                minHeight: "277mm",
+                overflow: "visible",
+                fontFamily: "'Lexend Deca', sans-serif",
+                display: "flex",
+                flexDirection: "column",
+              }}>
+                {/* Encabezado Hoja 2: solo campos, sin título ni emojis */}
+                <div style={{ background: C.fondoHeader, borderBottom: `2.5px solid ${C.borderFuerte}`, borderRadius: "8px 8px 0 0", padding: "10px 16px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
+                    {["Nombre y apellido", "Fecha", "Grado / Sección"].map(label => (
+                      <div key={label}>
+                        <p className="dato-label" style={{ fontSize: 9, color: C.muted, fontWeight: 700, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</p>
+                        <div style={{ borderBottom: `2px solid ${C.borderFuerte}`, height: 20 }} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* Cuerpo Hoja 2: ejercicios con n=5 */}
+                <div className="cuerpo-ficha ficha-contenido" style={{ padding: "10px 16px", flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
+                  {isPDL && registro.bloque === "Lectura de textos" ? (
+                    <div className="seccion">
+                      <SeccionHeader numero="2" titulo="Respondé" icono="✍️" />
+                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                        {Array.isArray(fichaLocal.preguntas) && fichaLocal.preguntas.map((preg, idx) => (
+                          <div key={idx}>
+                            <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
+                              <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
+                              <div ref={setRef(`pregunta_${idx}`)} style={{ flex: 1 }}>
+                                {editandoCampo === `pregunta_${idx}`
+                                  ? renderTextarea(2)
+                                  : <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(preg)} />
+                                }
+                              </div>
+                            </div>
+                            <LineasRespuesta n={5} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="seccion">
+                      <SeccionHeader numero="2" titulo="Tu turno" icono="✏️" />
+                      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                        {Array.isArray(fichaLocal.ejercicios) && fichaLocal.ejercicios.length > 0
+                          ? fichaLocal.ejercicios.map((ejercicio, idx) =>
+                              ejerciciosOcultos.has(idx) ? null : renderEjercicioItem(ejercicio, idx, 5)
+                            )
+                          : itemsLocal.map(({ num, texto }, idx) => (
+                            <div key={num}>
+                              <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
+                                <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{num}.</span>
+                                <div ref={setRef(`item_${idx}`)} style={{ flex: 1 }}>
+                                  {editandoCampo === `item_${idx}`
+                                    ? renderTextarea(2)
+                                    : <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(texto)} />
+                                  }
+                                </div>
+                              </div>
+                              {!tieneRespuestaEmbebida(texto) && <RecuadroRespuesta />}
+                            </div>
+                          ))
+                        }
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {/* Footer Hoja 2 */}
+                <div style={{ borderTop: `2px solid ${C.borderFuerte}`, borderRadius: "0 0 8px 8px", padding: "6px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: C.fondoHeader }}>
+                  <span style={{ fontSize: 13, fontFamily: "'Lexend Deca', sans-serif", color: C.muted }}>2</span>
+                  <span style={{ fontSize: 13, fontFamily: "'Lexend Deca', sans-serif", color: C.muted }}>{gradoDisplay} · {registro.area} · {registro.bloque}</span>
+                </div>
+              </div>
+            </div>
+          ) : (
           <div ref={refFicha} id="ficha-imprimible" className="ficha" style={{
             flex: 1,
             background: C.fondo,
             border: `2.5px solid ${C.borderFuerte}`,
             borderRadius: 10,
             minHeight: "277mm",
-            maxHeight: esDosHojas ? "574mm" : "277mm",
-            overflow: esDosHojas ? "visible" : "hidden",
+            maxHeight: "277mm",
+            overflow: "hidden",
             fontFamily: "'Lexend Deca', sans-serif",
           }}>
 
@@ -1145,11 +1305,12 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
               display: "flex", justifyContent: "space-between", alignItems: "center",
               background: C.fondoHeader
             }}>
-              <span style={{ fontSize: 10, color: C.muted }}>tiza. · Diseño Curricular 2018</span>
-              <span style={{ fontSize: 10, color: C.muted }}>{gradoDisplay} · {registro.area} · {registro.bloque}</span>
+              <span style={{ fontSize: 13, fontFamily: "'Lexend Deca', sans-serif", color: C.muted }}>tiza. · Diseño Curricular 2018</span>
+              <span style={{ fontSize: 13, fontFamily: "'Lexend Deca', sans-serif", color: C.muted }}>{gradoDisplay} · {registro.area} · {registro.bloque}</span>
             </div>
 
           </div>
+          )} {/* end esDosHojasObligatorio */}
 
           {/* ── Barra lateral de edición ── */}
           <div className="sidebar-edicion" style={{
@@ -1213,6 +1374,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
         @media print {
           * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           @page { size: A4; margin: 10mm; }
+          .hoja-dos { page-break-before: always; }
 
           html, body { margin: 0; padding: 0; width: 190mm; }
 

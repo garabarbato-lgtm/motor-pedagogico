@@ -83,12 +83,13 @@ export function SeccionHeader({ numero, titulo, icono }) {
   return (
     <div style={{
       display: "flex", alignItems: "center", gap: 10,
-      marginBottom: 8, paddingBottom: 6,
+      marginBottom: 8, padding: "5px 8px",
+      background: "#eafaf4", borderRadius: 6,
       borderBottom: `2px solid ${C.borderFuerte}`
     }}>
       <div style={{
         width: 22, height: 22, borderRadius: "50%",
-        background: C.borderFuerte, color: "#ffffff",
+        background: C.acento, color: "#ffffff",
         display: "flex", alignItems: "center", justifyContent: "center",
         fontSize: 11, fontWeight: 800, flexShrink: 0
       }}>
