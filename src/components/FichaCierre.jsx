@@ -138,12 +138,10 @@ export default function FichaCierre({ ficha, registro }) {
                       style={{
                         background: badgeColor,
                         color: "#ffffff",
-                        fontSize: 7,
+                        fontSize: 13,
                         fontWeight: 700,
                         borderRadius: 3,
                         padding: "3px 8px",
-                        whiteSpace: "nowrap",
-                        flexShrink: 0,
                         display: "inline-flex",
                         alignItems: "center",
                         justifyContent: "center",
