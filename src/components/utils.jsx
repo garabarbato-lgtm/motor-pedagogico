@@ -217,13 +217,14 @@ export function Andamiaje({ text }) {
   const { containerStyle, labelStyle } = useMemo(getAndamiajeStyle, []);
   return (
     <div style={{
-      width: 110,
+      width: 170,
       flexShrink: 0,
       alignSelf: "flex-start",
+      fontFamily: "'Lexend Deca', sans-serif",
       ...containerStyle,
     }}>
-      <span style={labelStyle}>Recordá</span>
-      <span style={{ fontSize: 8, lineHeight: 1.6 }}>{text}</span>
+      <span style={{ ...labelStyle, fontSize: 11, fontFamily: "'Lexend Deca', sans-serif" }}>Recordá</span>
+      <span style={{ fontSize: 13, lineHeight: 1.5, fontFamily: "'Lexend Deca', sans-serif", display: "block" }}>{text}</span>
     </div>
   );
 }

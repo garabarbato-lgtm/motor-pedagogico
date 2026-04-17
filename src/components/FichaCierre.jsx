@@ -60,11 +60,11 @@ export default function FichaCierre({ ficha, registro }) {
       {/* ── Encabezado (flex: 15) ── */}
       <div
         style={{
-          flex: 15,
+          flex: 19,
           background: C.fondoHeader,
           borderBottom: `2px solid ${C.borderFuerte}`,
           borderRadius: "8px 8px 0 0",
-          padding: "10px 18px",
+          padding: "12px 18px",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -84,7 +84,7 @@ export default function FichaCierre({ ficha, registro }) {
               <p style={{ fontSize: 9, color: C.muted, fontWeight: 700, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em" }}>
                 {label}
               </p>
-              <div style={{ borderBottom: `2px solid ${C.borderFuerte}`, height: 20 }} />
+              <div style={{ borderBottom: `2px solid ${C.borderFuerte}`, height: 28 }} />
             </div>
           ))}
         </div>
@@ -141,16 +141,19 @@ export default function FichaCierre({ ficha, registro }) {
                         fontSize: 7,
                         fontWeight: 700,
                         borderRadius: 3,
-                        padding: "2px 6px",
+                        padding: "3px 8px",
                         whiteSpace: "nowrap",
                         flexShrink: 0,
-                        marginTop: 2,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        lineHeight: 1,
                       }}
                     >
                       {peldano.rotulo}
                     </span>
                     {peldano.nombre && (
-                      <span style={{ fontSize: 9, color: C.texto }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: C.texto, textDecoration: "underline", textUnderlineOffset: 2 }}>
                         {peldano.nombre}
                       </span>
                     )}
