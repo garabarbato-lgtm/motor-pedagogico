@@ -73,6 +73,18 @@ function HowItWorks({ onEmpezar }) {
   );
 }
 
+function TizaSpan({ size = "inherit", color = "#004733" }) {
+  return (
+    <span style={{ fontFamily: "'Nunito', sans-serif", fontWeight: 900, fontSize: size, letterSpacing: "-0.02em" }}>
+      <span style={{ color: color }}>t</span>
+      <span style={{ color: C.acento }}>i</span>
+      <span style={{ color: color }}>z</span>
+      <span style={{ color: C.acento }}>a</span>
+      <span style={{ color: color }}>.</span>
+    </span>
+  );
+}
+
 function AboutTiza() {
   return (
     <div className="max-w-3xl mx-auto px-6 py-20 text-center">
@@ -89,13 +101,13 @@ function AboutTiza() {
           fontSize: "clamp(32px, 4vw, 48px)", 
           fontWeight: 300, color: "#004733", marginTop: "24px" 
         }}>
-          ¿Qué es <span style={{ fontWeight: 700 }}>tiza.</span>?
+          ¿Qué es <TizaSpan size="0.95em" />?
         </h2>
       </div>
 
       <div style={{ color: "#4a6b60", fontSize: "18px", lineHeight: "1.8", textAlign: "left" }} className="space-y-8">
         <p>
-          <span style={{ fontWeight: 700, color: "#004733" }}>tiza.</span> es una herramienta pensada para docentes de primaria de la Provincia de Buenos Aires que quieren preparar fichas de trabajo sin perder horas en el proceso.
+          <TizaSpan /> es una herramienta pensada para docentes de primaria de la Provincia de Buenos Aires que quieren preparar fichas de trabajo sin perder horas en el proceso.
         </p>
         
         <p>
@@ -109,7 +121,7 @@ function AboutTiza() {
         <div>
           <h3 style={{ fontSize: "24px", fontWeight: 700, color: "#004733", marginBottom: "16px" }}>¿Por qué existe?</h3>
           <p>
-            Porque preparar materiales de calidad lleva tiempo que los docentes no siempre tienen. <span style={{ fontWeight: 700 }}>tiza.</span> no reemplaza tu criterio pedagógico — te da un punto de partida sólido que podés ajustar antes de imprimir.
+            Porque preparar materiales de calidad lleva tiempo que los docentes no siempre tienen. <TizaSpan /> no reemplaza tu criterio pedagógico — te da un punto de partida sólido que podés ajustar antes de imprimir.
           </p>
         </div>
       </div>
