@@ -40,53 +40,33 @@ function HowItWorks({ onEmpezar }) {
     }
   ];
 
-  const sectionRef = useRef(null);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(".step-card", {
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 85%",
-        },
-        opacity: 0,
-        y: 20,
-        stagger: 0.1,
-        duration: 0.6,
-        ease: "power2.out"
-      });
-    }, sectionRef);
-    return () => ctx.revert();
-  }, []);
-
   return (
-    <div ref={sectionRef} className="max-w-6xl mx-auto px-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+    <div className="max-w-6xl mx-auto px-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
         {steps.map((step, i) => (
-          <div key={i} className="step-card flex flex-col items-center text-center group">
-            <div className="w-14 h-14 bg-[#f0fdf9] rounded-2xl border border-[#b0e8d4] flex items-center justify-center text-[#004733] mb-5 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-sm">
+          <div key={i} className="flex flex-col items-center text-center group">
+            <div className="w-16 h-16 bg-[#f0fdf9] rounded-2xl border border-[#b0e8d4] flex items-center justify-center text-[#004733] mb-6 transition-transform duration-300 group-hover:scale-110 shadow-sm">
               {step.icon}
             </div>
-            <h3 className="text-base font-bold text-[#2B2B2B] mb-2">{step.title}</h3>
-            <p className="text-sm text-[#4a6b60] leading-relaxed max-w-[240px]">
+            <h3 className="text-lg font-bold text-[#2B2B2B] mb-3">{step.title}</h3>
+            <p className="text-sm text-[#4a6b60] leading-relaxed max-w-[260px]">
               {step.desc}
             </p>
           </div>
         ))}
       </div>
       
-      {/* Botón de Refuerzo CTA en la sección Cómo Funciona */}
-      <div className="mt-16 text-center">
+      <div className="mt-20 text-center">
         <button 
           onClick={onEmpezar} 
-          className="group relative inline-flex items-center gap-2 px-8 py-4 bg-[#004733] text-white rounded-xl font-bold text-lg shadow-xl hover:bg-[#00603d] transition-all duration-200 active:scale-95"
+          className="group relative inline-flex items-center gap-3 px-10 py-5 bg-[#00c48c] text-[#004733] rounded-2xl font-bold text-xl shadow-lg hover:shadow-2xl hover:bg-[#00d498] transition-all duration-300 active:scale-95"
           style={{ cursor: "pointer" }}
         >
-          <span>Probar el motor ahora</span>
-          <Sparkles className="w-5 h-5 text-[#00c48c] group-hover:rotate-12 transition-transform" />
+          <span>Crear mi primera ficha</span>
+          <Sparkles className="w-6 h-6 group-hover:rotate-12 transition-transform" />
         </button>
-        <p className="mt-4 text-xs text-[#6B8C7D] font-medium uppercase tracking-widest">
-          Sin registros · Directo al diseño curricular
+        <p className="mt-6 text-[10px] text-[#6B8C7D] font-bold uppercase tracking-[0.2em]">
+          Sin registros · Alineado al Diseño Curricular
         </p>
       </div>
     </div>
@@ -123,24 +103,10 @@ function StepSearch({ typedText, searchFocused }) {
         transition: "border-color 0.2s, box-shadow 0.2s",
       }}>
         <LupaIcon active={searchFocused} />
-        <span style={{
-          fontSize: 14, flex: 1, minHeight: 20,
-          color: isTyping ? "#004733" : "#A0BDB5",
-          letterSpacing: "-0.01em",
-        }}>
+        <span style={{ fontSize: 14, flex: 1, minHeight: 20, color: isTyping ? "#004733" : "#A0BDB5" }}>
           {isTyping ? typedText : "Ej: fracciones 5to..."}
         </span>
       </div>
-      {!isTyping && (
-        <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
-          {["Fracciones 4°", "Sistema digestivo 6°"].map(chip => (
-            <span key={chip} style={{
-              border: "1px solid #00c48c", borderRadius: 99,
-              color: "#004733", fontSize: 11, padding: "5px 12px",
-            }}>{chip}</span>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
@@ -158,22 +124,13 @@ function StepResults() {
   ];
   return (
     <div style={{ padding: "20px 18px", background: "#F0F4F2", position: "relative" }}>
-      <div style={{
-        display: "flex", alignItems: "center", gap: 10,
-        borderRadius: 12, border: "1.5px solid #00c48c",
-        padding: "14px 18px", background: "#fff",
-      }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, borderRadius: 12, border: "1.5px solid #00c48c", padding: "14px 18px", background: "#fff" }}>
         <LupaIcon active={true} />
         <span style={{ fontSize: 14, color: "#004733" }}>{QUERY}</span>
       </div>
       <div style={{ background: "#fff", borderRadius: 12, marginTop: 6, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
         {results.map((r, i) => (
-          <div key={i} style={{
-            padding: "12px 16px",
-            background: i === 0 && phase >= 2 ? "#E6FAF3" : "#fff",
-            borderBottom: i === 0 ? "1.5px solid #F0F4F2" : "none",
-            borderRadius: i === 0 ? "12px 12px 0 0" : "0 0 12px 12px",
-          }}>
+          <div key={i} style={{ padding: "12px 16px", background: i === 0 && phase >= 2 ? "#E6FAF3" : "#fff", borderBottom: i === 0 ? "1.5px solid #F0F4F2" : "none", borderRadius: i === 0 ? "12px 12px 0 0" : "0 0 12px 12px" }}>
             <div style={{ fontSize: 10, color: "#6B8C7D" }}>{r.meta}</div>
             <div style={{ fontSize: 13, fontWeight: 600, color: "#004733" }}>{r.name}</div>
           </div>
@@ -218,7 +175,6 @@ function DemoInteractiva() {
   const [step, setStep] = useState(0);
   const [fading, setFading] = useState(false);
   const [typedText, setTypedText] = useState("");
-
   useEffect(() => {
     if (step !== 0) { setTypedText(""); return; }
     let i = 0;
@@ -229,7 +185,6 @@ function DemoInteractiva() {
     }, 100);
     return () => clearInterval(interval);
   }, [step]);
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setFading(true);
@@ -240,7 +195,6 @@ function DemoInteractiva() {
     }, STEP_DURATIONS[step]);
     return () => clearTimeout(timer);
   }, [step]);
-
   return (
     <div style={{ borderRadius: 20, overflow: "hidden", border: "1px solid #D4E6DE", boxShadow: "0 20px 40px rgba(0,40,30,0.1)", background: "#fff", opacity: fading ? 0.6 : 1, transition: "opacity 0.3s" }}>
       <div style={{ background: "#004733", padding: "10px", textAlign: "center", fontSize: 10, color: "rgba(255,255,255,0.5)" }}>fichastiza.app</div>
@@ -256,7 +210,6 @@ function DemoInteractiva() {
 
 export default function Landing({ onEmpezar }) {
   const [scrolled, setScrolled] = useState(false);
-  const [btnHover, setBtnHover] = useState(false);
 
   const heroBadgeRef = useRef(null);
   const heroTitleRef = useRef(null);
@@ -265,79 +218,69 @@ export default function Landing({ onEmpezar }) {
   const heroDemoRef = useRef(null);
 
   useEffect(() => {
-    const container = document.getElementById("scroll-container");
-    const onScroll = () => setScrolled(container.scrollTop > 50);
-    container.addEventListener("scroll", onScroll);
-    return () => container.removeEventListener("scroll", onScroll);
+    const onScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
     const targets = [heroBadgeRef, heroTitleRef, heroSubRef, heroBtnRef, heroDemoRef].map(r => r.current).filter(Boolean);
-    gsap.from(targets, { opacity: 0, y: 20, duration: 0.6, ease: "power3.out", stagger: 0.1 });
+    gsap.from(targets, { opacity: 0, y: 20, duration: 0.8, ease: "power3.out", stagger: 0.1 });
   }, []);
 
   return (
-    <div id="scroll-container" style={{ 
+    <div style={{ 
       fontFamily: "'Lexend', sans-serif", 
       width: "100%", 
-      background: C.fondo, 
-      height: "100vh", 
-      overflowY: "auto", 
-      scrollSnapType: "y mandatory",
-      scrollBehavior: "smooth",
-      position: "relative"
+      background: "#ffffff", 
+      minHeight: "100vh"
     }}>
 
       {/* ── NAV FIXED (SIEMPRE VERDE TIZA) ── */}
       <nav style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "14px 40px",
+        padding: "16px 40px",
         background: "#004733",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
       }}>
         <Logo size={32} color="#ffffff" />
-        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-          <button
-            onClick={onEmpezar}
-            style={{
-              fontSize: 13, fontWeight: 700, padding: "10px 24px",
-              borderRadius: 8, border: "none",
-              background: C.acento, color: "#004733", cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(0,196,140,0.3)",
-              transition: "transform 0.1s"
-            }}
-            onMouseDown={e => e.currentTarget.style.transform = "scale(0.96)"}
-            onMouseUp={e => e.currentTarget.style.transform = "scale(1)"}
-          >
-            Generar recurso ✦
-          </button>
-        </div>
+        <button
+          onClick={onEmpezar}
+          style={{
+            fontSize: 14, fontWeight: 700, padding: "10px 24px",
+            borderRadius: 10, border: "none",
+            background: C.acento, color: "#004733", cursor: "pointer",
+            boxShadow: "0 4px 12px rgba(0,196,140,0.2)",
+            transition: "all 0.2s"
+          }}
+          className="hover:scale-105 active:scale-95"
+        >
+          Generar recurso ✦
+        </button>
       </nav>
 
       {/* ── HERO ── */}
       <section style={{ 
-        background: "#ffffff", 
         minHeight: "100vh", 
         display: "flex", 
         alignItems: "center", 
-        justifyContent: "center",
-        scrollSnapAlign: "start",
-        paddingTop: "80px"
+        paddingTop: "100px",
+        paddingBottom: "100px"
       }}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto px-6 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto px-6 w-full">
           <div>
-            <div ref={heroBadgeRef} style={{ display: "inline-block", background: "#e0faf2", color: "#004733", fontSize: 11, fontWeight: 700, textTransform: "uppercase", padding: "6px 16px", borderRadius: 20, marginBottom: 24, border: "1px solid #b0e8d4" }}>
+            <div ref={heroBadgeRef} style={{ display: "inline-block", background: "#e0faf2", color: "#004733", fontSize: 11, fontWeight: 800, textTransform: "uppercase", padding: "6px 16px", borderRadius: 20, marginBottom: 24, border: "1px solid #b0e8d4" }}>
               Diseño Curricular PBA
             </div>
-            <h1 ref={heroTitleRef} style={{ fontSize: "clamp(32px, 4vw, 48px)", fontWeight: 400, color: C.texto, lineHeight: 1.1, marginBottom: 20 }}>
+            <h1 ref={heroTitleRef} style={{ fontSize: "clamp(36px, 5vw, 56px)", fontWeight: 400, color: C.texto, lineHeight: 1.1, marginBottom: 24 }}>
               Lo que tardabas una tarde, ahora son <span style={{ color: C.acento, fontStyle: "italic" }}>diez minutos.</span>
             </h1>
-            <p ref={heroSubRef} style={{ fontSize: 18, color: C.muted, lineHeight: 1.6, marginBottom: 32, maxWidth: 440 }}>
+            <p ref={heroSubRef} style={{ fontSize: 20, color: C.muted, lineHeight: 1.6, marginBottom: 40, maxWidth: 480 }}>
               El motor pedagógico que convierte el DC en recursos listos para el aula.
             </p>
             <div ref={heroBtnRef}>
-              <button onClick={onEmpezar} style={{ fontSize: 16, fontWeight: 700, padding: "16px 32px", borderRadius: 12, border: "none", background: "#004733", color: "#fff", cursor: "pointer", boxShadow: "0 10px 25px rgba(0,71,51,0.2)" }}>
+              <button onClick={onEmpezar} style={{ fontSize: 18, fontWeight: 700, padding: "18px 40px", borderRadius: 14, border: "none", background: "#004733", color: "#fff", cursor: "pointer", boxShadow: "0 10px 25px rgba(0,71,51,0.2)" }} className="hover:translate-y-[-2px] transition-transform">
                 Generar recurso ✦
               </button>
             </div>
@@ -348,33 +291,32 @@ export default function Landing({ onEmpezar }) {
         </div>
         
         {/* Flecha Scroll */}
-        <div style={{ position: "absolute", bottom: 30, left: "50%", transform: "translateX(-50%)", textAlign: "center", color: "#004733", opacity: 0.5 }}>
-          <p style={{ fontSize: 9, fontWeight: 800, textTransform: "uppercase", marginBottom: 4 }}>¿Cómo funciona?</p>
-          <ChevronDown size={20} className="mx-auto" style={{ animation: "bounce 2s infinite" }} />
+        <div style={{ position: "absolute", bottom: 40, left: "50%", transform: "translateX(-50%)", textAlign: "center", color: "#004733", opacity: 0.4 }}>
+          <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", marginBottom: 8, letterSpacing: "0.1em" }}>¿Cómo funciona?</p>
+          <ChevronDown size={24} className="mx-auto" style={{ animation: "bounce 2s infinite" }} />
         </div>
       </section>
 
       {/* ── ¿CÓMO FUNCIONA? ── */}
-      <section style={{ height: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", scrollSnapAlign: "start", background: "#ffffff", borderTop: "1px solid #F0F4F2" }}>
-          <div className="text-center mb-12">
-             <span style={{ fontSize: 11, fontWeight: 800, color: C.acento, background: "#e0faf2", padding: "5px 14px", borderRadius: 20, textTransform: "uppercase" }}>
+      <section style={{ padding: "120px 0", background: "#ffffff", borderTop: "1px solid #F0F4F2" }}>
+          <div className="text-center mb-20">
+             <span style={{ fontSize: 12, fontWeight: 800, color: C.acento, background: "#e0faf2", padding: "6px 16px", borderRadius: 20, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                Simple y Pedagógico
              </span>
-             <h2 className="text-4xl font-light text-[#2B2B2B] mt-4">¿Cómo funciona?</h2>
+             <h2 className="text-5xl font-light text-[#2B2B2B] mt-6 italic">¿Cómo funciona?</h2>
           </div>
           <HowItWorks onEmpezar={onEmpezar} />
       </section>
 
       {/* ── COBERTURA ── */}
-      <section style={{ height: "100vh", display: "flex", alignItems: "center", scrollSnapAlign: "start", background: "#F8FAF9" }}>
-        <div className="w-full">
-          <SloganSlider />
-        </div>
+      <section style={{ padding: "120px 0", background: "#F8FAF9" }}>
+        <SloganSlider />
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{ background: C.btn, padding: "20px", textAlign: "center", scrollSnapAlign: "end" }}>
-        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", margin: 0 }}>
+      <footer style={{ background: C.btn, padding: "40px 20px", textAlign: "center" }}>
+        <Logo size={40} color="rgba(255,255,255,0.2)" className="mx-auto mb-6" />
+        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", margin: 0 }}>
           tiza. motor pedagógico · Basado en el Diseño Curricular PBA 2018
         </p>
       </footer>
@@ -385,8 +327,7 @@ export default function Landing({ onEmpezar }) {
           40% { transform: translateY(-10px); }
           60% { transform: translateY(-5px); }
         }
-        #scroll-container::-webkit-scrollbar { display: none; }
-        #scroll-container { -ms-overflow-style: none; scrollbar-width: none; }
+        html { scroll-behavior: smooth; }
       `}</style>
     </div>
   );
