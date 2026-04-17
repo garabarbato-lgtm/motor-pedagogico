@@ -502,38 +502,64 @@ export default function Landing({ onEmpezar }) {
   }, []);
 
   return (
-    <div style={{ fontFamily: "'Lexend', sans-serif", width: "100%", background: C.fondo, minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+    <div style={{ 
+      fontFamily: "'Lexend', sans-serif", 
+      width: "100%", 
+      background: C.fondo, 
+      height: "100vh", 
+      overflowY: "auto", 
+      scrollSnapType: "y mandatory",
+      scrollBehavior: "smooth"
+    }}>
 
-      {/* ── NAV ── */}
+      {/* ── NAV (Flotante para no interferir con snap) ── */}
       <nav style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "18px 40px",
-        borderBottom: scrolled ? "none" : `0.5px solid ${C.border}`,
-        background: scrolled ? "rgba(0,71,51,0.95)" : C.btn,
+        background: scrolled ? "rgba(0,71,51,0.95)" : "transparent",
         backdropFilter: scrolled ? "blur(8px)" : "none",
         WebkitBackdropFilter: scrolled ? "blur(8px)" : "none",
-        boxShadow: scrolled ? "0 1px 0 rgba(255,255,255,0.1), 0 4px 16px rgba(0,0,0,0.12)" : "none",
-        position: "sticky", top: 0, zIndex: 10,
-        transition: "background 0.3s, box-shadow 0.3s, backdrop-filter 0.3s",
+        boxShadow: scrolled ? "0 4px 16px rgba(0,0,0,0.12)" : "none",
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
+        transition: "background 0.3s, box-shadow 0.3s",
       }}>
-        <Logo size={32} color="#ffffff" />
-        <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
+        <Logo size={32} color={scrolled ? "#ffffff" : "#004733"} />
+        <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+          {scrolled && (
+            <button
+              onClick={onEmpezar}
+              style={{
+                fontSize: 12, fontWeight: 600, padding: "8px 16px",
+                borderRadius: 7, border: "none",
+                background: C.acento, color: "#004733", cursor: "pointer",
+                boxShadow: "0 4px 12px rgba(0,196,140,0.3)",
+              }}>
+              Generar recurso ✦
+            </button>
+          )}
           <button
             onClick={onEmpezar}
             className="min-h-[44px] min-w-[44px]"
             style={{
               fontSize: 13, fontWeight: 500, padding: "8px 20px",
-              borderRadius: 7, border: `1.5px solid ${C.acento}`,
-              background: "transparent", color: C.acento, cursor: "pointer"
+              borderRadius: 7, border: `1.5px solid ${scrolled ? "#ffffff" : C.acento}`,
+              background: "transparent", color: scrolled ? "#ffffff" : C.acento, cursor: "pointer"
             }}>
             Entrar
           </button>
         </div>
       </nav>
 
-      {/* ── HERO ── */}
-      <section style={{ background: "#ffffff", flex: 1, display: "flex", alignItems: "center" }}
-        className="py-8 md:py-10">
+      {/* ── HERO (Full Screen) ── */}
+      <section style={{ 
+        background: "#ffffff", 
+        height: "100vh", 
+        display: "flex", 
+        alignItems: "center", 
+        justifyContent: "center",
+        scrollSnapAlign: "start",
+        position: "relative"
+      }}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 items-center max-w-[1280px] mx-auto px-6 md:px-12 w-full">
           {/* Columna izquierda */}
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
@@ -565,7 +591,7 @@ export default function Landing({ onEmpezar }) {
             </p>
 
             <div ref={heroBtnRef} className="flex flex-col items-center md:items-start gap-2.5" style={{ opacity: 1 }}>
-              <button
+                <button
                 onClick={onEmpezar}
                 onMouseEnter={() => setBtnHover(true)}
                 onMouseLeave={() => setBtnHover(false)}
@@ -578,13 +604,12 @@ export default function Landing({ onEmpezar }) {
                   boxShadow: btnHover ? "0 8px 24px rgba(0,71,51,0.3)" : "0 2px 8px rgba(0,71,51,0.12)",
                   transition: "background 0.2s, box-shadow 0.2s",
                 }}>
-                Generar mi primer recurso
+                Generar recurso ✦
               </button>
               <span style={{ fontSize: 12, color: "#6B8C7D" }}>
                 Contenido verificado · Alineado al DC · Listo para el aula
               </span>
             </div>
-
           </div>
 
           {/* Columna derecha: demo interactiva */}
@@ -592,18 +617,59 @@ export default function Landing({ onEmpezar }) {
             <DemoInteractiva />
           </div>
         </div>
+
+        {/* Scroll Indicator */}
+        <div style={{
+          position: "absolute",
+          bottom: "30px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          animation: "bounce 2s infinite",
+          color: "#004733",
+          opacity: 0.6,
+          textAlign: "center"
+        }}>
+          <p style={{ fontSize: 10, marginBottom: 4, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em" }}>¿Cómo funciona?</p>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M7 13l5 5 5-5M7 6l5 5 5-5" />
+          </svg>
+        </div>
+        
+        <style>{`
+          @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+            40% { transform: translateY(-10px) translateX(-50%); }
+            60% { transform: translateY(-5px) translateX(-50%); }
+          }
+        `}</style>
       </section>
 
       {/* ── SECCIÓN: CÓMO FUNCIONA ── */}
-      <HowItWorks />
-
-      {/* ── SECCIÓN: COBERTURA ── */}
-      <section className="py-20 bg-[#F5F5F5]">
-        <SloganSlider />
+      <section style={{ height: "100vh", display: "flex", alignItems: "center", scrollSnapAlign: "start", background: "#ffffff" }}>
+        <div className="w-full">
+          <div className="text-center mb-8">
+             <span style={{ 
+               fontSize: 12, fontWeight: 700, color: C.acento, 
+               background: "#e0faf2", padding: "4px 12px", borderRadius: 20,
+               textTransform: "uppercase", letterSpacing: "0.05em"
+             }}>
+               Flujo de trabajo
+             </span>
+             <h2 className="text-4xl font-light text-[#2B2B2B] mt-4">¿Cómo funciona?</h2>
+          </div>
+          <HowItWorks />
+        </div>
       </section>
 
-      {/* ── FOOTER ── */}
-      <footer style={{ background: C.btn, padding: "14px 48px", textAlign: "center", marginTop: "auto", marginBottom: 0 }}>
+      {/* ── SECCIÓN: COBERTURA ── */}
+      <section style={{ height: "100vh", display: "flex", alignItems: "center", scrollSnapAlign: "start", background: "#F5F5F5" }}>
+        <div className="w-full">
+          <SloganSlider />
+        </div>
+      </section>
+
+      {/* ── FOOTER (Anclado al final de la última sección o como sección extra) ── */}
+      <footer style={{ background: C.btn, padding: "14px 48px", textAlign: "center", scrollSnapAlign: "end" }}>
         <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", margin: 0 }}>
           Basado en el{" "}
           <a
