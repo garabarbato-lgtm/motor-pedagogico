@@ -49,7 +49,7 @@ function HowItWorks({ onEmpezar }) {
               {step.icon}
             </div>
             <h3 className="text-lg font-bold text-[#2B2B2B] mb-3">{step.title}</h3>
-            <p className="text-sm text-[#4a6b60] leading-relaxed max-w-[240px]">
+            <p className="text-sm text-[#4a6b60] leading-relaxed max-w-[260px]">
               {step.desc}
             </p>
           </div>
@@ -73,12 +73,55 @@ function HowItWorks({ onEmpezar }) {
   );
 }
 
+function AboutTiza() {
+  return (
+    <div className="max-w-3xl mx-auto px-6 py-20 text-center">
+      <div className="mb-12">
+        <span style={{ 
+          fontSize: 14, fontWeight: 800, color: C.acento, 
+          background: "#e0faf2", padding: "6px 16px", borderRadius: 20,
+          textTransform: "uppercase", letterSpacing: "0.1em"
+        }}>
+          Nuestra Esencia
+        </span>
+        <h2 style={{ 
+          fontFamily: "'Lexend', sans-serif", 
+          fontSize: "clamp(32px, 4vw, 48px)", 
+          fontWeight: 300, color: "#004733", marginTop: "24px" 
+        }}>
+          ¿Qué es <span style={{ fontWeight: 700 }}>tiza.</span>?
+        </h2>
+      </div>
+
+      <div style={{ color: "#4a6b60", fontSize: "18px", lineHeight: "1.8", textAlign: "left" }} className="space-y-8">
+        <p>
+          <span style={{ fontWeight: 700, color: "#004733" }}>tiza.</span> es una herramienta pensada para docentes de primaria de la Provincia de Buenos Aires que quieren preparar fichas de trabajo sin perder horas en el proceso.
+        </p>
+        
+        <p>
+          Funciona simple: elegís el grado, el área y el contenido que vas a dar, y la app genera una ficha lista para imprimir, alineada al <span style={{ fontStyle: "italic", color: C.acento, fontWeight: 600 }}>Diseño Curricular de PBA</span>.
+        </p>
+
+        <p style={{ background: "#f0fdf9", padding: "24px", borderRadius: "16px", borderLeft: `4px solid ${C.acento}` }}>
+          No hace falta registrarse. No hace falta saber de tecnología. En menos de un minuto tenés un recurso listo para el aula.
+        </p>
+
+        <div>
+          <h3 style={{ fontSize: "24px", fontWeight: 700, color: "#004733", marginBottom: "16px" }}>¿Por qué existe?</h3>
+          <p>
+            Porque preparar materiales de calidad lleva tiempo que los docentes no siempre tienen. <span style={{ fontWeight: 700 }}>tiza.</span> no reemplaza tu criterio pedagógico — te da un punto de partida sólido que podés ajustar antes de imprimir.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── DEMO INTERACTIVA ── */
 
 const QUERY = "fracciones 5to";
 const STEP_DURATIONS = [2000, 1500, 1500, 3500];
 const FADE_OUT = 250;
-const FADE_IN = 350;
 
 function LupaIcon({ active }) {
   const col = active ? "#00c48c" : "#6B8C7D";
@@ -210,17 +253,29 @@ function DemoInteractiva() {
 
 export default function Landing({ onEmpezar }) {
   const [scrolled, setScrolled] = useState(false);
+  const scrollPos = useRef(0);
 
   const heroBadgeRef = useRef(null);
   const heroTitleRef = useRef(null);
   const heroSubRef = useRef(null);
   const heroBtnRef  = useRef(null);
   const heroDemoRef = useRef(null);
+  const scrollIndicatorRef = useRef(null);
 
   useEffect(() => {
     const container = document.getElementById("scroll-container");
     if (!container) return;
-    const onScroll = () => setScrolled(container.scrollTop > 50);
+    const onScroll = () => {
+      const top = container.scrollTop;
+      setScrolled(top > 50);
+      
+      // Control de opacidad del indicador de scroll
+      if (scrollIndicatorRef.current) {
+        const opacity = Math.max(0, 0.4 - (top / 300));
+        scrollIndicatorRef.current.style.opacity = opacity;
+        scrollIndicatorRef.current.style.pointerEvents = opacity === 0 ? 'none' : 'auto';
+      }
+    };
     container.addEventListener("scroll", onScroll);
     return () => container.removeEventListener("scroll", onScroll);
   }, []);
@@ -280,7 +335,8 @@ export default function Landing({ onEmpezar }) {
         alignItems: "center", 
         paddingTop: "100px",
         paddingBottom: "100px",
-        background: "#ffffff"
+        background: "#ffffff",
+        position: "relative"
       }}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto px-6 w-full">
           <div>
@@ -304,8 +360,8 @@ export default function Landing({ onEmpezar }) {
           </div>
         </div>
         
-        {/* Flecha Scroll */}
-        <div style={{ position: "absolute", bottom: 40, left: "50%", transform: "translateX(-50%)", textAlign: "center", color: "#004733", opacity: 0.4 }}>
+        {/* Flecha Scroll (Con ref para fadeout) */}
+        <div ref={scrollIndicatorRef} style={{ position: "absolute", bottom: 40, left: "50%", transform: "translateX(-50%)", textAlign: "center", color: "#004733", opacity: 0.4, transition: "opacity 0.2s" }}>
           <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", marginBottom: 8, letterSpacing: "0.1em" }}>¿Cómo funciona?</p>
           <ChevronDown size={24} className="mx-auto" style={{ animation: "bounce 2s infinite" }} />
         </div>
@@ -322,15 +378,20 @@ export default function Landing({ onEmpezar }) {
           <HowItWorks onEmpezar={onEmpezar} />
       </section>
 
+      {/* ── ¿QUÉ ES TIZA.? ── */}
+      <section style={{ background: "#ffffff", borderTop: "1px solid #F0F4F2" }}>
+        <AboutTiza />
+      </section>
+
       {/* ── COBERTURA ── */}
       <section style={{ padding: "120px 0", background: C.fondo }}>
         <SloganSlider />
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{ background: C.btn, padding: "30px 20px", textAlign: "center" }}>
+      <footer style={{ background: C.btn, padding: "40px 20px", textAlign: "center" }}>
         {/* Botón Feedback */}
-        <div style={{ marginBottom: "24px" }}>
+        <div style={{ marginBottom: "20px" }}>
            <a 
              href="https://docs.google.com/forms/d/e/1FAIpQLSdf7onmbIprlcs3jg9-7ZleYS9PFkD4VIYjSJlkv3ykdZM5nQ/viewform"
              target="_blank"
@@ -339,34 +400,30 @@ export default function Landing({ onEmpezar }) {
                display: "inline-flex", 
                alignItems: "center", 
                gap: "10px",
-               padding: "10px 20px",
+               padding: "12px 28px",
                borderRadius: "99px",
-               background: "rgba(255,255,255,0.08)",
-               color: "#ffffff",
-               fontSize: "13px",
-               fontWeight: "500",
+               background: "#00c48c",
+               color: "#004733",
+               fontSize: "14px",
+               fontWeight: "700",
                textDecoration: "none",
-               border: "1px solid rgba(255,255,255,0.15)",
+               boxShadow: "0 4px 15px rgba(0,196,140,0.3)",
                transition: "all 0.2s",
                cursor: "pointer"
              }}
              onMouseEnter={e => {
-               e.currentTarget.style.background = "rgba(255,255,255,0.15)";
+               e.currentTarget.style.background = "#00d498";
                e.currentTarget.style.transform = "translateY(-2px)";
              }}
              onMouseLeave={e => {
-               e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+               e.currentTarget.style.background = "#00c48c";
                e.currentTarget.style.transform = "translateY(0)";
              }}
            >
-             <MessageSquare size={16} className="text-[#00c48c]" />
-             ¿Tenés sugerencias? Dejanos tu feedback
+             <MessageSquare size={18} />
+             Ayudá a que tiza. sea mejor: dejanos tu opinión
            </a>
         </div>
-
-        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", margin: 0, fontWeight: 400, letterSpacing: "0.02em" }}>
-          Basado en el Diseño Curricular PBA
-        </p>
       </footer>
 
       <style>{`

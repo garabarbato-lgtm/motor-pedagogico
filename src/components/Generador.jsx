@@ -839,19 +839,21 @@ export default function Generador({ onFichaGenerada, onVolver }) {
       {/* ── STEPPER (pasos 1–4) ── */}
       {paso > 0 && (
         <>
-          {/* Navbar simplificada */}
+          {/* Navbar principal del Generador */}
           <nav style={{
-            background: C.verdeOscuro, padding: "14px 28px",
+            background: "#004733", padding: "12px 24px",
             display: "flex", alignItems: "center", justifyContent: "space-between",
-            position: "sticky", top: 0, zIndex: 10,
+            position: "sticky", top: 0, zIndex: 100,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
           }}>
-            <button 
+            <div 
               onClick={() => onVolver()} 
               style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}
-              title="Volver al inicio"
+              title="Ir al inicio (Landing)"
             >
-              <Logo size={32} color="#ffffff" />
-            </button>
+              <Logo size={28} color="#ffffff" />
+            </div>
+            
             <button
               onClick={() => {
                 if (paso <= 1) {
@@ -861,15 +863,25 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                 }
               }}
               style={{
-                fontSize: 12, color: "rgba(255,255,255,0.7)",
-                background: "none", border: "1px solid rgba(255,255,255,0.2)",
-                borderRadius: 99, padding: "5px 14px", cursor: "pointer",
-                fontFamily: "'Lexend', sans-serif", transition: "all 0.15s",
+                fontSize: "13px", 
+                fontWeight: "600",
+                color: "#004733",
+                background: C.verdeAcento, 
+                border: "none",
+                borderRadius: "8px", 
+                padding: "8px 16px", 
+                cursor: "pointer",
+                fontFamily: "'Lexend', sans-serif", 
+                transition: "all 0.2s",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                boxShadow: "0 2px 8px rgba(0,196,140,0.2)"
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.1)"; e.currentTarget.style.color = "#fff"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "rgba(255,255,255,0.7)"; }}
+              onMouseEnter={e => e.currentTarget.style.transform = "scale(1.03)"}
+              onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
             >
-              ‹ volver
+              <span>‹ Volver</span>
             </button>
           </nav>
 
