@@ -3,14 +3,14 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Logo from "./src/components/Logo.jsx";
 import SloganSlider from "./src/components/SloganSlider.jsx";
-import { Search, Settings2, FileText, Sparkles, ChevronDown } from "lucide-react";
+import { Search, Settings2, FileText, Sparkles, ChevronDown, MessageSquare } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const DC_URL = "http://servicios.abc.gov.ar/lainstitucion/organismos/consejogeneral/disenioscurriculares/primaria/2018/dis-curricular-PBA-completo.pdf";
 
 const C = {
-  fondo: "#F5F5F5",
+  fondo: "#F0F4F2",
   acento: "#00c48c",
   texto: "#2B2B2B",
   muted: "#4a6b60",
@@ -26,7 +26,7 @@ function HowItWorks({ onEmpezar }) {
     {
       icon: <Search className="w-6 h-6" />,
       title: "1. Precisar contenido",
-      desc: "Seleccioná grado, área y bloque. El motor te sugiere contenidos exactos del DC PBA 2018."
+      desc: "Seleccioná grado, área y bloque. El motor te sugiere contenidos exactos del DC PBA."
     },
     {
       icon: <Settings2 className="w-6 h-6" />,
@@ -49,7 +49,7 @@ function HowItWorks({ onEmpezar }) {
               {step.icon}
             </div>
             <h3 className="text-lg font-bold text-[#2B2B2B] mb-3">{step.title}</h3>
-            <p className="text-sm text-[#4a6b60] leading-relaxed max-w-[260px]">
+            <p className="text-sm text-[#4a6b60] leading-relaxed max-w-[240px]">
               {step.desc}
             </p>
           </div>
@@ -218,9 +218,11 @@ export default function Landing({ onEmpezar }) {
   const heroDemoRef = useRef(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    const container = document.getElementById("scroll-container");
+    if (!container) return;
+    const onScroll = () => setScrolled(container.scrollTop > 50);
+    container.addEventListener("scroll", onScroll);
+    return () => container.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
@@ -229,11 +231,13 @@ export default function Landing({ onEmpezar }) {
   }, []);
 
   return (
-    <div style={{ 
+    <div id="scroll-container" style={{ 
       fontFamily: "'Lexend', sans-serif", 
       width: "100%", 
-      background: "#ffffff", 
-      minHeight: "100vh"
+      background: C.fondo, 
+      height: "100vh",
+      overflowY: "auto",
+      scrollBehavior: "smooth"
     }}>
 
       {/* ── NAV FIXED (SIEMPRE VERDE TIZA) ── */}
@@ -244,7 +248,16 @@ export default function Landing({ onEmpezar }) {
         boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
       }}>
-        <Logo size={32} color="#ffffff" />
+        <div 
+          onClick={() => {
+            const container = document.getElementById("scroll-container");
+            if (container) container.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
+          title="Ir al inicio"
+        >
+          <Logo size={32} color="#ffffff" />
+        </div>
         <button
           onClick={onEmpezar}
           style={{
@@ -266,7 +279,8 @@ export default function Landing({ onEmpezar }) {
         display: "flex", 
         alignItems: "center", 
         paddingTop: "100px",
-        paddingBottom: "100px"
+        paddingBottom: "100px",
+        background: "#ffffff"
       }}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto px-6 w-full">
           <div>
@@ -309,15 +323,49 @@ export default function Landing({ onEmpezar }) {
       </section>
 
       {/* ── COBERTURA ── */}
-      <section style={{ padding: "120px 0", background: "#F8FAF9" }}>
+      <section style={{ padding: "120px 0", background: C.fondo }}>
         <SloganSlider />
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{ background: C.btn, padding: "40px 20px", textAlign: "center" }}>
-        <Logo size={40} color="rgba(255,255,255,0.2)" className="mx-auto mb-6" />
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", margin: 0 }}>
-          tiza. motor pedagógico · Basado en el Diseño Curricular PBA 2018
+      <footer style={{ background: C.btn, padding: "30px 20px", textAlign: "center" }}>
+        {/* Botón Feedback */}
+        <div style={{ marginBottom: "24px" }}>
+           <a 
+             href="https://docs.google.com/forms/d/e/1FAIpQLSdf7onmbIprlcs3jg9-7ZleYS9PFkD4VIYjSJlkv3ykdZM5nQ/viewform"
+             target="_blank"
+             rel="noopener noreferrer"
+             style={{ 
+               display: "inline-flex", 
+               alignItems: "center", 
+               gap: "10px",
+               padding: "10px 20px",
+               borderRadius: "99px",
+               background: "rgba(255,255,255,0.08)",
+               color: "#ffffff",
+               fontSize: "13px",
+               fontWeight: "500",
+               textDecoration: "none",
+               border: "1px solid rgba(255,255,255,0.15)",
+               transition: "all 0.2s",
+               cursor: "pointer"
+             }}
+             onMouseEnter={e => {
+               e.currentTarget.style.background = "rgba(255,255,255,0.15)";
+               e.currentTarget.style.transform = "translateY(-2px)";
+             }}
+             onMouseLeave={e => {
+               e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+               e.currentTarget.style.transform = "translateY(0)";
+             }}
+           >
+             <MessageSquare size={16} className="text-[#00c48c]" />
+             ¿Tenés sugerencias? Dejanos tu feedback
+           </a>
+        </div>
+
+        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", margin: 0, fontWeight: 400, letterSpacing: "0.02em" }}>
+          Basado en el Diseño Curricular PBA
         </p>
       </footer>
 

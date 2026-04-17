@@ -845,11 +845,21 @@ export default function Generador({ onFichaGenerada, onVolver }) {
             display: "flex", alignItems: "center", justifyContent: "space-between",
             position: "sticky", top: 0, zIndex: 10,
           }}>
-            <button onClick={paso <= 1 ? () => cambiarDesde(0) : onVolver} style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+            <button 
+              onClick={() => onVolver()} 
+              style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}
+              title="Volver al inicio"
+            >
               <Logo size={32} color="#ffffff" />
             </button>
             <button
-              onClick={() => cambiarDesde(paso - 1)}
+              onClick={() => {
+                if (paso <= 1) {
+                  onVolver();
+                } else {
+                  cambiarDesde(paso - 1);
+                }
+              }}
               style={{
                 fontSize: 12, color: "rgba(255,255,255,0.7)",
                 background: "none", border: "1px solid rgba(255,255,255,0.2)",
