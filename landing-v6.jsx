@@ -1,6 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Logo from "./src/components/Logo.jsx";
+import SloganSlider from "./src/components/SloganSlider.jsx";
+import { Search, Settings2, FileText, Sparkles } from "lucide-react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const DC_URL = "http://servicios.abc.gov.ar/lainstitucion/organismos/consejogeneral/disenioscurriculares/primaria/2018/dis-curricular-PBA-completo.pdf";
 
@@ -13,6 +18,76 @@ const C = {
   white: "#ffffff",
   border: "#D9D9D9",
 };
+
+/* ── COMPONENTES INTERNOS ── */
+
+function HowItWorks() {
+  const steps = [
+    {
+      icon: <Search className="w-6 h-6" />,
+      title: "1. Precisar contenido",
+      desc: "Seleccioná grado, área y bloque. El motor te sugiere contenidos exactos del DC PBA 2018."
+    },
+    {
+      icon: <Settings2 className="w-6 h-6" />,
+      title: "2. Personalizar",
+      desc: "¿Explicación teórica? ¿Ejemplos concretos? Vos decidís qué elementos pedagógicos incluir."
+    },
+    {
+      icon: <FileText className="w-6 h-6" />,
+      title: "3. Recurso listo",
+      desc: "Obtené una ficha PDF profesional, lista para imprimir y llevar directamente al aula."
+    }
+  ];
+
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from(".step-card", {
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 80%",
+        },
+        opacity: 0,
+        y: 30,
+        stagger: 0.15,
+        duration: 0.8,
+        ease: "power3.out"
+      });
+    }, sectionRef);
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section ref={sectionRef} className="py-20 bg-white border-y border-[#D9D9D9]">
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-light text-[#2B2B2B] mb-4">
+            De la planificación al aula en <span className="text-[#00c48c] italic">tres pasos.</span>
+          </h2>
+          <p className="text-[#4a6b60] max-w-xl mx-auto">
+            Diseñado para integrarse a tu flujo de trabajo docente, sin complicaciones técnicas.
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          {steps.map((step, i) => (
+            <div key={i} className="step-card flex flex-col items-center text-center group">
+              <div className="w-16 h-16 bg-[#f0fdf9] rounded-2xl border border-[#b0e8d4] flex items-center justify-center text-[#004733] mb-6 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
+                {step.icon}
+              </div>
+              <h3 className="text-lg font-bold text-[#2B2B2B] mb-3">{step.title}</h3>
+              <p className="text-sm text-[#4a6b60] leading-relaxed">
+                {step.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 /* ── DEMO INTERACTIVA ── */
 
@@ -517,6 +592,14 @@ export default function Landing({ onEmpezar }) {
             <DemoInteractiva />
           </div>
         </div>
+      </section>
+
+      {/* ── SECCIÓN: CÓMO FUNCIONA ── */}
+      <HowItWorks />
+
+      {/* ── SECCIÓN: COBERTURA ── */}
+      <section className="py-20 bg-[#F5F5F5]">
+        <SloganSlider />
       </section>
 
       {/* ── FOOTER ── */}
