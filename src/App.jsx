@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import Landing from '../landing-v6.jsx'
+import Landing from './components/Landing.jsx'
 import Generador from './components/Generador.jsx'
 import FichaTrabajo from './components/FichaTrabajo.jsx'
 import DevTestFichas from './components/DevTestFichas.jsx'
