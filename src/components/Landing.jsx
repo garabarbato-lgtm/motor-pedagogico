@@ -12,233 +12,84 @@ const C = {
   btn: "#004733",
   white: "#ffffff",
   border: "#D9D9D9",
+  lbg: "#E6FAF3",
+  lborder: "#D4E6DE",
+  app: "#F0F4F2",
+  faded: "#6B8C7D",
 };
 
-/* ── DEMO INTERACTIVA ── */
+/* ── STATIC DEMO CARD ── */
 
-const QUERY = "fracciones 5to";
-const STEP_DURATIONS = [2000, 1500, 1500, 3500];
-const FADE_OUT = 250;
-const FADE_IN = 350;
-
-function SearchIcon() {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" stroke="#6B8C7D" strokeWidth="1.8"
-      strokeLinecap="round" width="14" height="14" style={{ flexShrink: 0 }}>
-      <circle cx="8.5" cy="8.5" r="5.5" />
-      <line x1="13" y1="13" x2="17" y2="17" />
-    </svg>
-  );
-}
-
-function SearchBar({ text, focused }) {
+function DemoBar({ w = "100%", dark = false }) {
   return (
     <div style={{
-      display: "flex", alignItems: "center", gap: 8,
-      borderRadius: 12, background: "#fff",
-      border: `1.5px solid ${focused ? "#00c48c" : "#D4E6DE"}`,
-      boxShadow: focused ? "0 0 0 3px rgba(0,196,140,0.12)" : "none",
-      padding: "9px 12px",
-      transition: "border-color 0.2s, box-shadow 0.2s",
-    }}>
-      <SearchIcon />
-      <span style={{ fontSize: 12, color: "#004733", flex: 1, minHeight: 16, letterSpacing: "-0.01em" }}>
-        {text}
-        {focused && (
-          <span style={{
-            display: "inline-block", width: 1.5, height: 13,
-            background: "#004733", marginLeft: 1, verticalAlign: "middle",
-            animation: "none", opacity: 1,
-          }} />
-        )}
-      </span>
-    </div>
-  );
-}
-
-function StepSearch({ typedText, searchFocused }) {
-  return (
-    <div style={{ padding: "16px 14px" }}>
-      <p style={{ fontSize: 10, color: "#6B8C7D", marginBottom: 8, letterSpacing: "0.04em", textTransform: "uppercase", fontWeight: 600 }}>
-        Buscá un contenido
-      </p>
-      <SearchBar text={typedText} focused={searchFocused} />
-    </div>
-  );
-}
-
-function StepResults() {
-  const results = [
-    { name: "Fracciones equivalentes", meta: "5° grado · Matemática · Números Racionales" },
-    { name: "Fracciones: partes del entero", meta: "5° grado · Matemática · Números Racionales" },
-  ];
-  return (
-    <div style={{ padding: "16px 14px", display: "flex", flexDirection: "column", gap: 8 }}>
-      <SearchBar text={QUERY} focused={false} />
-      <div style={{ display: "flex", flexDirection: "column", gap: 7, marginTop: 4 }}>
-        {results.map((r, i) => (
-          <div key={i} style={{
-            background: i === 0 ? "#E6FAF3" : "#fff",
-            border: `${i === 0 ? "2px" : "1px"} solid ${i === 0 ? "#004733" : "#D4E6DE"}`,
-            borderRadius: 10, padding: "9px 12px",
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-          }}>
-            <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#004733" }}>{r.name}</div>
-              <div style={{ fontSize: 10, color: "#6B8C7D", marginTop: 2 }}>{r.meta}</div>
-            </div>
-            {i === 0 && (
-              <span style={{
-                width: 18, height: 18, borderRadius: "50%",
-                background: "#00c48c", color: "#fff",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 10, fontWeight: 700, flexShrink: 0,
-              }}>✓</span>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function Toggle() {
-  return (
-    <div style={{
-      width: 36, height: 20, background: "#004733",
-      borderRadius: 10, position: "relative", flexShrink: 0,
-    }}>
-      <div style={{
-        width: 16, height: 16, background: "#fff",
-        borderRadius: "50%", position: "absolute",
-        right: 2, top: 2,
-      }} />
-    </div>
-  );
-}
-
-function StepConfirm() {
-  return (
-    <div style={{ padding: "16px 14px", display: "flex", flexDirection: "column", gap: 8 }}>
-      {/* Chip de confirmación */}
-      <div style={{
-        background: "#fff", border: "1px solid #D4E6DE",
-        borderRadius: 10, padding: "9px 12px",
-        display: "flex", alignItems: "center", gap: 8,
-      }}>
-        <div style={{
-          width: 20, height: 20, borderRadius: "50%",
-          background: "#E6FAF3", border: "1.5px solid #00c48c",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          flexShrink: 0,
-        }}>
-          <span style={{ color: "#00c48c", fontSize: 10, fontWeight: 700 }}>✓</span>
-        </div>
-        <span style={{ fontSize: 11, color: "#004733", flex: 1, fontWeight: 500 }}>
-          Fracciones equivalentes · 5° grado
-        </span>
-        <span style={{
-          fontSize: 10, color: "#6B8C7D", background: "#F0F4F2",
-          borderRadius: 6, padding: "3px 8px", flexShrink: 0,
-        }}>
-          Cambiar
-        </span>
-      </div>
-
-      {/* Toggles */}
-      {["Incluir explicación", "Incluir ejemplo concreto"].map((label) => (
-        <div key={label} style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "9px 12px", background: "#fff",
-          border: "1px solid #D4E6DE", borderRadius: 10,
-        }}>
-          <span style={{ fontSize: 11, color: "#004733" }}>{label}</span>
-          <Toggle />
-        </div>
-      ))}
-
-      {/* Botón generar */}
-      <div style={{
-        background: "#004733", color: "#fff",
-        borderRadius: 10, padding: "11px 16px",
-        fontSize: 12, fontWeight: 600,
-        width: "100%", textAlign: "center",
-        marginTop: 2,
-      }}>
-        Generar ficha ✦
-      </div>
-    </div>
-  );
-}
-
-function GrayLine({ width = "100%" }) {
-  return (
-    <div style={{
-      height: 7, background: "#D4E6DE",
-      borderRadius: 4, marginBottom: 4, width,
+      height: 5, background: dark ? "#b2dfd0" : C.lborder,
+      borderRadius: 3, width: w, marginBottom: 3,
     }} />
   );
 }
 
-function StepFicha() {
+function LandingDemoCard() {
   return (
-    <div style={{ overflow: "hidden" }}>
+    <div style={{
+      borderRadius: 16, overflow: "hidden",
+      border: "1px solid " + C.lborder,
+      boxShadow: "0 20px 48px rgba(0,40,30,0.14)",
+      fontFamily: "'Lexend', sans-serif",
+    }}>
       {/* Header */}
-      <div style={{ background: "#004733", padding: "10px 14px" }}>
-        <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 6 }}>
-          {["5° grado", "Matemática", "Núm. racionales"].map(tag => (
-            <span key={tag} style={{
+      <div style={{ background: C.btn, padding: "14px 18px" }}>
+        <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
+          {["5° grado", "Matemática", "Núm. Racionales"].map(t => (
+            <span key={t} style={{
               fontSize: 8, fontWeight: 700,
-              background: "rgba(0,196,140,0.22)", color: "#00c48c",
+              background: "rgba(0,196,140,0.22)", color: C.acento,
               borderRadius: 4, padding: "2px 6px",
-            }}>{tag}</span>
+            }}>{t}</span>
           ))}
         </div>
-        <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", lineHeight: 1.3 }}>
-          Fracciones{" "}
-          <span style={{ color: "#00c48c" }}>equivalentes</span>
+        <div style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>
+          Fracciones <span style={{ color: C.acento }}>equivalentes</span>
         </div>
-        {/* Datos alumno */}
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 8, marginTop: 8 }}>
-          {["Nombre y apellido", "Fecha"].map(label => (
-            <div key={label}>
-              <div style={{ fontSize: 8, color: "rgba(255,255,255,0.5)", marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</div>
-              <div style={{ borderBottom: "1.5px solid rgba(255,255,255,0.3)", height: 16 }} />
+        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 8, marginTop: 10 }}>
+          {["Nombre y apellido", "Fecha"].map(l => (
+            <div key={l}>
+              <div style={{ fontSize: 7, color: "rgba(255,255,255,0.38)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>{l}</div>
+              <div style={{ borderBottom: "1.5px solid rgba(255,255,255,0.22)", height: 16 }} />
             </div>
           ))}
         </div>
       </div>
 
-      {/* Cuerpo */}
-      <div style={{ padding: "10px 14px", background: "#fff", display: "flex", flexDirection: "column", gap: 10 }}>
-        {/* Sección 1: Leemos juntos */}
+      {/* Body */}
+      <div style={{ padding: "12px 18px", background: "#fff", display: "flex", flexDirection: "column", gap: 10 }}>
+        {/* Leemos juntos */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: "#004733", marginBottom: 5 }}>
-            1 · Leemos juntos
+          <div style={{ fontSize: 9, fontWeight: 700, color: C.btn, marginBottom: 5, display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ width: 16, height: 16, borderRadius: "50%", background: C.btn, color: "#fff", fontSize: 8, display: "inline-flex", alignItems: "center", justifyContent: "center", fontWeight: 800 }}>1</span>
+            Leemos juntos
           </div>
-          <div style={{
-            background: "#E6FAF3", borderLeft: "3px solid #004733",
-            borderRadius: "0 6px 6px 0", padding: "7px 10px",
-          }}>
-            <GrayLine width="95%" />
-            <GrayLine width="82%" />
-            <GrayLine width="70%" />
+          <div style={{ background: C.lbg, borderLeft: "2.5px solid " + C.btn, borderRadius: "0 5px 5px 0", padding: "6px 10px", display: "flex", flexDirection: "column", gap: 3 }}>
+            <DemoBar w="92%" dark />
+            <DemoBar w="80%" dark />
+            <DemoBar w="62%" dark />
           </div>
         </div>
 
-        {/* Sección 2: Tu turno */}
+        {/* Tu turno */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: "#004733", marginBottom: 5 }}>
-            2 · Tu turno
+          <div style={{ fontSize: 9, fontWeight: 700, color: C.btn, marginBottom: 5, display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ width: 16, height: 16, borderRadius: "50%", background: C.btn, color: "#fff", fontSize: 8, display: "inline-flex", alignItems: "center", justifyContent: "center", fontWeight: 800 }}>2</span>
+            Tu turno
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             <div>
-              <GrayLine width="88%" />
-              <div style={{ height: 28, border: "0.5px solid #D4E6DE", borderRadius: 6 }} />
+              <DemoBar w="88%" />
+              <div style={{ height: 22, border: "1px solid " + C.lborder, borderRadius: 5 }} />
             </div>
             <div>
-              <GrayLine width="75%" />
-              <div style={{ height: 28, border: "0.5px solid #D4E6DE", borderRadius: 6 }} />
+              <DemoBar w="70%" />
+              <div style={{ height: 22, border: "1px solid " + C.lborder, borderRadius: 5 }} />
             </div>
           </div>
         </div>
@@ -246,100 +97,12 @@ function StepFicha() {
 
       {/* Footer */}
       <div style={{
-        borderTop: "1px solid #D4E6DE", padding: "6px 14px",
-        display: "flex", justifyContent: "space-between",
-        background: "#F0F4F2",
+        borderTop: "1px solid " + C.lborder, padding: "6px 18px",
+        display: "flex", justifyContent: "space-between", background: C.app,
       }}>
-        <span style={{ fontSize: 8, color: "#6B8C7D" }}>tiza. · Diseño Curricular 2018</span>
-        <span style={{ fontSize: 8, color: "#6B8C7D" }}>5° grado · Matemática</span>
+        <span style={{ fontSize: 8, color: C.faded }}>tiza. · DC PBA 2018</span>
+        <span style={{ fontSize: 8, color: C.faded }}>5° · Matemática</span>
       </div>
-    </div>
-  );
-}
-
-function DemoInteractiva() {
-  const [step, setStep] = useState(0);
-  const [fading, setFading] = useState(false);
-  const [typedText, setTypedText] = useState("");
-  const [searchFocused, setSearchFocused] = useState(false);
-
-  // Typing animation — only on step 0
-  useEffect(() => {
-    if (step !== 0) {
-      setTypedText("");
-      setSearchFocused(false);
-      return;
-    }
-    let interval = null;
-    const startTimer = setTimeout(() => {
-      setSearchFocused(true);
-      let i = 0;
-      interval = setInterval(() => {
-        i++;
-        setTypedText(QUERY.slice(0, i));
-        if (i >= QUERY.length) clearInterval(interval);
-      }, 75);
-    }, FADE_IN + 200);
-    return () => {
-      clearTimeout(startTimer);
-      if (interval) clearInterval(interval);
-    };
-  }, [step]);
-
-  // Step progression loop
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setFading(true);
-      const changeTimer = setTimeout(() => {
-        setStep(s => (s + 1) % 4);
-        setFading(false);
-      }, FADE_OUT);
-      return () => clearTimeout(changeTimer);
-    }, STEP_DURATIONS[step]);
-    return () => clearTimeout(timer);
-  }, [step]);
-
-  const contentTransition = {
-    opacity: fading ? 0 : 1,
-    transition: `opacity ${fading ? FADE_OUT : FADE_IN}ms ease`,
-  };
-
-  return (
-    <div>
-      <div style={{
-        borderRadius: 16,
-        border: "0.5px solid #D4E6DE",
-        overflow: "hidden",
-        background: "#F0F4F2",
-        boxShadow: "0 8px 40px rgba(0,30,20,0.10)",
-        fontFamily: "'Lexend Deca', 'Lexend', system-ui, sans-serif",
-      }}>
-        {/* Browser header */}
-        <div style={{
-          background: "#004733",
-          padding: "11px 16px",
-          display: "flex", alignItems: "center", justifyContent: "center",
-        }}>
-          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", letterSpacing: "0.02em" }}>
-            fichastiza.vercel.app
-          </span>
-        </div>
-
-        {/* Animated content */}
-        <div style={contentTransition}>
-          {step === 0 && <StepSearch typedText={typedText} searchFocused={searchFocused} />}
-          {step === 1 && <StepResults />}
-          {step === 2 && <StepConfirm />}
-          {step === 3 && <StepFicha />}
-        </div>
-      </div>
-
-      <p style={{
-        textAlign: "center", fontSize: 11, color: "#6B8C7D",
-        marginTop: 12, marginBottom: 0,
-      }}>
-        Tarda unos segundos · Alineada al Diseño Curricular PBA
-      </p>
     </div>
   );
 }
@@ -347,7 +110,6 @@ function DemoInteractiva() {
 /* ── LANDING ── */
 
 export default function Landing({ onEmpezar }) {
-  const [btnHover, setBtnHover] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   const heroBadgeRef = useRef(null);
@@ -376,90 +138,130 @@ export default function Landing({ onEmpezar }) {
       {/* ── NAV ── */}
       <nav style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "18px 40px",
-        borderBottom: scrolled ? "none" : `0.5px solid ${C.border}`,
+        padding: "0 44px", height: 62,
         background: scrolled ? "rgba(0,71,51,0.95)" : C.btn,
         backdropFilter: scrolled ? "blur(8px)" : "none",
         WebkitBackdropFilter: scrolled ? "blur(8px)" : "none",
         boxShadow: scrolled ? "0 1px 0 rgba(255,255,255,0.1), 0 4px 16px rgba(0,0,0,0.12)" : "none",
         position: "sticky", top: 0, zIndex: 10,
-        transition: "background 0.3s, box-shadow 0.3s, backdrop-filter 0.3s",
+        transition: "background 0.3s, box-shadow 0.3s",
       }}>
-        <Logo size={32} color="#ffffff" />
+        <Logo size={28} color="#ffffff" />
         <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
+          <span style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>
+            ¿Cómo funciona?
+          </span>
           <button
             onClick={onEmpezar}
             style={{
-              fontSize: 13, fontWeight: 500, padding: "8px 20px",
-              borderRadius: 7, border: `1.5px solid ${C.acento}`,
-              background: "transparent", color: C.acento, cursor: "pointer"
+              fontSize: 13, fontWeight: 700, padding: "9px 22px",
+              borderRadius: 9, border: "none",
+              background: C.acento, color: C.btn, cursor: "pointer",
             }}>
-            Entrar
+            Generar recurso ✦
           </button>
         </div>
       </nav>
 
       {/* ── HERO ── */}
-      <section style={{
-        background: "#ffffff",
-        padding: "80px 40px 88px",
-      }}>
+      <section style={{ background: "#ffffff", padding: "64px 64px 80px" }}>
         <div style={{
           display: "grid", gridTemplateColumns: "1fr 1fr",
-          gap: 56, alignItems: "center",
+          gap: 64, alignItems: "center",
           maxWidth: 1100, margin: "0 auto",
         }}>
-          {/* Columna izquierda */}
+          {/* Left column */}
           <div>
             <div ref={heroBadgeRef} style={{
-              display: "inline-block", background: "#e0faf2", color: "#004733",
-              fontSize: 11, fontWeight: 500, letterSpacing: "0.08em",
-              textTransform: "uppercase", padding: "5px 16px",
-              borderRadius: 20, marginBottom: 32,
-              border: "1px solid #b0e8d4",
+              display: "inline-flex", alignItems: "center", gap: 7,
+              background: C.lbg, border: "1px solid #b0e8d4",
+              borderRadius: 99, padding: "5px 14px", marginBottom: 28,
               opacity: 1,
             }}>
-              Basado en el Diseño Curricular · PBA
+              <div style={{ width: 7, height: 7, borderRadius: "50%", background: C.acento }} />
+              <span style={{ fontSize: 11, fontWeight: 700, color: C.btn, letterSpacing: "0.07em", textTransform: "uppercase" }}>
+                Diseño Curricular PBA · Primaria
+              </span>
             </div>
 
             <h1 ref={heroTitleRef} style={{
               fontFamily: "'Lexend', sans-serif",
-              fontSize: "clamp(28px, 3.2vw, 42px)", fontWeight: 400,
-              color: C.texto, lineHeight: 1.2, marginBottom: 20,
+              fontSize: "clamp(28px, 3.5vw, 46px)", fontWeight: 400,
+              color: C.texto, lineHeight: 1.1, marginBottom: 20,
               letterSpacing: "-0.025em", opacity: 1,
             }}>
               Lo que tardabas una tarde, ahora son{" "}
-              <span style={{ color: C.acento, fontStyle: "italic" }}>diez minutos.</span>
+              <em style={{ color: C.acento, fontStyle: "italic" }}>diez minutos.</em>
             </h1>
 
-            <p ref={heroSubRef} style={{ fontSize: 17, color: C.muted, lineHeight: 1.65, marginBottom: 40, maxWidth: 400, opacity: 1 }}>
-              El Diseño Curricular, convertido en recursos listos para el aula.
+            <p ref={heroSubRef} style={{ fontSize: 18, color: C.muted, lineHeight: 1.65, marginBottom: 36, maxWidth: 430, opacity: 1 }}>
+              Generá fichas pedagógicas alineadas al DC PBA. Sin registrarte. Listo para imprimir.
             </p>
 
-            <div ref={heroBtnRef} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 12, opacity: 1 }}>
+            <div ref={heroBtnRef} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 14, opacity: 1 }}>
               <button
                 onClick={onEmpezar}
-                onMouseEnter={() => setBtnHover(true)}
-                onMouseLeave={() => setBtnHover(false)}
                 style={{
-                  fontSize: 15, fontWeight: 600, padding: "14px 32px",
-                  borderRadius: 8, border: "none",
-                  background: btnHover ? "#00603d" : C.btn,
-                  color: "#ffffff", cursor: "pointer",
-                  transform: btnHover ? "translateY(-2px)" : "none",
-                  boxShadow: btnHover ? "0 8px 24px rgba(0,71,51,0.3)" : "0 2px 8px rgba(0,71,51,0.12)",
+                  fontSize: 17, fontWeight: 700, padding: "16px 36px",
+                  borderRadius: 10, border: "none",
+                  background: C.btn, color: "#ffffff", cursor: "pointer",
+                  boxShadow: "0 8px 24px rgba(0,71,51,0.22)",
                   transition: "all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                }}>
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = "#00603d"; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 12px 28px rgba(0,71,51,0.3)"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = C.btn; e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,71,51,0.22)"; }}>
                 Generar mi primer recurso
               </button>
-              <span style={{ fontSize: 12, color: C.muted }}>Contenido verificado · Alineado al DC · Listo para el aula</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+                {["Sin registro", "Alineado al DC", "PDF listo"].map(t => (
+                  <span key={t} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: C.faded }}>
+                    <span style={{ color: C.acento, fontWeight: 800 }}>✓</span> {t}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Columna derecha: demo interactiva */}
-          <div ref={heroDemoRef} style={{ opacity: 1 }}>
-            <DemoInteractiva />
+          {/* Right column: static demo card */}
+          <div ref={heroDemoRef} style={{ display: "flex", justifyContent: "center", opacity: 1 }}>
+            <div style={{ width: 340 }}>
+              <LandingDemoCard />
+              <p style={{ textAlign: "center", fontSize: 11, color: C.faded, marginTop: 12 }}>
+                ~15 segundos · Alineada al DC PBA 2018
+              </p>
+            </div>
           </div>
+        </div>
+      </section>
+
+      {/* ── HOW IT WORKS STRIP ── */}
+      <section style={{
+        background: C.app, borderTop: "1px solid " + C.lborder,
+        padding: "20px 64px", flexShrink: 0,
+      }}>
+        <div style={{ display: "flex", maxWidth: 1100, margin: "0 auto" }}>
+          {[
+            { n: "01", t: "Elegís el contenido",   s: "Grado, área y bloque del DC PBA" },
+            { n: "02", t: "Personalizás opciones", s: "Momento, nivel y contexto del grupo" },
+            { n: "03", t: "Descargás la ficha",    s: "PDF profesional listo para el aula" },
+          ].map((step, i) => (
+            <div key={i} style={{
+              flex: 1, display: "flex", alignItems: "center", gap: 14,
+              paddingRight: i < 2 ? 32 : 0, paddingLeft: i > 0 ? 32 : 0,
+              borderRight: i < 2 ? "1px solid " + C.lborder : "none",
+            }}>
+              <div style={{
+                width: 40, height: 40, borderRadius: 10,
+                background: C.btn, color: C.acento,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 13, fontWeight: 800, flexShrink: 0,
+              }}>{step.n}</div>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: C.btn, marginBottom: 2 }}>{step.t}</div>
+                <div style={{ fontSize: 12, color: C.muted }}>{step.s}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 

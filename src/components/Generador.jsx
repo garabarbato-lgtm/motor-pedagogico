@@ -1077,14 +1077,16 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
                     {["Presentación", "Práctica", "Cierre / Integración"].map((op) => (
                       <button key={op} onClick={() => setMomento(momento === op ? null : op)} style={{
-                        border: `1.5px solid ${momento === op ? "#004733" : "#D4E6DE"}`,
-                        background: momento === op ? "#004733" : "#fff",
-                        color: momento === op ? "#fff" : "#004733",
+                        border: `1.5px solid ${momento === op ? "#00c48c" : "#D4E6DE"}`,
+                        background: momento === op ? "#00c48c" : "#fff",
+                        color: momento === op ? "#004733" : "#004733",
                         borderRadius: 999, padding: "7px 16px", fontSize: 14, cursor: "pointer",
-                        transition: "all 0.15s", fontFamily: "'Lexend', sans-serif",
+                        transition: "all 0.2s ease", fontFamily: "'Lexend', sans-serif",
+                        fontWeight: momento === op ? 700 : 400,
+                        boxShadow: momento === op ? "0 2px 8px rgba(0,196,140,0.25)" : "none",
                       }}
-                        onMouseEnter={e => { if (momento !== op) { e.currentTarget.style.background = "#E6FAF3"; e.currentTarget.style.borderColor = "#00c48c"; } }}
-                        onMouseLeave={e => { if (momento !== op) { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "#D4E6DE"; } }}
+                        onMouseEnter={e => { if (momento !== op) { e.currentTarget.style.background = "#E6FAF3"; e.currentTarget.style.borderColor = "#00c48c"; e.currentTarget.style.color = "#004733"; } }}
+                        onMouseLeave={e => { if (momento !== op) { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "#D4E6DE"; e.currentTarget.style.color = "#004733"; } }}
                       >{op}</button>
                     ))}
                   </div>
@@ -1094,11 +1096,13 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
                     {["Necesita más apoyo", "Sin adaptación", "Puede ir más lejos"].map((op) => (
                       <button key={op} onClick={() => setNivelGrupo(nivelGrupo === op ? null : op)} style={{
-                        border: `1.5px solid ${nivelGrupo === op ? "#004733" : "#D4E6DE"}`,
-                        background: nivelGrupo === op ? "#004733" : "#fff",
-                        color: nivelGrupo === op ? "#fff" : "#004733",
+                        border: `1.5px solid ${nivelGrupo === op ? "#00c48c" : "#D4E6DE"}`,
+                        background: nivelGrupo === op ? "#00c48c" : "#fff",
+                        color: "#004733",
                         borderRadius: 999, padding: "7px 16px", fontSize: 14, cursor: "pointer",
-                        transition: "all 0.15s", fontFamily: "'Lexend', sans-serif",
+                        transition: "all 0.2s ease", fontFamily: "'Lexend', sans-serif",
+                        fontWeight: nivelGrupo === op ? 700 : 400,
+                        boxShadow: nivelGrupo === op ? "0 2px 8px rgba(0,196,140,0.25)" : "none",
                       }}
                         onMouseEnter={e => { if (nivelGrupo !== op) { e.currentTarget.style.background = "#E6FAF3"; e.currentTarget.style.borderColor = "#00c48c"; } }}
                         onMouseLeave={e => { if (nivelGrupo !== op) { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "#D4E6DE"; } }}
@@ -1116,23 +1120,22 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                       Algo más a tener en cuenta{" "}
                       <span style={{ fontSize: 11, color: C.textoSec, fontWeight: 400 }}>(opcional)</span>
                     </p>
-                    <div style={{ border: "1.5px solid #D4E6DE", borderRadius: 10, overflow: "hidden", display: "flex" }}>
-                      <div style={{ background: "#F0F4F2", padding: "10px 12px", fontSize: 13, color: "#4a6b60", borderRight: "1.5px solid #D4E6DE", flexShrink: 0, whiteSpace: "nowrap" }}>
-                        Tener en cuenta que:
-                      </div>
-                      <textarea
-                        value={contextoLibre}
-                        onChange={e => setContextoLibre(e.target.value)}
-                        maxLength={150}
-                        placeholder="hay alumnos con dislexia, el grupo no terminó el tema anterior…"
-                        style={{
-                          border: "none", outline: "none", width: "100%",
-                          padding: "10px 12px", fontSize: 13, color: "#004733",
-                          height: 60, resize: "none", fontFamily: "'Lexend', sans-serif",
-                          background: "#fff",
-                        }}
-                      />
-                    </div>
+                    <textarea
+                      value={contextoLibre}
+                      onChange={e => setContextoLibre(e.target.value)}
+                      maxLength={150}
+                      placeholder="Ej: hay alumnos con dislexia, el grupo no terminó el tema anterior…"
+                      style={{
+                        width: "100%", minHeight: 60, border: "1.5px solid #D4E6DE",
+                        borderRadius: 10, outline: "none",
+                        padding: "10px 14px", fontSize: 13, color: "#004733",
+                        resize: "none", fontFamily: "'Lexend', sans-serif",
+                        background: "#fff", transition: "border-color 0.2s",
+                        boxSizing: "border-box",
+                      }}
+                      onFocus={e => { e.target.style.borderColor = "#00c48c"; }}
+                      onBlur={e => { e.target.style.borderColor = "#D4E6DE"; }}
+                    />
                     <p style={{ fontSize: 11, color: contextoLibre.length > 120 ? "#F5A623" : "#4a6b60", textAlign: "right", margin: "4px 0 0" }}>
                       {contextoLibre.length} / 150
                     </p>
