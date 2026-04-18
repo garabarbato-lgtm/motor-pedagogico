@@ -342,6 +342,125 @@ function AcordeonBloques({ bloques, contenidosPorBloque, registroSeleccionado, o
   );
 }
 
+function Shimmer({ delay = "0s" }) {
+  return (
+    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.65) 50%,transparent 100%)", animation: "shimmer 1.8s ease-in-out infinite", animationDelay: delay }} />
+  );
+}
+
+function WLine({ delay = "0s", color = "#D4E6DE", dur = "2.8s" }) {
+  return (
+    <div style={{ height: 6, width: "100%", borderRadius: 3, background: color, transformOrigin: "left center", animation: `writeLine ${dur} ease-in-out infinite`, animationDelay: delay, flexShrink: 0 }} />
+  );
+}
+
+function FichaSkeletonDynamic({ momento }) {
+  const BK = "#0d1f1a";
+  const FH = "#f5f5f5";
+  const EASE = "0.5s cubic-bezier(0.4,0,0.2,1)";
+  const body = 340;
+
+  const specs = {
+    "Presentación":         { expH: Math.round(body * 0.72), actH: Math.round(body * 0.28) },
+    "Práctica":             { expH: Math.round(body * 0.18), actH: Math.round(body * 0.82) },
+    "Cierre / Integración": { expH: null, actH: null },
+  };
+
+  const isCierre = momento === "Cierre / Integración";
+  const { expH, actH } = specs[momento] || specs["Presentación"];
+
+  const SecLabel = ({ num, label }) => (
+    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6, paddingBottom: 4, borderBottom: `1.5px solid ${BK}` }}>
+      <div style={{ width: 14, height: 14, borderRadius: "50%", background: BK, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, flexShrink: 0 }}>{num}</div>
+      <span style={{ fontSize: 9, fontWeight: 700, color: BK }}>{label}</span>
+    </div>
+  );
+
+  const ExplBlock = ({ h }) => (
+    <div style={{ height: h, padding: "8px 12px", background: "#fff", borderBottom: `1px solid ${C.bordeSuave}`, transition: `height ${EASE}`, overflow: "hidden", flexShrink: 0, display: "flex", flexDirection: "column" }}>
+      <SecLabel num="1" label="Leemos juntos" />
+      <div style={{ background: "#E6FAF3", borderLeft: "2px solid #00c48c", borderRadius: "0 4px 4px 0", padding: "8px 10px", display: "flex", flexDirection: "column", gap: 5, flex: 1, justifyContent: "space-around" }}>
+        {[0, 0.3, 0.6, 1.0, 1.3, 1.6].map((d, i) => <WLine key={i} delay={`${d}s`} color="#b2dfd0" dur="3s" />)}
+      </div>
+    </div>
+  );
+
+  const ActBlock = ({ h }) => (
+    <div style={{ height: h, padding: "8px 12px", background: "#fff", transition: `height ${EASE}`, overflow: "hidden", flexShrink: 0, display: "flex", flexDirection: "column" }}>
+      <SecLabel num="2" label="Tu turno" />
+      <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-evenly", flex: 1 }}>
+        {[0, 0.6, 1.2, 1.8].map((d, i) => (
+          <div key={i}>
+            <WLine delay={`${d}s`} dur="2.8s" />
+            <div style={{ height: 16, border: `1px solid ${C.bordeSuave}`, borderRadius: 3, marginTop: 4, position: "relative", overflow: "hidden" }}>
+              <Shimmer delay={`${d + 0.2}s`} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const cierreH = Math.round(body / 4);
+  const cierreBlocks = [
+    { num: "1", label: "Nivel 1" }, { num: "2", label: "Nivel 2" },
+    { num: "3", label: "Nivel 3" }, { num: "·", label: "Para pensar" },
+  ];
+
+  return (
+    <div style={{ borderRadius: 8, overflow: "hidden", border: `2px solid ${BK}`, boxShadow: "0 4px 20px rgba(0,0,0,0.12)", fontFamily: "'Lexend',sans-serif" }}>
+      {/* Header */}
+      <div style={{ background: BK, padding: "10px 14px" }}>
+        <div style={{ display: "flex", gap: 4, marginBottom: 6 }}>
+          {[30, 80, 60].map((w, i) => (
+            <div key={i} style={{ height: 13, width: w, borderRadius: 4, background: "rgba(0,196,140,0.28)", position: "relative", overflow: "hidden" }}>
+              <Shimmer delay={`${i * 0.15}s`} />
+            </div>
+          ))}
+        </div>
+        <div style={{ height: 15, width: "55%", borderRadius: 4, background: "rgba(255,255,255,0.2)", position: "relative", overflow: "hidden", marginBottom: 8 }}>
+          <Shimmer delay="0.1s" />
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 8 }}>
+          {["Nombre", "Fecha", "Grado"].map(l => (
+            <div key={l}>
+              <div style={{ fontSize: 6, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", marginBottom: 2 }}>{l}</div>
+              <div style={{ borderBottom: "1.5px solid rgba(255,255,255,0.2)", height: 14 }} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Body */}
+      {isCierre ? (
+        <div style={{ background: "#fff" }}>
+          {cierreBlocks.map((b, i) => (
+            <div key={i} style={{ height: cierreH, padding: "8px 12px", borderBottom: i < 3 ? `1px solid ${C.bordeSuave}` : "none", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+              <SecLabel num={b.num} label={b.label} />
+              <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-evenly", flex: 1 }}>
+                <WLine delay={`${i * 0.3}s`} dur="2.8s" />
+                <div style={{ height: 14, border: `1px solid ${C.bordeSuave}`, borderRadius: 3, position: "relative", overflow: "hidden" }}><Shimmer delay={`${i * 0.15}s`} /></div>
+                <div style={{ height: 14, border: `1px solid ${C.bordeSuave}`, borderRadius: 3, position: "relative", overflow: "hidden" }}><Shimmer delay={`${i * 0.2}s`} /></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div style={{ background: "#fff" }}>
+          <ExplBlock h={expH} />
+          <ActBlock h={actH} />
+        </div>
+      )}
+
+      {/* Footer */}
+      <div style={{ background: FH, borderTop: `1.5px solid ${BK}`, padding: "5px 14px", display: "flex", justifyContent: "space-between" }}>
+        <span style={{ fontSize: 7, color: "#999", fontFamily: "'Lexend',sans-serif" }}>tiza. · DC PBA 2018</span>
+        <span style={{ fontSize: 7, color: "#999" }}>5° · contenido</span>
+      </div>
+    </div>
+  );
+}
+
 function SidebarPreview({ gradoData, area, registro, tipoFicha, genero }) {
   const tituloFicha = registro
     ? (registro.subtema || registro.item_original)
@@ -751,6 +870,21 @@ export default function Generador({ onFichaGenerada, onVolver }) {
           0%   { background: #E6FAF3; }
           40%  { background: #b2f0da; }
           100% { background: #E6FAF3; }
+        }
+        @keyframes shimmer {
+          0%   { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        @keyframes writeLine {
+          0%   { transform: scaleX(0); opacity: 0.2; }
+          18%  { opacity: 1; }
+          65%  { transform: scaleX(1); opacity: 1; }
+          88%  { transform: scaleX(1); opacity: 0.8; }
+          100% { transform: scaleX(0); opacity: 0.2; }
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0.35; }
         }
         * { box-sizing: border-box; }
       `}</style>
@@ -1185,36 +1319,74 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                 </PasoWrap>
               )}
 
-              {/* ── Loading ── */}
+              {/* ── Loading: skeleton + status pill ── */}
               {generando && (
-                <div style={{ padding: "48px 0", animation: "fadeUp 0.4s both" }}>
-                  <div style={{
-                    background: C.verdeClaroBg, borderRadius: 20,
-                    padding: "44px 36px", textAlign: "center", maxWidth: 420, margin: "0 auto",
-                  }}>
-                    <div style={{ position: "relative", width: 72, height: 72, margin: "0 auto 32px" }}>
-                      <div style={{
-                        position: "absolute", inset: 0,
-                        border: "4px solid rgba(0,196,140,0.2)",
-                        borderTopColor: C.verdeAcento, borderRadius: "50%",
-                        animation: "spin 1.8s linear infinite",
-                      }} />
-                      <span style={{
-                        position: "absolute", inset: 0,
-                        display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26,
-                      }}>✏️</span>
-                    </div>
-                    <p style={{
-                      fontSize: 17, fontWeight: 700, color: C.textoPrincipal,
-                      marginBottom: 24, minHeight: 28,
+                <div style={{ padding: "32px 0", animation: "fadeUp 0.4s both" }}>
+                  {/* Status pill */}
+                  <div style={{ textAlign: "center", marginBottom: 20 }}>
+                    <div style={{
+                      display: "inline-flex", alignItems: "center", gap: 10,
+                      background: "#fff", border: `1px solid ${C.bordeSuave}`,
+                      borderRadius: 99, padding: "10px 22px",
+                      boxShadow: "0 2px 12px rgba(0,71,51,0.08)",
                       opacity: msgVisible ? 1 : 0, transition: "opacity 0.3s ease",
-                    }}>{getMensaje(msgIdx)}</p>
-                    <div style={{ height: 5, background: "rgba(0,196,140,0.2)", borderRadius: 999, overflow: "hidden" }}>
-                      <div style={{
-                        height: "100%", background: C.verdeAcento, borderRadius: 999,
-                        width: mensajeLoading === 0 ? "30%" : mensajeLoading === 1 ? "75%" : "100%",
-                        transition: "width 1.5s ease",
-                      }} />
+                    }}>
+                      <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.verdeAcento, animation: "pulse 1.2s ease-in-out infinite" }} />
+                      <span style={{ fontSize: 13, color: C.textoPrincipal, fontWeight: 500 }}>{getMensaje(msgIdx)}</span>
+                    </div>
+                    <p style={{ fontSize: 11, color: C.textoMuted, marginTop: 8 }}>Promedio: ~15 segundos · No cierres la pestaña</p>
+                  </div>
+
+                  {/* Shimmer skeleton de la ficha */}
+                  <div style={{ maxWidth: 480, margin: "0 auto", borderRadius: 10, overflow: "hidden", border: `2px solid ${C.verdeOscuro}`, boxShadow: "0 4px 24px rgba(0,30,20,0.1)" }}>
+                    {/* Header skeleton */}
+                    <div style={{ background: C.verdeOscuro, padding: "14px 18px" }}>
+                      <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
+                        {[52, 74, 96].map((w, i) => (
+                          <div key={i} style={{ height: 16, width: w, borderRadius: 4, background: "rgba(0,196,140,0.25)", position: "relative", overflow: "hidden" }}>
+                            <Shimmer delay={`${i * 0.2}s`} />
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ height: 18, width: "55%", borderRadius: 5, background: "rgba(255,255,255,0.2)", position: "relative", overflow: "hidden", marginBottom: 12 }}>
+                        <Shimmer delay="0.1s" />
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 14 }}>
+                        {[1, 2].map(i => (
+                          <div key={i}>
+                            <div style={{ height: 7, width: "40%", borderRadius: 3, background: "rgba(255,255,255,0.2)", marginBottom: 6, position: "relative", overflow: "hidden" }}><Shimmer delay={`${i * 0.15}s`} /></div>
+                            <div style={{ borderBottom: "1.5px solid rgba(255,255,255,0.18)", height: 18 }} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    {/* Body skeleton */}
+                    <div style={{ padding: "16px 18px", background: "#fff", display: "flex", flexDirection: "column", gap: 16 }}>
+                      {[1, 2].map(si => (
+                        <div key={si}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                            <div style={{ width: 18, height: 18, borderRadius: "50%", background: C.bordeSuave, position: "relative", overflow: "hidden" }}><Shimmer /></div>
+                            <div style={{ height: 8, width: 90, borderRadius: 4, background: C.bordeSuave, position: "relative", overflow: "hidden" }}><Shimmer delay="0.1s" /></div>
+                          </div>
+                          <div style={{ background: si === 1 ? C.verdeClaroBg : "transparent", borderLeft: si === 1 ? `3px solid ${C.bordeSuave}` : "none", borderRadius: "0 5px 5px 0", padding: si === 1 ? "10px 12px" : "0", display: "flex", flexDirection: "column", gap: 6 }}>
+                            {[95, 82, 70, 55].slice(0, si === 1 ? 4 : 2).map((w, i) => (
+                              <div key={i} style={{ height: 6, width: `${w}%`, borderRadius: 3, background: C.bordeSuave, position: "relative", overflow: "hidden" }}>
+                                <Shimmer delay={`${i * 0.12}s`} />
+                              </div>
+                            ))}
+                            {si === 2 && [1, 2].map(j => (
+                              <div key={j} style={{ height: 28, border: `1px solid ${C.bordeSuave}`, borderRadius: 5, position: "relative", overflow: "hidden" }}>
+                                <Shimmer delay={`${j * 0.2}s`} />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Footer skeleton */}
+                    <div style={{ background: C.fondoApp, borderTop: `1px solid ${C.bordeSuave}`, padding: "8px 18px", display: "flex", justifyContent: "space-between" }}>
+                      <div style={{ height: 7, width: 80, borderRadius: 3, background: C.bordeSuave, position: "relative", overflow: "hidden" }}><Shimmer /></div>
+                      <div style={{ height: 7, width: 100, borderRadius: 3, background: C.bordeSuave, position: "relative", overflow: "hidden" }}><Shimmer delay="0.2s" /></div>
                     </div>
                   </div>
                 </div>
