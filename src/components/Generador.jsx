@@ -988,12 +988,21 @@ export default function Generador({ onFichaGenerada, onVolver }) {
               <Logo size={28} color="#ffffff" />
             </div>
             
+            {paso >= 1 && paso < 4 && !generando && (
+              <span style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", fontWeight: 600 }}>
+                Elegí el contenido
+              </span>
+            )}
+
             <button
               onClick={() => {
-                if (paso <= 1) {
-                  onVolver();
+                if (paso >= 4) {
+                  irAPaso(1, () => { setRegistro(null); setTipoFicha(null); setGenero(null); });
                 } else {
-                  cambiarDesde(paso - 1);
+                  irAPaso(0, () => {
+                    setGradoData(null); setArea(null); setAreaConfig(null);
+                    setRegistro(null); setTipoFicha(null); setGenero(null);
+                  });
                 }
               }}
               style={{
@@ -1029,7 +1038,131 @@ export default function Generador({ onFichaGenerada, onVolver }) {
             }} />
           </div>
 
-          {/* Grid */}
+          {/* ── FINDER: pasos 1–3 ── */}
+          {paso >= 1 && paso < 4 && !generando && (
+            <div style={{ display: "flex", height: "calc(100vh - 65px)", overflow: "hidden" }}>
+
+              {/* Columna 1: Grado */}
+              <div style={{ width: 176, flexShrink: 0, borderRight: `1px solid ${C.bordeSuave}`, overflowY: "auto", background: C.fondoCard }}>
+                <div style={{ padding: "10px 16px 8px", fontSize: 10, fontWeight: 700, color: C.textoMuted, textTransform: "uppercase", letterSpacing: "0.07em", borderBottom: `1px solid ${C.bordeSuave}`, background: C.fondoApp }}>Grado</div>
+                {GRADOS.map(g => {
+                  const activo = gradoData?.num === g.num;
+                  return (
+                    <button key={g.num}
+                      onClick={() => { setGradoData(g); setArea(null); setAreaConfig(null); setRegistro(null); setTipoFicha(null); setGenero(null); }}
+                      style={{ width: "100%", padding: "14px 16px", textAlign: "left", border: "none", borderBottom: `1px solid ${C.bordeHover}`, background: activo ? C.verdeOscuro : "transparent", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", transition: "background 0.15s", fontFamily: "'Lexend', sans-serif" }}
+                      onMouseEnter={e => { if (!activo) e.currentTarget.style.background = "#F0FBF7"; }}
+                      onMouseLeave={e => { if (!activo) e.currentTarget.style.background = "transparent"; }}
+                    >
+                      <div>
+                        <div style={{ fontSize: 18, fontWeight: 700, color: activo ? "#fff" : C.textoPrincipal }}>{g.num}</div>
+                        <div style={{ fontSize: 10, color: activo ? "rgba(255,255,255,0.6)" : C.textoMuted, marginTop: 2 }}>{g.ciclo}</div>
+                      </div>
+                      {activo && <span style={{ color: C.verdeAcento, fontSize: 18 }}>›</span>}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Columna 2: Área */}
+              <div style={{ width: 220, flexShrink: 0, borderRight: `1px solid ${C.bordeSuave}`, overflowY: "auto", background: C.fondoCard }}>
+                <div style={{ padding: "10px 16px 8px", fontSize: 10, fontWeight: 700, color: C.textoMuted, textTransform: "uppercase", letterSpacing: "0.07em", borderBottom: `1px solid ${C.bordeSuave}`, background: C.fondoApp }}>
+                  Área{gradoData ? ` · ${gradoData.num} grado` : ""}
+                </div>
+                {!gradoData ? (
+                  <p style={{ padding: "20px 16px", fontSize: 12, color: C.textoMuted, fontStyle: "italic" }}>Elegí un grado</p>
+                ) : areasDisponibles.map(a => {
+                  const activo = area === a.nombre;
+                  return (
+                    <button key={a.nombre}
+                      onClick={() => { setArea(a.nombre); setAreaConfig(a); setRegistro(null); setTipoFicha(null); setGenero(null); }}
+                      style={{ width: "100%", padding: "14px 16px", textAlign: "left", border: "none", borderBottom: `1px solid ${C.bordeHover}`, background: activo ? C.verdeClaroBg : "transparent", cursor: "pointer", display: "flex", alignItems: "center", gap: 12, transition: "background 0.15s", fontFamily: "'Lexend', sans-serif" }}
+                      onMouseEnter={e => { if (!activo) e.currentTarget.style.background = "#F0FBF7"; }}
+                      onMouseLeave={e => { if (!activo) e.currentTarget.style.background = "transparent"; }}
+                    >
+                      <span style={{ fontSize: 22, flexShrink: 0 }}>{a.emoji}</span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: activo ? 700 : 500, color: C.textoPrincipal }}>{a.nombre}</div>
+                        <div style={{ fontSize: 11, color: C.textoMuted, marginTop: 2 }}>{a.desc}</div>
+                      </div>
+                      {activo && <span style={{ color: C.verdeAcento, fontSize: 18, flexShrink: 0 }}>›</span>}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Columna 3: Contenido */}
+              <div style={{ flex: 1, overflowY: "auto", borderRight: `1px solid ${C.bordeSuave}`, background: "#fff" }}>
+                <div style={{ padding: "10px 16px 8px", fontSize: 10, fontWeight: 700, color: C.textoMuted, textTransform: "uppercase", letterSpacing: "0.07em", borderBottom: `1px solid ${C.bordeSuave}`, background: C.fondoApp }}>
+                  Contenido{area ? ` · ${area}` : ""}
+                </div>
+                {!area ? (
+                  <p style={{ padding: "20px 16px", fontSize: 12, color: C.textoMuted, fontStyle: "italic" }}>Elegí un área</p>
+                ) : (
+                  <div style={{ padding: "12px 16px" }}>
+                    <AcordeonBloques
+                      bloques={bloquesDisponibles}
+                      contenidosPorBloque={contenidosPorBloque}
+                      registroSeleccionado={registro}
+                      onSelect={(r) => {
+                        setRegistro(r);
+                        if (r.area === "Prácticas del Lenguaje") {
+                          const tipo = pdlBloqueATipo(r.bloque);
+                          if (tipo) { setTipoFicha(tipo); setGenero(r.subtema || r.item_original); }
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Columna 4: Configuración */}
+              <aside style={{ width: 260, flexShrink: 0, background: C.fondoCard, borderLeft: `1px solid ${C.bordeSuave}`, display: "flex", flexDirection: "column", padding: 20, overflowY: "auto" }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: C.textoMuted, textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 14px" }}>Tu configuración</p>
+                {[
+                  { label: "Grado",     val: gradoData ? `${gradoData.num} grado` : null },
+                  { label: "Área",      val: area },
+                  { label: "Contenido", val: registro?.subtema || registro?.item_original },
+                ].map(({ label, val }) => (
+                  <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: `1px solid ${C.bordeHover}` }}>
+                    <span style={{ fontSize: 11, color: C.textoMuted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      {val ? (
+                        <>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: C.textoPrincipal, maxWidth: 110, textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{val}</span>
+                          <span style={{ color: C.verdeAcento, fontSize: 14, fontWeight: 700 }}>✓</span>
+                        </>
+                      ) : (
+                        <span style={{ fontSize: 12, color: C.textoDisabled, fontStyle: "italic" }}>—</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                <div style={{ flex: 1, marginTop: 20, minHeight: 0 }}>
+                  <FichaSkeletonDynamic momento="Presentación" />
+                </div>
+                <button
+                  disabled={!registro}
+                  onClick={() => irAPaso(4, () => {})}
+                  style={{
+                    width: "100%", padding: "14px 0", marginTop: 16,
+                    background: registro ? C.verdeOscuro : C.bordeSuave,
+                    color: registro ? "#fff" : C.textoDisabled,
+                    border: "none", borderRadius: 12, fontSize: 15, fontWeight: 700,
+                    cursor: registro ? "pointer" : "not-allowed",
+                    transition: "all 0.2s", fontFamily: "'Lexend', sans-serif",
+                  }}
+                  onMouseEnter={e => { if (registro) e.currentTarget.style.background = C.verdeHoverBtn; }}
+                  onMouseLeave={e => { if (registro) e.currentTarget.style.background = C.verdeOscuro; }}
+                >
+                  Continuar →
+                </button>
+              </aside>
+            </div>
+          )}
+
+          {/* ── GRID: paso 4 + generando ── */}
+          {(paso === 4 || generando) && (
           <div style={{
             display: "grid",
             gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
@@ -1086,120 +1219,9 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                 }}>{error}</div>
               )}
 
-              {/* ── PASO 1: Grado ── */}
-              {paso === 1 && (
-                <PasoWrap onMount={(el) => { pasoWrapEl.current = el; }}>
-                  <PreguntaHeader pregunta="¿Con qué grado trabajamos hoy?" sub="Elegí el año de la primaria" />
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
-                    {GRADOS.map((g) => (
-                      <GradoBtn key={g.num} g={g} activo={gradoData?.num === g.num}
-                        onClick={() => {
-                          irAPaso(2, () => {
-                            setGradoData(g);
-                            setArea(null); setAreaConfig(null); setRegistro(null);
-                          });
-                        }}
-                      />
-                    ))}
-                  </div>
-                </PasoWrap>
-              )}
 
-              {/* ── PASO 2: Área ── */}
-              {paso === 2 && (
-                <PasoWrap onMount={(el) => { pasoWrapEl.current = el; }}>
-                  <button onClick={() => cambiarDesde(1)} style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: 13, color: C.textoMuted, padding: 0, marginBottom: 16, fontFamily: "'Lexend', sans-serif" }}>‹ Volver</button>
-                  <PreguntaHeader pregunta="¿Qué área trabajamos?" sub={`${gradoData?.num} · elegí la materia`} />
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                    {areasDisponibles.map((a) => (
-                      <AreaBtn key={a.nombre} a={a} activo={area === a.nombre}
-                        onClick={() => {
-                          irAPaso(3, () => {
-                            setArea(a.nombre); setAreaConfig(a);
-                            setRegistro(null); setBusqueda("");
-                          });
-                        }}
-                      />
-                    ))}
-                  </div>
-                </PasoWrap>
-              )}
 
-              {/* ── PASO 3: Contenido — áreas no-PDL ── */}
-              {paso === 3 && area !== "Prácticas del Lenguaje" && (
-                <PasoWrap onMount={(el) => { pasoWrapEl.current = el; }}>
-                  <button onClick={() => cambiarDesde(2)} style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: 13, color: C.textoMuted, padding: 0, marginBottom: 16, fontFamily: "'Lexend', sans-serif" }}>‹ Volver</button>
-                  <PreguntaHeader
-                    pregunta={`¿Qué contenido de ${area}?`}
-                    sub="Diseño Curricular PBA · elegí el bloque y el objetivo"
-                  />
-                  <AcordeonBloques
-                    bloques={bloquesDisponibles}
-                    contenidosPorBloque={contenidosPorBloque}
-                    registroSeleccionado={registro}
-                    onSelect={(r) => { irAPaso(4, () => setRegistro(r)); }}
-                  />
-                </PasoWrap>
-              )}
 
-              {/* ── PASO 3: PDL cascada ── */}
-              {paso === 3 && area === "Prácticas del Lenguaje" && (
-                <PasoWrap onMount={(el) => { pasoWrapEl.current = el; }}>
-                  <button onClick={() => cambiarDesde(2)} style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: 13, color: C.textoMuted, padding: 0, marginBottom: 16, fontFamily: "'Lexend', sans-serif" }}>‹ Volver</button>
-                  {!tipoFicha ? (
-                    <>
-                      <PreguntaHeader pregunta="¿Qué tipo de ficha?" sub={`Prácticas del Lenguaje · ${gradoData?.num}`} />
-                      {PDL_TIPOS.map((tipo) => (
-                        <button key={tipo} onClick={() => setTipoFicha(tipo)} style={{
-                          width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
-                          background: C.fondoCard, border: `1px solid ${C.bordeSuave}`,
-                          borderRadius: 12, padding: "14px 18px", cursor: "pointer", marginBottom: 8,
-                          fontSize: 15, fontWeight: 600, color: C.textoPrincipal, textAlign: "left",
-                          transition: "all 0.15s", boxShadow: "0 1px 4px rgba(0,71,51,0.04)",
-                        }}
-                          onMouseEnter={e => { e.currentTarget.style.background = "#F0FBF7"; e.currentTarget.style.borderColor = C.verdeAcento; e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,71,51,0.10)"; }}
-                          onMouseLeave={e => { e.currentTarget.style.background = C.fondoCard; e.currentTarget.style.borderColor = C.bordeSuave; e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,71,51,0.04)"; }}
-                        >
-                          {tipo}
-                          <span style={{ fontSize: 18, color: C.textoDisabled }}>›</span>
-                        </button>
-                      ))}
-                    </>
-                  ) : (
-                    <>
-                      <PreguntaHeader
-                        pregunta={tipoFicha === "Ortografía" ? "¿Qué regla ortográfica?" : "¿Qué tipo de texto?"}
-                        sub={tipoFicha}
-                      />
-                      <button onClick={() => setTipoFicha(null)} style={{
-                        display: "flex", alignItems: "center", gap: 4,
-                        fontSize: 13, color: C.textoMuted, background: "none", border: "none",
-                        cursor: "pointer", padding: "0 0 16px", fontFamily: "'Lexend', sans-serif",
-                      }}
-                        onMouseEnter={e => e.currentTarget.style.color = C.textoPrincipal}
-                        onMouseLeave={e => e.currentTarget.style.color = C.textoMuted}
-                      >
-                        ‹ volver a tipos
-                      </button>
-                      {getPDLGeneros(tipoFicha, gradoNum).map((gen) => (
-                        <button key={gen} onClick={() => { irAPaso(4, () => setGenero(gen)); }} style={{
-                          width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
-                          background: C.fondoCard, border: `1px solid ${C.bordeSuave}`,
-                          borderRadius: 12, padding: "13px 18px", cursor: "pointer", marginBottom: 8,
-                          fontSize: 14, fontWeight: 400, color: C.textoSec, textAlign: "left",
-                          transition: "all 0.15s",
-                        }}
-                          onMouseEnter={e => { e.currentTarget.style.background = "#F0FBF7"; e.currentTarget.style.borderColor = C.verdeAcento; e.currentTarget.style.color = C.textoPrincipal; }}
-                          onMouseLeave={e => { e.currentTarget.style.background = C.fondoCard; e.currentTarget.style.borderColor = C.bordeSuave; e.currentTarget.style.color = C.textoSec; }}
-                        >
-                          {gen}
-                          <span style={{ fontSize: 18, color: C.textoDisabled }}>›</span>
-                        </button>
-                      ))}
-                    </>
-                  )}
-                </PasoWrap>
-              )}
 
               {/* ── PASO 4: Opciones + Generar ── */}
               {paso === 4 && !generando && (
@@ -1404,31 +1426,10 @@ export default function Generador({ onFichaGenerada, onVolver }) {
               height: isMobile ? "auto" : "calc(100vh - 60px)",
               overflowY: "auto", order: isMobile ? 2 : 0,
             }}>
-              <SidebarPreview
-                gradoData={gradoData} area={area} areaConfig={areaConfig}
-                registro={registro} tipoFicha={tipoFicha} genero={genero}
-              />
-
-              <div style={{ background: C.fondoApp, borderRadius: 12, padding: "14px 16px" }}>
-                {[
-                  { key: "Grado",    val: gradoData?.num },
-                  { key: "Área",     val: area },
-                  { key: "Contenido", val: area === "Prácticas del Lenguaje"
-                    ? (genero ? `${tipoFicha} · ${genero}` : tipoFicha)
-                    : (registro?.subtema || registro?.item_original) },
-                ].map(({ key, val }) => (
-                  <div key={key} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, marginBottom: 6 }}>
-                    <span style={{ fontSize: 11, color: C.textoMuted, flexShrink: 0 }}>{key}</span>
-                    <span style={{
-                      fontSize: 11, color: val ? C.textoPrincipal : "#C4D9D0",
-                      fontWeight: val ? 600 : 400, fontStyle: val ? "normal" : "italic",
-                      textAlign: "right", maxWidth: 150,
-                      overflow: "hidden", textOverflow: "ellipsis",
-                      display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
-                    }}>{val || "—"}</span>
-                  </div>
-                ))}
-              </div>
+              <p style={{ fontSize: 10, fontWeight: 700, color: C.textoMuted, textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 12px" }}>
+                Vista previa · {momento || "Presentación"}
+              </p>
+              <FichaSkeletonDynamic momento={momento || "Presentación"} />
 
               <a
                 href="https://www.abc.gob.ar/secretarias/sites/default/files/2024-07/diseno-curricular-primaria-2018.pdf"
@@ -1446,6 +1447,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
               </a>
             </aside>
           </div>
+          )}
         </>
       )}
     </div>
