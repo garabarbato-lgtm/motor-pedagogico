@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import Logo from "./Logo.jsx";
+import FeedbackButton from "./FeedbackButton.jsx";
 
 // ── Colores (copiado de FichaTrabajo) ──
 const C = {
@@ -353,6 +354,7 @@ export default function FichaPresenta({ ficha, registro, validacion, onNueva, on
   if (!ficha || !registro) return null;
 
   const [imprimiendo, setImprimiendo] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [fichaLocal, setFichaLocal] = useState(() => ({ ...ficha }));
   const [editandoCampo, setEditandoCampo] = useState(null);
   const [planosLocal, setPlanosLocal] = useState(() => initFieldDataPresenta(ficha));
@@ -491,8 +493,9 @@ export default function FichaPresenta({ ficha, registro, validacion, onNueva, on
   };
 
   const handleDescargarPDF = async () => {
+    setIsDownloading(true);
     const element = document.getElementById("ficha-imprimible");
-    if (!element) { console.error("No se encontró #ficha-imprimible"); return; }
+    if (!element) { console.error("No se encontró #ficha-imprimible"); setIsDownloading(false); return; }
     const areaSlug = registro.area.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
     const filename = `tiza-${areaSlug}-${registro.grado}.pdf`;
     const prevBorder = element.style.border;
@@ -512,6 +515,7 @@ export default function FichaPresenta({ ficha, registro, validacion, onNueva, on
     const altoImg = (canvas.height * anchoImg) / canvas.width;
     pdf.addImage(imgData, "JPEG", 0, 0, anchoImg, altoImg);
     pdf.save(filename);
+    setIsDownloading(false);
   };
 
   // ── Render ──
@@ -878,7 +882,7 @@ export default function FichaPresenta({ ficha, registro, validacion, onNueva, on
           .seccion:last-of-type { flex: 1; }
         }
       `}</style>
-
+      <FeedbackButton isDownloading={isDownloading} />
     </div>
   );
 }
