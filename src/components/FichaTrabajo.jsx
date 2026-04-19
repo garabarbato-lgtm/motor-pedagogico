@@ -5,6 +5,7 @@ import Logo from "./Logo.jsx";
 import FichaPresenta from "./FichaPresenta.jsx";
 import FichaPractica from "./FichaPractica.jsx";
 import FichaCierre from "./FichaCierre.jsx";
+import FeedbackButton from "./FeedbackButton.jsx";
 
 const C = {
   fondo: "#ffffff",
@@ -224,6 +225,7 @@ function LineaDoble() {
 
 export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onInicio }) {
   const [imprimiendo, setImprimiendo] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [fichaLocal, setFichaLocal] = useState(() => {
     const f = { ...ficha };
     if (f.explicacion && typeof f.explicacion === 'object') {
@@ -681,8 +683,9 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   };
 
   const handleDescargarPDF = async () => {
+    setIsDownloading(true);
     const element = document.getElementById("ficha-imprimible");
-    if (!element) { console.error("No se encontró #ficha-imprimible"); return; }
+    if (!element) { console.error("No se encontró #ficha-imprimible"); setIsDownloading(false); return; }
     const areaSlug = registro.area.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
     const filename = `tiza-${areaSlug}-${registro.grado}.pdf`;
 
@@ -713,6 +716,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
       posY += altoPagina;
     }
     pdf.save(filename);
+    setIsDownloading(false);
   };
 
   // ── Routing por tipo_ficha ──
@@ -1422,6 +1426,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
           .seccion:last-of-type { flex: 1; }
         }
       `}</style>
+      <FeedbackButton isDownloading={isDownloading} />
     </div>
   );
 }
