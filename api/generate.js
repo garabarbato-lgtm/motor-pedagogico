@@ -952,15 +952,20 @@ export default async function handler(req, res) {
   }
 
   try {
-    const resultado = await runPipeline(contenido, tipoFicha);
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("TIMEOUT")), 55000)
+    );
+    const resultado = await Promise.race([runPipeline(contenido, tipoFicha), timeout]);
 
-    // DIAGNÓSTICO: ver estructura completa antes de enviar al frontend
     console.log("[DIAGNÓSTICO] JSON completo que se envía al frontend:");
     console.log(JSON.stringify(resultado, null, 2));
 
     return res.status(200).json(resultado);
   } catch (error) {
+    if (error.message === "TIMEOUT") {
+      return res.status(504).json({ error: "TIMEOUT" });
+    }
     console.error("Error en el pipeline:", error);
-    return res.status(500).json({ error: "Error al generar el recurso" });
+    return res.status(500).json({ error: "SERVER_ERROR" });
   }
 }

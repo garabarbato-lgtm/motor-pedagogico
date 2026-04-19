@@ -648,6 +648,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
   const [generando, setGenerando] = useState(false);
   const [mensajeLoading, setMensajeLoading] = useState(0);
   const [error, setError] = useState(null);
+  const [retryMessage, setRetryMessage] = useState(null);
   const [msgIdx, setMsgIdx] = useState(0);
   const [msgVisible, setMsgVisible] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -781,7 +782,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
   };
 
   // ── API ────────────────────────────────────────────────────────────────
-  const generarConPayload = async (payload, registroParaFicha, isRetry) => {
+  const generarConPayload = async (payload, registroParaFicha, isRetry, isNetworkRetry = false) => {
     const timer4s = setTimeout(() => setMensajeLoading(1), 4000);
     try {
       const res = await fetch("/api/generate", {
@@ -790,7 +791,10 @@ export default function Generador({ onFichaGenerada, onVolver }) {
         body: JSON.stringify(payload),
       });
       clearTimeout(timer4s);
-      if (!res.ok) throw new Error("Error en el servidor");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(res.status === 504 ? "TIMEOUT" : (data.error || "SERVER_ERROR"));
+      }
       const resultado = await res.json();
 
       if (!isRetry && resultado.validacion?.observaciones?.length > 0) {
@@ -799,14 +803,27 @@ export default function Generador({ onFichaGenerada, onVolver }) {
       } else {
         setMensajeLoading(2);
         setTimeout(() => {
-          setGenerando(false); setError(null);
+          setGenerando(false); setError(null); setRetryMessage(null);
           onFichaGenerada(resultado.ficha, registroParaFicha, null);
         }, 1000);
       }
-    } catch {
+    } catch (err) {
       clearTimeout(timer4s);
-      setGenerando(false); setMensajeLoading(0);
-      setError("No se pudo generar la ficha. Verificá tu conexión e intentá de nuevo.");
+      if (!isNetworkRetry) {
+        const isTimeout = err.message === "TIMEOUT";
+        if (isTimeout) setRetryMessage("Tardó demasiado, reintentando...");
+        await new Promise(r => setTimeout(r, isTimeout ? 500 : 2000));
+        await generarConPayload(payload, registroParaFicha, isRetry, true);
+        return;
+      }
+      setGenerando(false); setMensajeLoading(0); setRetryMessage(null);
+      if (err.message === "TIMEOUT") {
+        setError("El servidor está tardando mucho. Esperá unos minutos e intentá de nuevo.");
+      } else if (!navigator.onLine) {
+        setError("Sin conexión. Verificá el internet e intentá de nuevo.");
+      } else {
+        setError("Algo salió mal. Intentá de nuevo en un momento.");
+      }
     }
   };
 
@@ -1397,7 +1414,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                       opacity: msgVisible ? 1 : 0, transition: "opacity 0.3s ease",
                     }}>
                       <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.verdeAcento, animation: "pulse 1.2s ease-in-out infinite" }} />
-                      <span style={{ fontSize: 13, color: C.textoPrincipal, fontWeight: 500 }}>{getMensaje(msgIdx)}</span>
+                      <span style={{ fontSize: 13, color: C.textoPrincipal, fontWeight: 500 }}>{retryMessage || getMensaje(msgIdx)}</span>
                     </div>
                     <p style={{ fontSize: 11, color: C.textoMuted, marginTop: 8 }}>Promedio: ~15 segundos · No cierres la pestaña</p>
                   </div>

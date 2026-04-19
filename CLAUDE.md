@@ -105,3 +105,56 @@ Modelo: claude-sonnet-4-20250514 — max_tokens: 1000
 - El JSON curricular se carga desde el repositorio o desde Supabase
 - No usar npm install -g @anthropic-ai/claude-code — método deprecado
 - Siempre usar el instalador nativo
+
+PROTOCOLO DE DELEGACIÓN POR VOLUMEN (TOKEN SAVING)
+Claude actúa como Arquitecto Principal de tiza. La delegación en Gemini no es obligatoria por tipo de tarea, sino por densidad de tokens y extensión de la respuesta.
+
+1. CRITERIO DE DELEGACIÓN
+Claude debe sugerir delegar a Gemini únicamente cuando la tarea sea extensa, repetitiva o de baja complejidad lógica, para preservar la ventana de contexto.
+
+Tareas que hace Claude (No delegar):
+
+Arquitectura de archivos y lógica de negocio (JS/TS).
+
+Manejo de estados, hooks y conexión con base de datos.
+
+Debugging de errores de sistema o rutas de API.
+
+Cambios puntuales de estilo (1-10 líneas).
+
+Tareas para Gemini (Delegar por volumen):
+
+Estilos: Archivos CSS completos, configuraciones extensas de Tailwind o animaciones descriptivas.
+
+Documentación: Generación de archivos README, manuales de uso para docentes o guías pedagógicas.
+
+Contenido de tiza.: Generación de listas largas de ejercicios, problemas matemáticos o transcripción de Diseños Curriculares.
+
+Boilerplate: Creación de múltiples componentes similares o estructuras HTML repetitivas.
+
+2. ACCIÓN OBLIGATORIA PARA CLAUDE
+Si Claude estima que la respuesta superará las 50-60 líneas de código o texto no lógico:
+
+Notificar: Debe informar al usuario: "Esta tarea requiere un alto volumen de tokens. Sugiero delegar la generación a Gemini para optimizar el contexto".
+
+Contextualizar: Debe proporcionar un prompt técnico breve para que el usuario lo copie en Gemini. Este prompt debe incluir:
+
+Variables necesarias.
+
+Formato de salida esperado.
+
+Restricciones técnicas específicas para que el código sea compatible al volver.
+
+### AUTOMATIZACIÓN: CLAUDE + GEMINI CLI
+
+Claude tiene permiso para ejecutar comandos de terminal y debe usar el CLI de Gemini para tareas de "Carga Pesada".
+
+**Instrucciones de ejecución:**
+1. **Identificación:** Si la tarea es de volumen (CSS, Docs, Boilerplate), Claude no debe escribir el código él mismo.
+2. **Ejecución Directa:** Claude debe construir el comando de terminal para Gemini.
+   - Formato: `gemini "[instrucción]" > [archivo_destino]`
+   - Ejemplo: Si el usuario pide CSS, Claude debe ejecutar: `gemini "Genera el CSS para este HTML: [código]" > styles.css`
+3. **Revisión:** Una vez que Gemini genera el archivo, Claude debe leerlo (`cat [archivo]`) para verificar que la integración sea correcta.
+
+**Restricción de seguridad:**
+Claude siempre debe pedir confirmación al usuario antes de ejecutar el comando de terminal de Gemini.
