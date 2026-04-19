@@ -310,7 +310,7 @@ export default function Landing({ onEmpezar }) {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{ background: C.btn, padding: "40px 20px", textAlign: "center" }}>
+      <footer style={{ background: C.btn, padding: "20px 20px", textAlign: "center" }}>
         <div style={{ marginBottom: 20 }}>
           <a
             href="https://docs.google.com/forms/d/e/1FAIpQLSdf7onmbIprlcs3jg9-7ZleYS9PFkD4VIYjSJlkv3ykdZM5nQ/viewform"
