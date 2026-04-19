@@ -20,6 +20,19 @@ const C = {
   faded: "#6B8C7D",
 };
 
+/* ── MOBILE HOOK ── */
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 /* ── TIZA SPAN ── */
 
 function TizaSpan({ size = "inherit", color = "#004733" }) {
@@ -92,7 +105,7 @@ function LandingDemoCard() {
 
 /* ── HOW IT WORKS ── */
 
-function HowItWorks({ onEmpezar }) {
+function HowItWorks({ onEmpezar, isMobile }) {
   const steps = [
     { icon: <Search size={24} />, title: "1. Precisar contenido", desc: "Seleccioná grado, área y bloque. El motor te sugiere contenidos exactos del DC PBA." },
     { icon: <Settings2 size={24} />, title: "2. Personalizar", desc: "¿Explicación teórica? ¿Ejemplos concretos? Vos decidís qué elementos pedagógicos incluir." },
@@ -100,8 +113,8 @@ function HowItWorks({ onEmpezar }) {
   ];
 
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 40px" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 48 }}>
+    <div style={{ maxWidth: 1100, margin: "0 auto", padding: isMobile ? "0 16px" : "0 40px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: isMobile ? 28 : 48 }}>
         {steps.map((step, i) => (
           <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
             <div style={{ width: 64, height: 64, background: "#f0fdf9", borderRadius: 16, border: "1px solid #b0e8d4", display: "flex", alignItems: "center", justifyContent: "center", color: C.btn, marginBottom: 24, boxShadow: "0 2px 8px rgba(0,71,51,0.06)" }}>
@@ -133,8 +146,9 @@ function HowItWorks({ onEmpezar }) {
 /* ── ABOUT TIZA ── */
 
 function AboutTiza() {
+  const isMobile = useIsMobile();
   return (
-    <div style={{ maxWidth: 720, margin: "0 auto", padding: "80px 40px", textAlign: "center" }}>
+    <div style={{ maxWidth: 720, margin: "0 auto", padding: isMobile ? "48px 20px" : "80px 40px", textAlign: "center" }}>
       <div style={{ marginBottom: 48 }}>
         <span style={{ fontSize: 12, fontWeight: 800, color: C.acento, background: "#e0faf2", padding: "6px 16px", borderRadius: 20, textTransform: "uppercase", letterSpacing: "0.1em" }}>
           Nuestra Esencia
@@ -167,6 +181,7 @@ function AboutTiza() {
 /* ── LANDING ── */
 
 export default function Landing({ onEmpezar }) {
+  const isMobile = useIsMobile();
   const scrollIndicatorRef = useRef(null);
   const heroBadgeRef = useRef(null);
   const heroTitleRef = useRef(null);
@@ -196,14 +211,14 @@ export default function Landing({ onEmpezar }) {
     <div id="landing-scroll" style={{ fontFamily: "'Lexend', sans-serif", width: "100%", height: "100vh", overflowY: "auto", background: C.fondo, scrollBehavior: "smooth" }}>
 
       {/* ── NAV ── */}
-      <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 40px", background: C.btn, boxShadow: "0 4px 20px rgba(0,0,0,0.1)", position: "sticky", top: 0, zIndex: 100 }}>
+      <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMobile ? "12px 16px" : "16px 40px", background: C.btn, boxShadow: "0 4px 20px rgba(0,0,0,0.1)", position: "sticky", top: 0, zIndex: 100 }}>
         <div onClick={() => document.getElementById("landing-scroll")?.scrollTo({ top: 0, behavior: "smooth" })} style={{ cursor: "pointer" }}>
           <Logo size={28} color="#ffffff" />
         </div>
         <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
           <span
             onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })}
-            style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", cursor: "pointer" }}
+            style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", cursor: "pointer", display: isMobile ? "none" : "inline" }}
           >¿Cómo funciona?</span>
           <button
             onClick={onEmpezar}
@@ -217,8 +232,8 @@ export default function Landing({ onEmpezar }) {
       </nav>
 
       {/* ── HERO ── */}
-      <section style={{ minHeight: "calc(100vh - 62px)", display: "flex", alignItems: "center", background: "#ffffff", position: "relative", padding: "80px 64px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center", maxWidth: 1100, margin: "0 auto", width: "100%" }}>
+      <section style={{ minHeight: "calc(100vh - 62px)", display: "flex", alignItems: "center", background: "#ffffff", position: "relative", padding: isMobile ? "40px 20px 48px" : "80px 64px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 40 : 64, alignItems: "center", maxWidth: 1100, margin: "0 auto", width: "100%" }}>
           <div>
             <div ref={heroBadgeRef} style={{ display: "inline-flex", alignItems: "center", gap: 7, background: C.lbg, border: "1px solid #b0e8d4", borderRadius: 99, padding: "5px 14px", marginBottom: 28 }}>
               <div style={{ width: 7, height: 7, borderRadius: "50%", background: C.acento }} />
@@ -253,7 +268,7 @@ export default function Landing({ onEmpezar }) {
             </div>
           </div>
 
-          <div ref={heroDemoRef} style={{ display: "flex", justifyContent: "center" }}>
+          <div ref={heroDemoRef} style={{ display: isMobile ? "none" : "flex", justifyContent: "center" }}>
             <div style={{ width: 340 }}>
               <LandingDemoCard />
               <p style={{ textAlign: "center", fontSize: 11, color: C.faded, marginTop: 12 }}>~15 segundos · Alineada al DC PBA 2018</p>
@@ -268,14 +283,14 @@ export default function Landing({ onEmpezar }) {
       </section>
 
       {/* ── STRIP 01/02/03 ── */}
-      <section style={{ background: C.app, borderTop: "1px solid " + C.lborder, padding: "20px 64px" }}>
-        <div style={{ display: "flex", maxWidth: 1100, margin: "0 auto" }}>
+      <section style={{ background: C.app, borderTop: "1px solid " + C.lborder, padding: isMobile ? "16px 20px" : "20px 64px" }}>
+        <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", maxWidth: 1100, margin: "0 auto" }}>
           {[
             { n: "01", t: "Elegís el contenido",   s: "Grado, área y bloque del DC PBA" },
             { n: "02", t: "Personalizás opciones", s: "Momento, nivel y contexto del grupo" },
             { n: "03", t: "Descargás la ficha",    s: "PDF profesional listo para el aula" },
           ].map((step, i) => (
-            <div key={i} style={{ flex: 1, display: "flex", alignItems: "center", gap: 14, paddingRight: i < 2 ? 32 : 0, paddingLeft: i > 0 ? 32 : 0, borderRight: i < 2 ? "1px solid " + C.lborder : "none" }}>
+            <div key={i} style={{ flex: 1, display: "flex", alignItems: "center", gap: 14, paddingRight: !isMobile && i < 2 ? 32 : 0, paddingLeft: !isMobile && i > 0 ? 32 : 0, paddingTop: isMobile && i > 0 ? 14 : 0, paddingBottom: isMobile && i < 2 ? 14 : 0, borderRight: !isMobile && i < 2 ? "1px solid " + C.lborder : "none", borderBottom: isMobile && i < 2 ? "1px solid " + C.lborder : "none" }}>
               <div style={{ width: 40, height: 40, borderRadius: 10, background: C.btn, color: C.acento, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, flexShrink: 0 }}>{step.n}</div>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: C.btn, marginBottom: 2 }}>{step.t}</div>
@@ -296,7 +311,7 @@ export default function Landing({ onEmpezar }) {
             ¿Cómo funciona?
           </h2>
         </div>
-        <HowItWorks onEmpezar={onEmpezar} />
+        <HowItWorks onEmpezar={onEmpezar} isMobile={isMobile} />
       </section>
 
       {/* ── ¿QUÉ ES TIZA? ── */}
