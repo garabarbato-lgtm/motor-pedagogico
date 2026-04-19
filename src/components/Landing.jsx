@@ -323,11 +323,6 @@ export default function Landing({ onEmpezar }) {
             Ayudá a que tiza. sea mejor: dejanos tu opinión
           </a>
         </div>
-        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>
-          Basado en el{" "}
-          <a href={DC_URL} target="_blank" rel="noopener noreferrer" style={{ color: C.acento, fontWeight: 500 }}>Diseño Curricular PBA</a>
-          {" "}· DGCyE 2018 · Resolución N° 1482/17
-        </p>
       </footer>
     </div>
   );
