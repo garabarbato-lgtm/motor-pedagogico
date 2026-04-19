@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import Logo from "./Logo.jsx";
-import { MessageSquare } from "lucide-react";
+import SloganSlider from "./SloganSlider.jsx";
+import { Search, Settings2, FileText, Sparkles, ChevronDown, MessageSquare } from "lucide-react";
 
 const DC_URL = "http://servicios.abc.gov.ar/lainstitucion/organismos/consejogeneral/disenioscurriculares/primaria/2018/dis-curricular-PBA-completo.pdf";
 
@@ -18,6 +19,20 @@ const C = {
   app: "#F0F4F2",
   faded: "#6B8C7D",
 };
+
+/* ── TIZA SPAN ── */
+
+function TizaSpan({ size = "inherit", color = "#004733" }) {
+  return (
+    <span style={{ fontFamily: "'Nunito', sans-serif", fontWeight: 900, fontSize: size, letterSpacing: "-0.02em" }}>
+      <span style={{ color }}>t</span>
+      <span style={{ color: C.acento }}>i</span>
+      <span style={{ color }}>z</span>
+      <span style={{ color: C.acento }}>a</span>
+      <span style={{ color }}>.</span>
+    </span>
+  );
+}
 
 /* ── STATIC DEMO CARD ── */
 
@@ -75,14 +90,102 @@ function LandingDemoCard() {
   );
 }
 
+/* ── HOW IT WORKS ── */
+
+function HowItWorks({ onEmpezar }) {
+  const steps = [
+    { icon: <Search size={24} />, title: "1. Precisar contenido", desc: "Seleccioná grado, área y bloque. El motor te sugiere contenidos exactos del DC PBA." },
+    { icon: <Settings2 size={24} />, title: "2. Personalizar", desc: "¿Explicación teórica? ¿Ejemplos concretos? Vos decidís qué elementos pedagógicos incluir." },
+    { icon: <FileText size={24} />, title: "3. Recurso listo", desc: "Obtené una ficha PDF profesional, lista para imprimir y llevar directamente al aula." },
+  ];
+
+  return (
+    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 40px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 48 }}>
+        {steps.map((step, i) => (
+          <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+            <div style={{ width: 64, height: 64, background: "#f0fdf9", borderRadius: 16, border: "1px solid #b0e8d4", display: "flex", alignItems: "center", justifyContent: "center", color: C.btn, marginBottom: 24, boxShadow: "0 2px 8px rgba(0,71,51,0.06)" }}>
+              {step.icon}
+            </div>
+            <h3 style={{ fontSize: 17, fontWeight: 700, color: C.texto, marginBottom: 12 }}>{step.title}</h3>
+            <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.6, maxWidth: 260 }}>{step.desc}</p>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: 64, textAlign: "center" }}>
+        <button
+          onClick={onEmpezar}
+          style={{ display: "inline-flex", alignItems: "center", gap: 12, padding: "18px 40px", borderRadius: 16, background: C.acento, color: C.btn, fontSize: 18, fontWeight: 700, border: "none", cursor: "pointer", boxShadow: "0 6px 20px rgba(0,196,140,0.3)", transition: "all 0.2s" }}
+          onMouseEnter={e => { e.currentTarget.style.background = "#00d498"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = C.acento; e.currentTarget.style.transform = "none"; }}
+        >
+          <span>Crear mi primera ficha</span>
+          <Sparkles size={22} />
+        </button>
+        <p style={{ marginTop: 16, fontSize: 11, color: C.faded, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.15em" }}>
+          Sin registros · Alineado al Diseño Curricular
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ── ABOUT TIZA ── */
+
+function AboutTiza() {
+  return (
+    <div style={{ maxWidth: 720, margin: "0 auto", padding: "80px 40px", textAlign: "center" }}>
+      <div style={{ marginBottom: 48 }}>
+        <span style={{ fontSize: 12, fontWeight: 800, color: C.acento, background: "#e0faf2", padding: "6px 16px", borderRadius: 20, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+          Nuestra Esencia
+        </span>
+        <h2 style={{ fontFamily: "'Lexend', sans-serif", fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 300, color: C.btn, marginTop: 24 }}>
+          ¿Qué es <TizaSpan size="0.95em" />?
+        </h2>
+      </div>
+      <div style={{ color: C.muted, fontSize: 17, lineHeight: 1.8, textAlign: "left" }}>
+        <p style={{ marginBottom: 24 }}>
+          <TizaSpan /> es una herramienta pensada para docentes de primaria de la Provincia de Buenos Aires que quieren preparar fichas de trabajo sin perder horas en el proceso.
+        </p>
+        <p style={{ marginBottom: 24 }}>
+          Funciona simple: elegís el grado, el área y el contenido que vas a dar, y la app genera una ficha lista para imprimir, alineada al <span style={{ fontStyle: "italic", color: C.acento, fontWeight: 600 }}>Diseño Curricular de PBA</span>.
+        </p>
+        <p style={{ background: "#f0fdf9", padding: "24px", borderRadius: 16, borderLeft: `4px solid ${C.acento}`, marginBottom: 24 }}>
+          No hace falta registrarse. No hace falta saber de tecnología. En menos de un minuto tenés un recurso listo para el aula.
+        </p>
+        <div>
+          <h3 style={{ fontSize: 22, fontWeight: 700, color: C.btn, marginBottom: 14 }}>¿Por qué existe?</h3>
+          <p>
+            Porque preparar materiales de calidad lleva tiempo que los docentes no siempre tienen. <TizaSpan /> no reemplaza tu criterio pedagógico — te da un punto de partida sólido que podés ajustar antes de imprimir.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── LANDING ── */
 
 export default function Landing({ onEmpezar }) {
+  const scrollIndicatorRef = useRef(null);
   const heroBadgeRef = useRef(null);
   const heroTitleRef = useRef(null);
   const heroSubRef = useRef(null);
   const heroBtnRef = useRef(null);
   const heroDemoRef = useRef(null);
+
+  useEffect(() => {
+    const container = document.getElementById("landing-scroll");
+    if (!container) return;
+    const onScroll = () => {
+      if (scrollIndicatorRef.current) {
+        const opacity = Math.max(0, 0.5 - container.scrollTop / 200);
+        scrollIndicatorRef.current.style.opacity = opacity;
+      }
+    };
+    container.addEventListener("scroll", onScroll, { passive: true });
+    return () => container.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const targets = [heroBadgeRef, heroTitleRef, heroSubRef, heroBtnRef, heroDemoRef].map(r => r.current).filter(Boolean);
@@ -114,7 +217,7 @@ export default function Landing({ onEmpezar }) {
       </nav>
 
       {/* ── HERO ── */}
-      <section style={{ display: "flex", alignItems: "center", background: "#ffffff", position: "relative", padding: "80px 64px" }}>
+      <section style={{ minHeight: "calc(100vh - 62px)", display: "flex", alignItems: "center", background: "#ffffff", position: "relative", padding: "80px 64px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center", maxWidth: 1100, margin: "0 auto", width: "100%" }}>
           <div>
             <div ref={heroBadgeRef} style={{ display: "inline-flex", alignItems: "center", gap: 7, background: C.lbg, border: "1px solid #b0e8d4", borderRadius: 99, padding: "5px 14px", marginBottom: 28 }}>
@@ -158,10 +261,14 @@ export default function Landing({ onEmpezar }) {
           </div>
         </div>
 
+        <div ref={scrollIndicatorRef} style={{ position: "absolute", bottom: 32, left: "50%", transform: "translateX(-50%)", textAlign: "center", color: C.btn, opacity: 0.5, transition: "opacity 0.2s", pointerEvents: "none" }}>
+          <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", marginBottom: 6, letterSpacing: "0.12em" }}>¿Cómo funciona?</p>
+          <ChevronDown size={22} style={{ margin: "0 auto" }} />
+        </div>
       </section>
 
       {/* ── STRIP 01/02/03 ── */}
-      <section id="como-funciona" style={{ background: C.app, borderTop: "1px solid " + C.lborder, padding: "20px 64px" }}>
+      <section style={{ background: C.app, borderTop: "1px solid " + C.lborder, padding: "20px 64px" }}>
         <div style={{ display: "flex", maxWidth: 1100, margin: "0 auto" }}>
           {[
             { n: "01", t: "Elegís el contenido",   s: "Grado, área y bloque del DC PBA" },
@@ -177,6 +284,29 @@ export default function Landing({ onEmpezar }) {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* ── ¿CÓMO FUNCIONA? ── */}
+      <section id="como-funciona" style={{ padding: "100px 0", background: "#ffffff", borderTop: "1px solid " + C.app }}>
+        <div style={{ textAlign: "center", marginBottom: 64 }}>
+          <span style={{ fontSize: 12, fontWeight: 800, color: C.acento, background: "#e0faf2", padding: "6px 16px", borderRadius: 20, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            Simple y Pedagógico
+          </span>
+          <h2 style={{ fontFamily: "'Lexend', sans-serif", fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 300, color: C.texto, marginTop: 20, fontStyle: "italic" }}>
+            ¿Cómo funciona?
+          </h2>
+        </div>
+        <HowItWorks onEmpezar={onEmpezar} />
+      </section>
+
+      {/* ── ¿QUÉ ES TIZA? ── */}
+      <section style={{ background: "#ffffff", borderTop: "1px solid " + C.app }}>
+        <AboutTiza />
+      </section>
+
+      {/* ── COBERTURA ── */}
+      <section style={{ padding: "100px 0", background: C.fondo }}>
+        <SloganSlider />
       </section>
 
       {/* ── FOOTER ── */}
