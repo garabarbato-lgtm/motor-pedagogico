@@ -386,14 +386,16 @@ export function renderEjercicioItem(ejercicio, idx, { hideNum = false } = {}) {
     );
   }
 
-  // Default: enunciado + renglones
+  // Default: enunciado + recuadro (situacion_problematica) o renglones
   return (
     <div key={idx} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
       <div style={{ flex: 1 }}>
         <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
           {numLabel}{enunciadoEl}
         </div>
-        <LineasRespuesta n={4} />
+        {ejercicio.tipo === "situacion_problematica"
+          ? <RecuadroRespuesta />
+          : <LineasRespuesta n={4} />}
       </div>
       {andamiajeEl}
     </div>
