@@ -7,7 +7,7 @@ import {
   GlobeHemisphereWest, 
   CheckCircle, 
   ArrowRight,
-  Sparkles
+  Sparkle
 } from "@phosphor-icons/react";
 
 const C = {
@@ -91,7 +91,7 @@ export default function SloganSlider() {
     <div ref={containerRef} className="w-full max-w-4xl mx-auto px-4 py-12">
       {/* Título de la sección */}
       <div className="flex items-center gap-2 mb-8 justify-center md:justify-start">
-        <Sparkles className="text-[#00c48c] w-5 h-5" weight="duotone" />
+        <Sparkle className="text-[#00c48c] w-5 h-5" weight="duotone" />
         <h3 className="text-sm font-semibold uppercase tracking-widest text-[#4a6b60]">
           Cobertura Curricular PBA
         </h3>
