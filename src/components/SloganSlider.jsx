@@ -4,11 +4,11 @@ import {
   Calculator, 
   BookOpen, 
   Microscope, 
-  Globe, 
-  CheckCircle2, 
+  GlobeHemisphereWest, 
+  CheckCircle, 
   ArrowRight,
   Sparkles
-} from "lucide-react";
+} from "@phosphor-icons/react";
 
 const C = {
   acento: "#00c48c",
@@ -23,42 +23,42 @@ const C = {
 const SLIDES = [
   {
     id: "mat",
-    icon: <Calculator className="w-6 h-6" />,
+    icon: <Calculator size={24} weight="duotone" />,
     materia: "Matemática",
     slogan: "De la numeración a la geometría, todo el bloque de 1° a 6°.",
     dato: "435 indicadores de avance mapeados según el DC 2018.",
     tags: ["Números Naturales", "Operaciones", "Geometría", "Medida"],
-    color: "#00c48c",
+    color: "#dc2626",
     status: "100% Disponible"
   },
   {
     id: "pdl",
-    icon: <BookOpen className="w-6 h-6" />,
+    icon: <BookOpen size={24} weight="duotone" />,
     materia: "Prácticas del Lenguaje",
     slogan: "Lectura, escritura y oralidad con enfoque comunicativo.",
     dato: "435 situaciones de enseñanza y ámbitos del estudiante.",
     tags: ["Literatura", "Formación del Estudiante", "Ciudadanía"],
-    color: "#0284c7",
+    color: "#2563eb",
     status: "100% Disponible"
   },
   {
     id: "cs",
-    icon: <Globe className="w-6 h-6" />,
+    icon: <GlobeHemisphereWest size={24} weight="duotone" />,
     materia: "Ciencias Sociales",
     slogan: "Pasado y presente, sociedades y espacios geográficos.",
     dato: "Bloques completos de sociedades, culturas y territorios.",
     tags: ["Sociedades y Culturas", "Territorios", "Pasado y Presente"],
-    color: "#f59e0b",
+    color: "#ca8a04",
     status: "100% Disponible"
   },
   {
     id: "cn",
-    icon: <Microscope className="w-6 h-6" />,
+    icon: <Microscope size={24} weight="duotone" />,
     materia: "Ciencias Naturales",
     slogan: "De los seres vivos a la Tierra, ciencia en el aula.",
     dato: "Mapeo de mundo físico, materiales y biodiversidad.",
     tags: ["Seres Vivos", "Materiales", "Mundo Físico", "La Tierra"],
-    color: "#8b5cf6",
+    color: "#059669",
     status: "100% Disponible"
   }
 ];
@@ -91,7 +91,7 @@ export default function SloganSlider() {
     <div ref={containerRef} className="w-full max-w-4xl mx-auto px-4 py-12">
       {/* Título de la sección */}
       <div className="flex items-center gap-2 mb-8 justify-center md:justify-start">
-        <Sparkles className="text-[#00c48c] w-5 h-5" />
+        <Sparkles className="text-[#00c48c] w-5 h-5" weight="duotone" />
         <h3 className="text-sm font-semibold uppercase tracking-widest text-[#4a6b60]">
           Cobertura Curricular PBA
         </h3>
@@ -119,7 +119,7 @@ export default function SloganSlider() {
               onMouseUp={(e) => e.currentTarget.style.transform = active === i ? "scale(1.02)" : "scale(1)"}
             >
               <div 
-                className="p-2 rounded-lg transition-colors"
+                className="p-2 rounded-lg transition-colors flex items-center justify-center"
                 style={{ 
                   backgroundColor: active === i ? `${slide.color}20` : "transparent",
                   color: active === i ? slide.color : "inherit"
@@ -133,7 +133,7 @@ export default function SloganSlider() {
                 </div>
                 {active === i && (
                   <div className="text-[10px] font-medium text-[#00c48c] flex items-center gap-1 mt-0.5">
-                    <CheckCircle2 size={10} /> {slide.status}
+                    <CheckCircle size={10} weight="fill" /> {slide.status}
                   </div>
                 )}
               </div>
@@ -150,10 +150,15 @@ export default function SloganSlider() {
         {/* Lado Derecho: Contenido */}
         <div ref={contentRef} className="flex-1 p-8 md:p-12 flex flex-col justify-center bg-white relative">
           <div 
-            className="absolute top-0 right-0 w-32 h-32 opacity-5 pointer-events-none"
+            className="absolute top-0 right-0 w-32 h-32 opacity-5 pointer-events-none p-4"
             style={{ color: SLIDES[active].color }}
           >
-            {SLIDES[active].icon}
+            {/* Clona el icono con un tamaño mayor para el fondo */}
+            {import.meta.env.DEV ? (
+               <div style={{ fontSize: 120 }}>{SLIDES[active].icon}</div>
+            ) : (
+               <div style={{ transform: "scale(5)", transformOrigin: "top right" }}>{SLIDES[active].icon}</div>
+            )}
           </div>
 
           <div className="mb-6">
@@ -199,9 +204,9 @@ export default function SloganSlider() {
           
           <button 
             onClick={nextSlide}
-            className="absolute bottom-8 right-8 p-3 rounded-full hover:bg-[#f0f4f2] transition-colors group"
+            className="absolute bottom-8 right-8 p-3 rounded-full hover:bg-[#f0f4f2] transition-colors group flex items-center justify-center"
           >
-            <ArrowRight className="text-[#6B8C7D] group-hover:translate-x-1 transition-transform" />
+            <ArrowRight size={20} className="text-[#6B8C7D] group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
       </div>

@@ -1,5 +1,24 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import { 
+  Calculator, 
+  BookOpen, 
+  Microscope, 
+  GlobeHemisphereWest, 
+  CheckCircle, 
+  CaretRight, 
+  ArrowLeft, 
+  ArrowRight,
+  MagnifyingGlass, 
+  X, 
+  Sparkle, 
+  Check,
+  CaretLeft,
+  ArrowsClockwise,
+  FileText,
+  Lightbulb,
+  HandsClapping
+} from "@phosphor-icons/react";
 import curricularData from "../../dc_pba_base_curricular_corregida.json";
 import Logo from "./Logo.jsx";
 
@@ -32,10 +51,10 @@ const GRADOS = [
 ];
 
 const AREAS_CONFIG = {
-  "Matemática":             { emoji: "🔢", bg: "#E8F0FF", border: "#C5D5FF", desc: "Números, geometría, medidas" },
-  "Prácticas del Lenguaje": { emoji: "📖", bg: "#FFF0E8", border: "#FFD5B8", desc: "Lectura, escritura, oralidad" },
-  "Ciencias Naturales":     { emoji: "🔬", bg: "#E8FFF4", border: "#B8FFDC", desc: "Seres vivos, cuerpo, materiales" },
-  "Ciencias Sociales":      { emoji: "🌍", bg: "#FEF9E0", border: "#FDE98A", desc: "Historia, geografía, sociedad" },
+  "Matemática":             { icon: <Calculator weight="duotone" />, bg: "#FFF0F0", border: "#FFD5D5", desc: "Números, geometría, medidas", color: "#dc2626" },
+  "Prácticas del Lenguaje": { icon: <BookOpen weight="duotone" />, bg: "#E8F0FF", border: "#C5D5FF", desc: "Lectura, escritura, oralidad", color: "#2563eb" },
+  "Ciencias Naturales":     { icon: <Microscope weight="duotone" />, bg: "#E8FFF4", border: "#B8FFDC", desc: "Seres vivos, cuerpo, materiales", color: "#059669" },
+  "Ciencias Sociales":      { icon: <GlobeHemisphereWest weight="duotone" />, bg: "#FEF9E0", border: "#FDE98A", desc: "Historia, geografía, sociedad", color: "#ca8a04" },
 };
 
 // ── PDL cascada ────────────────────────────────────────────────────────────
@@ -135,15 +154,7 @@ function ChipSeleccion({ label, valor, onClick }) {
         boxShadow: hov ? "0 2px 8px rgba(0,71,51,0.08)" : "none",
       }}
     >
-      <div style={{
-        width: 20, height: 20, borderRadius: "50%",
-        background: C.verdeOscuro, display: "flex",
-        alignItems: "center", justifyContent: "center", flexShrink: 0,
-      }}>
-        <svg viewBox="0 0 12 10" fill="none" width="10" height="10">
-          <polyline points="1,5 4,8 11,1" stroke={C.verdeAcento} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </div>
+      <CheckCircle size={20} weight={hov ? "fill" : "regular"} color={hov ? C.verdeAcento : C.textoDisabled} style={{ flexShrink: 0 }} />
       <div style={{ flex: 1, minWidth: 0 }}>
         <p style={{ fontSize: 10, color: C.textoMuted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", margin: 0 }}>{label}</p>
         <p style={{ fontSize: 14, color: C.textoPrincipal, fontWeight: 500, margin: "2px 0 0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{valor}</p>
@@ -154,7 +165,7 @@ function ChipSeleccion({ label, valor, onClick }) {
         background: hov ? C.verdeOscuro : C.fondoApp,
         padding: "2px 10px", borderRadius: 99, flexShrink: 0,
         transition: "all 0.15s",
-      }}>Cambiar</span>
+      }}>{hov ? "Cambiar" : "Cambiar"}</span>
     </button>
   );
 }
@@ -201,7 +212,7 @@ function AreaBtn({ a, activo, onClick }) {
       onMouseLeave={() => setHov(false)}
       style={{
         display: "flex", flexDirection: "column", alignItems: "flex-start",
-        gap: 10, borderRadius: 16, padding: 28,
+        gap: 12, borderRadius: 16, padding: 24,
         cursor: "pointer", textAlign: "left", transition: "all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
         border: activo ? `2px solid ${C.verdeOscuro}` : `1.5px solid ${hov ? C.verdeOscuro : a.border}`,
         background: a.bg,
@@ -210,7 +221,21 @@ function AreaBtn({ a, activo, onClick }) {
         opacity: 1, visibility: "visible",
       }}
     >
-      <span style={{ fontSize: 52, lineHeight: 1 }}>{a.emoji}</span>
+      <div style={{ 
+        fontSize: 40, 
+        lineHeight: 1, 
+        color: a.color,
+        background: "#fff",
+        width: 60,
+        height: 60,
+        borderRadius: 14,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
+      }}>
+        {a.icon}
+      </div>
       <div>
         <p style={{ fontSize: 16, fontWeight: 700, color: C.verdeOscuro, margin: "0 0 4px" }}>{a.nombre}</p>
         <p style={{ fontSize: 12, color: C.textoSec, lineHeight: 1.4, margin: 0 }}>{a.desc}</p>
@@ -300,11 +325,15 @@ function AcordeonBloques({ bloques, contenidosPorBloque, registroSeleccionado, o
               onMouseLeave={e => { if (!abierto) e.currentTarget.style.background = C.fondoCard; }}
             >
               <span>{b}</span>
-              <span style={{
-                fontSize: 14, color: abierto ? C.verdeAcento : C.textoDisabled,
-                transform: abierto ? "rotate(90deg)" : "rotate(0deg)",
-                transition: "transform 0.2s, color 0.2s", display: "inline-block",
-              }}>›</span>
+              <CaretRight 
+                size={16} 
+                weight="bold" 
+                color={abierto ? C.verdeAcento : C.textoDisabled}
+                style={{
+                  transform: abierto ? "rotate(90deg)" : "rotate(0deg)",
+                  transition: "transform 0.2s",
+                }} 
+              />
             </button>
             {abierto && (
               <div>
@@ -329,7 +358,7 @@ function AcordeonBloques({ bloques, contenidosPorBloque, registroSeleccionado, o
                       onMouseLeave={e => { if (!activo) { e.currentTarget.style.background = C.fondoCard; e.currentTarget.style.color = C.textoSec; } }}
                     >
                       <span>{r.subtema || r.item_original}</span>
-                      {activo && <span style={{ fontSize: 12, color: C.verdeAcento, flexShrink: 0, marginLeft: 8 }}>✓</span>}
+                      {activo && <Check size={16} weight="bold" color={C.verdeAcento} />}
                     </button>
                   );
                 })}
@@ -369,16 +398,18 @@ function FichaSkeletonDynamic({ momento }) {
   const isCierre = momento === "Cierre / Integración";
   const { expH, actH } = specs[momento] || specs["Presentación"];
 
-  const SecLabel = ({ num, label }) => (
+  const SecLabel = ({ icon, label }) => (
     <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6, paddingBottom: 4, borderBottom: `1.5px solid ${BK}` }}>
-      <div style={{ width: 14, height: 14, borderRadius: "50%", background: BK, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontWeight: 800, flexShrink: 0 }}>{num}</div>
-      <span style={{ fontSize: 9, fontWeight: 700, color: BK }}>{label}</span>
+      <div style={{ color: BK, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        {icon}
+      </div>
+      <span style={{ fontSize: 9, fontWeight: 700, color: BK, textTransform: "uppercase", letterSpacing: "0.02em" }}>{label}</span>
     </div>
   );
 
   const ExplBlock = ({ h }) => (
     <div style={{ height: h, padding: "8px 12px", background: "#fff", borderBottom: `1px solid ${C.bordeSuave}`, transition: `height ${EASE}`, overflow: "hidden", flexShrink: 0, display: "flex", flexDirection: "column" }}>
-      <SecLabel num="1" label="Leemos juntos" />
+      <SecLabel icon={<FileText size={12} weight="bold" />} label="Leemos juntos" />
       <div style={{ background: "#E6FAF3", borderLeft: "2px solid #00c48c", borderRadius: "0 4px 4px 0", padding: "8px 10px", display: "flex", flexDirection: "column", gap: 5, flex: 1, justifyContent: "space-around" }}>
         {[0, 0.3, 0.6, 1.0, 1.3, 1.6].map((d, i) => <WLine key={i} delay={`${d}s`} color="#b2dfd0" dur="3s" />)}
       </div>
@@ -387,7 +418,7 @@ function FichaSkeletonDynamic({ momento }) {
 
   const ActBlock = ({ h }) => (
     <div style={{ height: h, padding: "8px 12px", background: "#fff", transition: `height ${EASE}`, overflow: "hidden", flexShrink: 0, display: "flex", flexDirection: "column" }}>
-      <SecLabel num="2" label="Tu turno" />
+      <SecLabel icon={<Lightbulb size={12} weight="bold" />} label="Tu turno" />
       <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-evenly", flex: 1 }}>
         {[0, 0.6, 1.2, 1.8].map((d, i) => (
           <div key={i}>
@@ -403,8 +434,10 @@ function FichaSkeletonDynamic({ momento }) {
 
   const cierreH = Math.round(body / 4);
   const cierreBlocks = [
-    { num: "1", label: "Nivel 1" }, { num: "2", label: "Nivel 2" },
-    { num: "3", label: "Nivel 3" }, { num: "·", label: "Para pensar" },
+    { icon: <FileText size={10} />, label: "Nivel 1" }, 
+    { icon: <FileText size={10} />, label: "Nivel 2" },
+    { icon: <FileText size={10} />, label: "Nivel 3" }, 
+    { icon: <Lightbulb size={10} />, label: "Para pensar" },
   ];
 
   return (
@@ -436,7 +469,7 @@ function FichaSkeletonDynamic({ momento }) {
         <div style={{ background: "#fff" }}>
           {cierreBlocks.map((b, i) => (
             <div key={i} style={{ height: cierreH, padding: "8px 12px", borderBottom: i < 3 ? `1px solid ${C.bordeSuave}` : "none", overflow: "hidden", display: "flex", flexDirection: "column" }}>
-              <SecLabel num={b.num} label={b.label} />
+              <SecLabel icon={b.icon} label={b.label} />
               <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-evenly", flex: 1 }}>
                 <WLine delay={`${i * 0.3}s`} dur="2.8s" />
                 <div style={{ height: 14, border: `1px solid ${C.bordeSuave}`, borderRadius: 3, position: "relative", overflow: "hidden" }}><Shimmer delay={`${i * 0.15}s`} /></div>
@@ -474,9 +507,9 @@ function SidebarPreview({ gradoData, area, registro, tipoFicha, genero }) {
 
   const hasContent = !!(registro || genero);
   const blocks = [
-    { num: 1, name: "Explicación", type: "explanation" },
-    { num: 2, name: "Actividad",   type: "activity" },
-    { num: 3, name: "Reflexión",   type: "reflection" },
+    { num: 1, name: "Explicación", type: "explanation", icon: <FileText size={12} weight="bold" /> },
+    { num: 2, name: "Actividad",   type: "activity",    icon: <Lightbulb size={12} weight="bold" /> },
+    { num: 3, name: "Reflexión",   type: "reflection",  icon: <HandsClapping size={12} weight="bold" /> },
   ];
 
   return (
@@ -509,11 +542,11 @@ function SidebarPreview({ gradoData, area, registro, tipoFicha, genero }) {
             filter: hasContent ? "none" : "grayscale(1)", transition: "all 0.3s",
           }}>
             <div style={{
-              display: "flex", alignItems: "center", gap: 4,
-              background: C.verdeClaroBg, borderRadius: "4px 4px 0 0", padding: "3px 7px",
+              display: "flex", alignItems: "center", gap: 6,
+              background: C.verdeClaroBg, borderRadius: "4px 4px 0 0", padding: "4px 8px",
             }}>
-              <span style={{ fontSize: 11, fontWeight: 700, color: C.verdeTexto }}>{block.num}</span>
-              <span style={{ fontSize: 11, color: C.textoMuted }}>{block.name}</span>
+              <span style={{ color: C.verdeTexto, display: "flex", alignItems: "center" }}>{block.icon}</span>
+              <span style={{ fontSize: 11, color: C.textoMuted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.02em" }}>{block.name}</span>
             </div>
             <div style={{
               background: "#fafafa", borderRadius: "0 0 4px 4px",
@@ -567,10 +600,12 @@ function Buscador({ value, onChange, onFocus, onBlur, focused, onClear, placehol
         : "0 2px 10px rgba(0,71,51,0.06)",
       transition: "all 0.2s",
     }}>
-      <svg width={grande ? 20 : 16} height={grande ? 20 : 16} viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
-        <circle cx="7" cy="7" r="5" stroke={focused ? C.verdeAcento : C.textoMuted} strokeWidth="1.5" />
-        <path d="M11 11l3 3" stroke={focused ? C.verdeAcento : C.textoMuted} strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
+      <MagnifyingGlass 
+        size={grande ? 22 : 18} 
+        weight={focused ? "bold" : "regular"} 
+        color={focused ? C.verdeAcento : C.textoMuted} 
+        style={{ flexShrink: 0 }} 
+      />
       <input
         type="text"
         value={value}
@@ -586,7 +621,9 @@ function Buscador({ value, onChange, onFocus, onBlur, focused, onClear, placehol
         }}
       />
       {value && (
-        <button onClick={onClear} style={{ background: "none", border: "none", cursor: "pointer", color: C.textoMuted, fontSize: 18, padding: 0, lineHeight: 1, flexShrink: 0 }}>×</button>
+        <button onClick={onClear} style={{ background: "none", border: "none", cursor: "pointer", color: C.textoMuted, display: "flex", alignItems: "center", justifyContent: "center", padding: 0, flexShrink: 0 }}>
+          <X size={grande ? 20 : 16} weight="bold" />
+        </button>
       )}
     </div>
   );
@@ -1018,13 +1055,14 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                 transition: "all 0.2s",
                 display: "flex",
                 alignItems: "center",
-                gap: "6px",
+                gap: "8px",
                 boxShadow: "0 2px 8px rgba(0,196,140,0.2)"
               }}
               onMouseEnter={e => e.currentTarget.style.transform = "scale(1.03)"}
               onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
             >
-              <span>‹ Volver</span>
+              <CaretLeft size={16} weight="bold" />
+              <span>Volver</span>
             </button>
           </nav>
 
@@ -1058,7 +1096,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                         <div style={{ fontSize: 18, fontWeight: 700, color: activo ? "#fff" : C.textoPrincipal }}>{g.num}</div>
                         <div style={{ fontSize: 10, color: activo ? "rgba(255,255,255,0.6)" : C.textoMuted, marginTop: 2 }}>{g.ciclo}</div>
                       </div>
-                      {activo && <span style={{ color: C.verdeAcento, fontSize: 18 }}>›</span>}
+                      {activo && <CaretRight size={18} weight="bold" color={activo ? "#fff" : C.verdeAcento} />}
                     </button>
                   );
                 })}
@@ -1080,12 +1118,12 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                       onMouseEnter={e => { if (!activo) e.currentTarget.style.background = "#F0FBF7"; }}
                       onMouseLeave={e => { if (!activo) e.currentTarget.style.background = "transparent"; }}
                     >
-                      <span style={{ fontSize: 22, flexShrink: 0 }}>{a.emoji}</span>
+                      <span style={{ fontSize: 24, flexShrink: 0, color: activo ? C.verdeOscuro : a.color, display: "flex", alignItems: "center" }}>{a.icon}</span>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: 13, fontWeight: activo ? 700 : 500, color: C.textoPrincipal }}>{a.nombre}</div>
                         <div style={{ fontSize: 11, color: C.textoMuted, marginTop: 2 }}>{a.desc}</div>
                       </div>
-                      {activo && <span style={{ color: C.verdeAcento, fontSize: 18, flexShrink: 0 }}>›</span>}
+                      {activo && <CaretRight size={18} weight="bold" color={C.verdeAcento} />}
                     </button>
                   );
                 })}
@@ -1130,7 +1168,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                       {val ? (
                         <>
                           <span style={{ fontSize: 12, fontWeight: 600, color: C.textoPrincipal, maxWidth: 110, textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{val}</span>
-                          <span style={{ color: C.verdeAcento, fontSize: 14, fontWeight: 700 }}>✓</span>
+                          <Check size={16} weight="bold" color={C.verdeAcento} />
                         </>
                       ) : (
                         <span style={{ fontSize: 12, color: C.textoDisabled, fontStyle: "italic" }}>—</span>
@@ -1151,11 +1189,13 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                     border: "none", borderRadius: 12, fontSize: 15, fontWeight: 700,
                     cursor: registro ? "pointer" : "not-allowed",
                     transition: "all 0.2s", fontFamily: "'Lexend', sans-serif",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 10
                   }}
                   onMouseEnter={e => { if (registro) e.currentTarget.style.background = C.verdeHoverBtn; }}
                   onMouseLeave={e => { if (registro) e.currentTarget.style.background = C.verdeOscuro; }}
                 >
-                  Continuar →
+                  <span>Continuar</span>
+                  <ArrowRight size={18} weight="bold" />
                 </button>
               </aside>
             </div>
@@ -1226,7 +1266,10 @@ export default function Generador({ onFichaGenerada, onVolver }) {
               {/* ── PASO 4: Opciones + Generar ── */}
               {paso === 4 && !generando && (
                 <PasoWrap onMount={(el) => { pasoWrapEl.current = el; }}>
-                  <button onClick={() => cambiarDesde(3)} style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: 13, color: C.textoMuted, padding: 0, marginBottom: 16, fontFamily: "'Lexend', sans-serif" }}>‹ Volver</button>
+                  <button onClick={() => cambiarDesde(3)} style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: 13, color: C.textoMuted, padding: 0, marginBottom: 16, fontFamily: "'Lexend', sans-serif", display: "flex", alignItems: "center", gap: 6 }}>
+                    <ArrowLeft size={14} weight="bold" />
+                    <span>Volver</span>
+                  </button>
 
                   {/* Momento didáctico */}
                   <p style={{ fontSize: 11, fontWeight: 700, color: C.textoMuted, textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 10px" }}>Momento didáctico</p>
