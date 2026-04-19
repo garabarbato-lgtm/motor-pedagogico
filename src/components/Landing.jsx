@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import Logo from "./Logo.jsx";
 import SloganSlider from "./SloganSlider.jsx";
-import { Search, Settings2, FileText, Sparkles, ChevronDown, MessageSquare } from "lucide-react";
+import { Search, Settings2, FileText, Sparkles, MessageSquare } from "lucide-react";
 
 const DC_URL = "http://servicios.abc.gov.ar/lainstitucion/organismos/consejogeneral/disenioscurriculares/primaria/2018/dis-curricular-PBA-completo.pdf";
 
@@ -167,25 +167,11 @@ function AboutTiza() {
 /* ── LANDING ── */
 
 export default function Landing({ onEmpezar }) {
-  const scrollIndicatorRef = useRef(null);
   const heroBadgeRef = useRef(null);
   const heroTitleRef = useRef(null);
   const heroSubRef = useRef(null);
   const heroBtnRef = useRef(null);
   const heroDemoRef = useRef(null);
-
-  useEffect(() => {
-    const container = document.getElementById("landing-scroll");
-    if (!container) return;
-    const onScroll = () => {
-      if (scrollIndicatorRef.current) {
-        const opacity = Math.max(0, 0.5 - container.scrollTop / 200);
-        scrollIndicatorRef.current.style.opacity = opacity;
-      }
-    };
-    container.addEventListener("scroll", onScroll, { passive: true });
-    return () => container.removeEventListener("scroll", onScroll);
-  }, []);
 
   useEffect(() => {
     const targets = [heroBadgeRef, heroTitleRef, heroSubRef, heroBtnRef, heroDemoRef].map(r => r.current).filter(Boolean);
@@ -217,7 +203,7 @@ export default function Landing({ onEmpezar }) {
       </nav>
 
       {/* ── HERO ── */}
-      <section style={{ minHeight: "calc(100vh - 62px)", display: "flex", alignItems: "center", background: "#ffffff", position: "relative", padding: "80px 64px" }}>
+      <section style={{ display: "flex", alignItems: "center", background: "#ffffff", position: "relative", padding: "80px 64px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center", maxWidth: 1100, margin: "0 auto", width: "100%" }}>
           <div>
             <div ref={heroBadgeRef} style={{ display: "inline-flex", alignItems: "center", gap: 7, background: C.lbg, border: "1px solid #b0e8d4", borderRadius: 99, padding: "5px 14px", marginBottom: 28 }}>
@@ -261,10 +247,6 @@ export default function Landing({ onEmpezar }) {
           </div>
         </div>
 
-        <div ref={scrollIndicatorRef} style={{ position: "absolute", bottom: 32, left: "50%", transform: "translateX(-50%)", textAlign: "center", color: C.btn, opacity: 0.5, transition: "opacity 0.2s", pointerEvents: "none" }}>
-          <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", marginBottom: 6, letterSpacing: "0.12em" }}>¿Cómo funciona?</p>
-          <ChevronDown size={22} style={{ margin: "0 auto" }} />
-        </div>
       </section>
 
       {/* ── STRIP 01/02/03 ── */}
