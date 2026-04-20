@@ -1,4 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useRef, useEffect } from "react";
+
+export function EditableHtml({ html, className, style }) {
+  const ref = useRef(null);
+  useEffect(() => { if (ref.current) ref.current.innerHTML = html || ""; }, []);
+  return <div ref={ref} contentEditable suppressContentEditableWarning className={className} style={style} />;
+}
 
 // ── Paleta de colores compartida ──
 export const C = {
@@ -95,7 +101,11 @@ export function SeccionHeader({ numero, titulo, icono }) {
       }}>
         {numero}
       </div>
-      <span style={{ fontSize: 13, fontWeight: 700, color: C.texto, letterSpacing: "0.01em" }}>
+      <span
+        contentEditable suppressContentEditableWarning
+        className="ficha-campo-editable"
+        style={{ fontSize: 13, fontWeight: 700, color: C.texto, letterSpacing: "0.01em" }}
+      >
         {titulo}
       </span>
       <span style={{ fontSize: 13, marginLeft: "auto", opacity: 0.4 }}>{icono}</span>
@@ -107,19 +117,34 @@ export function RecuadroRespuesta() {
   return (
     <div style={{
       height: 96,
+      minHeight: 40,
       border: "0.5px solid #ddddd8",
       borderRadius: 6,
       background: "transparent",
       marginTop: 4,
+      resize: "vertical",
+      overflow: "hidden",
+      cursor: "ns-resize",
     }} />
   );
 }
 
 export function LineasRespuesta({ n = 4 }) {
   return (
-    <div style={{ marginTop: 4 }}>
-      {Array.from({ length: n }).map((_, i) => <LineaEscritura key={i} />)}
-    </div>
+    <div
+      contentEditable
+      suppressContentEditableWarning
+      className="ficha-campo-editable"
+      style={{
+        marginTop: 4,
+        minHeight: n * 28,
+        resize: "vertical",
+        overflow: "hidden",
+        borderBottom: "0.5px solid #ddddd8",
+        padding: "4px 2px",
+        lineHeight: "28px",
+      }}
+    />
   );
 }
 
@@ -224,14 +249,18 @@ export function Andamiaje({ text }) {
       ...containerStyle,
     }}>
       <span style={{ ...labelStyle, fontSize: 11, fontFamily: "'Lexend Deca', sans-serif" }}>Recordá</span>
-      <span style={{ fontSize: 13, lineHeight: 1.5, fontFamily: "'Lexend Deca', sans-serif", display: "block" }}>{text}</span>
+      <span
+        contentEditable suppressContentEditableWarning
+        className="ficha-campo-editable"
+        style={{ fontSize: 13, lineHeight: 1.5, fontFamily: "'Lexend Deca', sans-serif", display: "block" }}
+      >{text}</span>
     </div>
   );
 }
 
 // ── renderEjercicioItem — solo modo display ──
 
-export function renderEjercicioItem(ejercicio, idx, { hideNum = false } = {}) {
+export function renderEjercicioItem(ejercicio, idx, { hideNum = false, editable = false } = {}) {
   if (!ejercicio) return null;
 
   const hasContent = (() => {
@@ -250,8 +279,15 @@ export function renderEjercicioItem(ejercicio, idx, { hideNum = false } = {}) {
 
   const enunciadoEl = (
     <div style={{ flex: 1 }}>
-      <div style={{ fontSize: 13, color: C.texto, lineHeight: 1.55, margin: 0 }}
-        dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio.enunciado)} />
+      {editable
+        ? <EditableHtml
+            html={renderHTMLConNegrita(ejercicio.enunciado).__html}
+            className="ficha-campo-editable"
+            style={{ fontSize: 13, color: C.texto, lineHeight: 1.55 }}
+          />
+        : <div style={{ fontSize: 13, color: C.texto, lineHeight: 1.55, margin: 0 }}
+            dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio.enunciado)} />
+      }
     </div>
   );
 
@@ -267,7 +303,10 @@ export function renderEjercicioItem(ejercicio, idx, { hideNum = false } = {}) {
           <div style={{ marginLeft: hideNum ? 0 : 24 }}>
             {(ejercicio.oraciones || []).map((oracion, j) => (
               <div key={j} style={{ marginBottom: 8 }}>
-                <div style={{ fontSize: 13, lineHeight: 1.6 }} dangerouslySetInnerHTML={renderHTMLConNegrita(oracion)} />
+                {editable
+                  ? <EditableHtml html={renderHTMLConNegrita(oracion).__html} className="ficha-campo-editable" style={{ fontSize: 13, lineHeight: 1.6 }} />
+                  : <div style={{ fontSize: 13, lineHeight: 1.6 }} dangerouslySetInnerHTML={renderHTMLConNegrita(oracion)} />
+                }
               </div>
             ))}
           </div>
@@ -299,9 +338,12 @@ export function renderEjercicioItem(ejercicio, idx, { hideNum = false } = {}) {
                   return (
                     <tr key={i}>
                       {(ejercicio.columnas || []).map((_, j) => (
-                        <td key={j} style={{ border: "0.5px solid #ddddd8", padding: "4px 8px", height: 32 }}
-                          dangerouslySetInnerHTML={renderHTMLConNegrita(celdas[j] || "")}
-                        />
+                        <td key={j} style={{ border: "0.5px solid #ddddd8", padding: "4px 8px", minHeight: 32 }}>
+                          {editable
+                            ? <EditableHtml html={renderHTMLConNegrita(celdas[j] || "").__html} className="ficha-campo-editable" style={{ fontSize: 11, minHeight: 24 }} />
+                            : <span dangerouslySetInnerHTML={renderHTMLConNegrita(celdas[j] || "")} />
+                          }
+                        </td>
                       ))}
                     </tr>
                   );
@@ -325,7 +367,10 @@ export function renderEjercicioItem(ejercicio, idx, { hideNum = false } = {}) {
           <div style={{ marginLeft: hideNum ? 0 : 24, display: "flex", flexDirection: "column", gap: 6 }}>
             {(ejercicio.afirmaciones || []).map((afirmacion, j) => (
               <div key={j} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ fontSize: 13, lineHeight: 1.5, flex: 1 }} dangerouslySetInnerHTML={renderHTMLConNegrita(afirmacion)} />
+                {editable
+                  ? <EditableHtml html={renderHTMLConNegrita(afirmacion).__html} className="ficha-campo-editable" style={{ fontSize: 13, lineHeight: 1.5, flex: 1 }} />
+                  : <span style={{ fontSize: 13, lineHeight: 1.5, flex: 1 }} dangerouslySetInnerHTML={renderHTMLConNegrita(afirmacion)} />
+                }
                 <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
                   {["V", "F"].map(l => (
                     <span key={l} style={{ border: `1px solid ${C.border}`, padding: "2px 7px", fontSize: 11, fontWeight: 700, borderRadius: 3 }}>{l}</span>
@@ -350,8 +395,10 @@ export function renderEjercicioItem(ejercicio, idx, { hideNum = false } = {}) {
           <div style={{ marginLeft: hideNum ? 0 : 24, display: "flex", flexDirection: "column", gap: 10 }}>
             {(ejercicio.preguntas || []).map((pregunta, j) => (
               <div key={j}>
-                <div style={{ fontSize: 13, color: C.texto, lineHeight: 1.55, marginBottom: 4 }}
-                  dangerouslySetInnerHTML={renderHTMLConNegrita(`${j + 1}. ${pregunta}`)} />
+                {editable
+                  ? <EditableHtml html={renderHTMLConNegrita(`${j + 1}. ${pregunta}`).__html} className="ficha-campo-editable" style={{ fontSize: 13, color: C.texto, lineHeight: 1.55, marginBottom: 4 }} />
+                  : <div style={{ fontSize: 13, color: C.texto, lineHeight: 1.55, marginBottom: 4 }} dangerouslySetInnerHTML={renderHTMLConNegrita(`${j + 1}. ${pregunta}`)} />
+                }
                 <LineasRespuesta n={3} />
               </div>
             ))}

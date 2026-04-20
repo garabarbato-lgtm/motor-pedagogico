@@ -1,0 +1,232 @@
+/* ── Contenedor Word completo ── */
+.ficha-canvas-word {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── Toolbar fija estilo Word (CSS generado por Gemini) ── */
+.ficha-word-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  background: #f3f2f1;
+  border-bottom: 1px solid #d0cece;
+  padding: 4px 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 44px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+.ficha-word-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 8px;
+  border-right: 1px solid #d0cece;
+}
+
+.ficha-word-toolbar-group:last-child {
+  border-right: none;
+}
+
+.ficha-word-toolbar-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #323130;
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s;
+  box-sizing: border-box;
+}
+
+.ficha-word-toolbar-btn:hover { background: #edebe9; }
+.ficha-word-toolbar-btn.active { background: #c7e0f4; color: #005a9e; }
+
+.ficha-word-toolbar-select {
+  border: 1px solid #d0cece;
+  background: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  height: 28px;
+  cursor: pointer;
+  color: #323130;
+  box-sizing: border-box;
+}
+
+.ficha-word-toolbar-pdf-btn {
+  background: #FF6B2B;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  height: 32px;
+  transition: filter 0.12s;
+}
+.ficha-word-toolbar-pdf-btn:hover { filter: brightness(1.1); }
+
+/* ── Área de trabajo (escritorio gris) ── */
+.ficha-canvas-wrapper {
+  background-color: #b0b0b0;
+  padding: 60px 0 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ── Hoja A4 ── */
+.ficha-hoja {
+  width: 210mm;
+  min-height: 297mm;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 8px 32px rgba(0,0,0,0.25);
+  border-radius: 1px;
+  margin-bottom: 40px;
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* La hoja no tiene padding propio — el contenido interno maneja sus márgenes */
+.ficha-hoja > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.ficha-hoja-numero {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 11px;
+  color: #9ca3af;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Campos editables ── */
+.ficha-campo-editable {
+  outline: none;
+  border: 1px solid transparent;
+  background: transparent;
+  width: 100%;
+  cursor: text;
+  border-radius: 3px;
+  transition: border-color 0.15s, background 0.15s;
+  box-sizing: border-box;
+  padding: 2px 4px;
+}
+
+.ficha-campo-editable:hover { border: 1px dotted #3b82f6; outline: none; }
+.ficha-campo-editable:focus {
+  border: 1px solid #60a5fa;
+  background-color: #f0f7ff;
+  outline: 2px solid #60a5fa;
+  outline-offset: 1px;
+}
+
+/* ── Toolbar contextual flotante ── */
+.ficha-toolbar-contextual {
+  position: fixed;
+  background: #1e1e1e;
+  border-radius: 6px;
+  padding: 4px 6px;
+  display: flex;
+  gap: 2px;
+  z-index: 9999;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  animation: toolbar-fade-in 0.1s ease;
+}
+
+@keyframes toolbar-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ficha-toolbar-btn {
+  background: transparent;
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 4px 9px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.12s;
+  line-height: 1;
+}
+.ficha-toolbar-btn:hover { background: #444; }
+.ficha-toolbar-btn.active { background: #2196f3; }
+.ficha-toolbar-separator { width: 1px; background: #444; margin: 2px 3px; }
+
+/* ── Elementos redimensionables ── */
+[style*="resize: vertical"],
+[style*="resize:vertical"] {
+  position: relative;
+}
+[style*="resize: vertical"]:hover,
+[style*="resize:vertical"]:hover {
+  border-color: #90caf9 !important;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .ficha-canvas-wrapper { padding: 52px 0 16px; }
+  .ficha-hoja { width: 100%; min-height: unset; margin-bottom: 16px; }
+  .ficha-word-toolbar { padding: 4px 8px; gap: 2px; }
+}
+
+/* ── Print ── */
+@media print {
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  @page { size: A4; margin: 0; }
+
+  .ficha-word-toolbar,
+  .ficha-hoja-numero,
+  .feedback-button { display: none !important; }
+
+  .ficha-canvas-word { min-height: auto; }
+
+  .ficha-canvas-wrapper {
+    background: white !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+
+  .ficha-hoja {
+    width: 210mm !important;
+    min-height: 297mm !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    page-break-after: always;
+  }
+
+  .ficha-hoja:last-child { page-break-after: auto; }
+
+  .ficha-campo-editable:hover,
+  .ficha-campo-editable:focus {
+    border-color: transparent !important;
+    background: transparent !important;
+  }
+}

@@ -1,24 +1,9 @@
-import { useRef } from "react";
 import {
   C, renderTitulo,
   Andamiaje,
   renderEjercicioItem,
 } from "./utils.jsx";
-
-const PRINT_CSS = `
-@media print {
-  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  @page { size: A4; margin: 0.5cm; }
-  html, body { margin: 0; padding: 0; }
-  .ficha {
-    width: 100% !important;
-    min-height: auto !important;
-    border: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-  }
-}
-`;
+import FichaCanvas from "./FichaCanvas.jsx";
 
 const BADGE_COLORS = {
   "Nivel 1": "#888888",
@@ -28,7 +13,6 @@ const BADGE_COLORS = {
 };
 
 export default function FichaCierre({ ficha, registro }) {
-  const refFicha = useRef(null);
   if (!ficha || !registro) return null;
 
   const emojis = Array.isArray(ficha.emojis) && ficha.emojis.length ? ficha.emojis : ["📝"];
@@ -41,23 +25,18 @@ export default function FichaCierre({ ficha, registro }) {
   const gradoDisplay = `${registro.grado}° grado`;
   const escalera = Array.isArray(ficha.escalera) ? ficha.escalera : [];
 
-  return (
+  const contenido = (
     <div
-      ref={refFicha}
-      id="ficha-imprimible"
-      className="ficha"
       style={{
         display: "flex",
         flexDirection: "column",
-        width: "210mm",
-        minHeight: "297mm",
-        background: C.fondo,
+        flex: 1,
         fontFamily: "'Lexend Deca', sans-serif",
         fontSize: 12,
         color: C.texto,
       }}
     >
-      {/* ── Encabezado (flex: 15) ── */}
+      {/* ── Encabezado ── */}
       <div
         style={{
           flex: 19,
@@ -73,8 +52,13 @@ export default function FichaCierre({ ficha, registro }) {
       >
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
           <span style={{ fontSize: 28, lineHeight: 1, flexShrink: 0 }}>{emojiLeft}</span>
-          <h2 style={{ fontSize: 20, fontWeight: 800, margin: 0, lineHeight: 1.25, letterSpacing: "-0.01em", textAlign: "center", flex: 1 }}>
-            {renderTitulo(tituloTexto)}
+          <h2
+            contentEditable
+            suppressContentEditableWarning
+            className="ficha-campo-editable"
+            style={{ fontSize: 20, fontWeight: 800, margin: 0, lineHeight: 1.25, letterSpacing: "-0.01em", textAlign: "center", flex: 1 }}
+          >
+            {tituloTexto}
           </h2>
           <span style={{ fontSize: 28, lineHeight: 1, flexShrink: 0 }}>{emojiRight}</span>
         </div>
@@ -90,7 +74,7 @@ export default function FichaCierre({ ficha, registro }) {
         </div>
       </div>
 
-      {/* ── Escalera (flex: 85) ── */}
+      {/* ── Escalera ── */}
       <div
         style={{
           flex: 85,
@@ -130,9 +114,7 @@ export default function FichaCierre({ ficha, registro }) {
                   alignItems: "flex-start",
                 }}
               >
-                {/* Contenido del peldaño */}
                 <div style={{ flex: 1 }}>
-                  {/* Badge + nombre */}
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6, flexWrap: "wrap" }}>
                     <span
                       style={{
@@ -151,17 +133,20 @@ export default function FichaCierre({ ficha, registro }) {
                       {peldano.rotulo}
                     </span>
                     {peldano.nombre && (
-                      <span style={{ fontSize: 12, fontWeight: 700, color: C.texto, textDecoration: "underline", textUnderlineOffset: 2 }}>
+                      <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        className="ficha-campo-editable"
+                        style={{ fontSize: 12, fontWeight: 700, color: C.texto, textDecoration: "underline", textUnderlineOffset: 2 }}
+                      >
                         {peldano.nombre}
                       </span>
                     )}
                   </div>
 
-                  {/* Ejercicio */}
-                  {renderEjercicioItem(ejercicio, idx, { hideNum: true })}
+                  {renderEjercicioItem(ejercicio, idx, { hideNum: true, editable: true })}
                 </div>
 
-                {/* Andamiaje */}
                 {peldano.andamiaje && <Andamiaje text={peldano.andamiaje} />}
               </div>
             );
@@ -185,8 +170,13 @@ export default function FichaCierre({ ficha, registro }) {
         <span>tiza. · Diseño Curricular 2018</span>
         <span>{gradoDisplay} · {registro.area} · {registro.bloque}</span>
       </div>
-
-      <style>{PRINT_CSS}</style>
     </div>
+  );
+
+  return (
+    <FichaCanvas
+      paginas={[contenido]}
+      hojaId="ficha-imprimible"
+    />
   );
 }

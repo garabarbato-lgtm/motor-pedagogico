@@ -1,11 +1,15 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import Logo from "./Logo.jsx";
 import FichaPresenta from "./FichaPresenta.jsx";
 import FichaPractica from "./FichaPractica.jsx";
 import FichaCierre from "./FichaCierre.jsx";
 import FeedbackButton from "./FeedbackButton.jsx";
+import FichaCanvas from "./FichaCanvas.jsx";
+import {
+  EditableHtml, RecuadroRespuesta, LineasRespuesta,
+  renderEjercicioItem,
+} from "./utils.jsx";
 
 const C = {
   fondo: "#ffffff",
@@ -22,8 +26,6 @@ const C = {
 
 // ── Helpers ──
 
-// Detecta ejercicios que ya tienen su espacio de respuesta embebido
-// (tabla HTML o espacios en blanco con guiones/span)
 function tieneRespuestaEmbebida(texto) {
   if (!texto) return false;
   return texto.includes("<table") || /_{2,}/.test(texto);
@@ -56,72 +58,6 @@ function renderHTMLConNegrita(str) {
     .replace(/^[•\-]\s+/gm, "")
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
   return { __html: html };
-}
-
-function htmlATextoPlano(html) {
-  if (!html) return '';
-  return html
-    .replace(/<\/p>/gi, '\n')
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<table[\s\S]*?<\/table>/gi, '[tabla]')
-    .replace(/<[^>]+>/g, '')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
-}
-
-function initFieldData(ficha) {
-  const planos = {};
-
-  // Campos simples (texto plano)
-  for (const k of ['titulo', 'explicacion', 'concepto_clave', 'texto', 'consigna', 'ejemplo', 'reflexion', 'pregunta_reflexion']) {
-    if (ficha[k]) planos[k] = ficha[k];
-  }
-
-  // PDL Lectura: preguntas
-  (ficha.preguntas || []).forEach((v, i) => { planos[`pregunta_${i}`] = v || ''; });
-
-  // Ejercicios tipados (nuevo formato) o strings (PDL Ortografía viejo)
-  (ficha.ejercicios || []).forEach((ejercicio, i) => {
-    if (!ejercicio) return;
-    if (typeof ejercicio === 'string') {
-      planos[`ejercicio_${i}`] = htmlATextoPlano(ejercicio);
-    } else {
-      planos[`ejercicio_${i}_enunciado`] = ejercicio.enunciado || '';
-      (ejercicio.oraciones || []).forEach((o, j) => { planos[`ejercicio_${i}_oracion_${j}`] = o || ''; });
-      (ejercicio.filas || []).forEach((f, j) => { planos[`ejercicio_${i}_fila_${j}`] = f || ''; });
-      (ejercicio.afirmaciones || []).forEach((a, j) => { planos[`ejercicio_${i}_afirmacion_${j}`] = a || ''; });
-    }
-  });
-
-  // Backward compat: actividad plain text
-  if (ficha.actividad) {
-    parsearActividad(ficha.actividad).items.forEach((item, i) => { planos[`item_${i}`] = item.texto || ''; });
-  }
-
-  return { planos, tablas: {} };
-}
-
-function renderTitulo(texto) {
-  if (!texto) return null;
-  const colonIdx = texto.indexOf(":");
-  if (colonIdx !== -1) {
-    return (
-      <>
-        <span style={{ color: C.texto }}>{texto.slice(0, colonIdx + 1)}</span>
-        <span style={{ color: C.acento }}>{texto.slice(colonIdx + 1)}</span>
-      </>
-    );
-  }
-  const palabras = texto.split(" ");
-  if (palabras.length <= 2) return <span style={{ color: C.acento }}>{texto}</span>;
-  const corte = Math.max(palabras.length - 2, 1);
-  return (
-    <>
-      <span style={{ color: C.texto }}>{palabras.slice(0, corte).join(" ")}</span>
-      {" "}
-      <span style={{ color: C.acento }}>{palabras.slice(corte).join(" ")}</span>
-    </>
-  );
 }
 
 function separarPregunta(texto) {
@@ -158,56 +94,26 @@ function parsearActividad(texto) {
   return { header, items };
 }
 
-// ── Subcomponentes ──
+// ── Sub-components ──
 
 function LineaEscritura() {
   return (
-    <div style={{
-      borderBottom: `1.5px solid ${C.lineaEscritura}`,
-      height: 24, width: "100%", marginBottom: 4
-    }} />
+    <div style={{ borderBottom: `1.5px solid ${C.lineaEscritura}`, height: 24, width: "100%", marginBottom: 4 }} />
   );
 }
 
 function SeccionHeader({ numero, titulo, icono }) {
   return (
-    <div style={{
-      display: "flex", alignItems: "center", gap: 10,
-      marginBottom: 8, paddingBottom: 6,
-      borderBottom: `2px solid ${C.borderFuerte}`
-    }}>
-      <div style={{
-        width: 22, height: 22, borderRadius: "50%",
-        background: C.borderFuerte, color: "#ffffff",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 11, fontWeight: 800, flexShrink: 0
-      }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, paddingBottom: 6, borderBottom: `2px solid ${C.borderFuerte}` }}>
+      <div style={{ width: 22, height: 22, borderRadius: "50%", background: C.borderFuerte, color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, flexShrink: 0 }}>
         {numero}
       </div>
-      <span style={{ fontSize: 12, fontWeight: 700, color: C.texto, letterSpacing: "0.01em" }}>
-        {titulo}
-      </span>
+      <span
+        contentEditable suppressContentEditableWarning
+        className="ficha-campo-editable"
+        style={{ fontSize: 12, fontWeight: 700, color: C.texto, letterSpacing: "0.01em" }}
+      >{titulo}</span>
       <span style={{ fontSize: 12, marginLeft: "auto", opacity: 0.4 }}>{icono}</span>
-    </div>
-  );
-}
-
-function RecuadroRespuesta() {
-  return (
-    <div style={{
-      height: 96,
-      border: "0.5px solid #ddddd8",
-      borderRadius: 6,
-      background: "transparent",
-      marginTop: 4,
-    }} />
-  );
-}
-
-function LineasRespuesta({ n = 4 }) {
-  return (
-    <div style={{ marginTop: 4 }}>
-      {Array.from({ length: n }).map((_, i) => <LineaEscritura key={i} />)}
     </div>
   );
 }
@@ -224,30 +130,22 @@ function LineaDoble() {
 // ── Componente principal ──
 
 export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onInicio }) {
-  const [imprimiendo, setImprimiendo] = useState(false);
+  if (!ficha || !registro) return null;
+
   const [isDownloading, setIsDownloading] = useState(false);
-  const [fichaLocal, setFichaLocal] = useState(() => {
+
+  // Normalizar ficha (explicacion puede ser objeto con parrafos)
+  const fichaLocal = (() => {
     const f = { ...ficha };
-    if (f.explicacion && typeof f.explicacion === 'object') {
+    if (f.explicacion && typeof f.explicacion === "object") {
       f.explicacion = Array.isArray(f.explicacion.parrafos)
-        ? f.explicacion.parrafos.join('\n\n')
-        : '';
+        ? f.explicacion.parrafos.join("\n\n")
+        : "";
     }
     return f;
-  });
-  const [itemsLocal, setItemsLocal] = useState(() => parsearActividad(ficha.actividad).items);
-  const [editandoCampo, setEditandoCampo] = useState(null);
-  const [planosLocal, setPlanosLocal] = useState(() => initFieldData(ficha).planos);
-  const [tablasLocal] = useState(() => initFieldData(ficha).tablas);
-  const [posiciones, setPosiciones] = useState({});
-  const [editDraft, setEditDraft] = useState(null);
-  const [mostrarReflexion, setMostrarReflexion] = useState(true);
-  const [ejerciciosOcultos, setEjerciciosOcultos] = useState(new Set());
-  const refFicha = useRef(null);
-  const sectionRefs = useRef({});
-  const textareaRef = useRef(null);
+  })();
 
-  if (!ficha || !registro) return null;
+  const itemsLocal = parsearActividad(ficha.actividad).items;
 
   const esDosHojasObligatorio =
     ficha.tipo_ficha === "presentacion" &&
@@ -257,7 +155,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
       (registro.area === "Prácticas del Lenguaje" && registro.bloque === "Lectura de textos")
     );
 
-  if (ficha?.tipo_ficha === 'presentacion' && !esDosHojasObligatorio) {
+  // Delegar a FichaPresenta para presentaciones de una sola página
+  if (ficha?.tipo_ficha === "presentacion" && !esDosHojasObligatorio) {
     return (
       <FichaPresenta
         ficha={ficha}
@@ -281,1152 +180,451 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
   const emojiLeft = emojis[0];
   const emojiRight = emojis[1] || emojis[0];
   const { pregunta: pregExplicacion } = separarPregunta(stripMarkdown(fichaLocal.explicacion));
-  const { header: headerActividad } = parsearActividad(ficha.actividad);
   const gradoEsUno = registro.grado === "1";
   const gradoDisplay = `${registro.grado}° grado`;
 
-  // ── Posicionamiento de íconos ──
-
-  useEffect(() => {
-    if (!refFicha.current) return;
-    const compute = () => {
-      const fichaEl = refFicha.current;
-      if (!fichaEl) return;
-      const fichaRect = fichaEl.getBoundingClientRect();
-      const nuevas = {};
-      for (const [key, el] of Object.entries(sectionRefs.current)) {
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          nuevas[key] = rect.top - fichaRect.top;
-        }
-      }
-      setPosiciones(nuevas);
-    };
-    const id = requestAnimationFrame(compute);
-    window.addEventListener("resize", compute);
-    return () => { cancelAnimationFrame(id); window.removeEventListener("resize", compute); };
-  }, [fichaLocal, itemsLocal, editandoCampo]);
-
-  // ── Detección de overflow y recorte automático ──
-  useEffect(() => {
-    if (esDosHojasObligatorio) return;
-    const el = refFicha.current;
-    if (!el) return;
-
-    if (el.scrollHeight <= el.clientHeight) return;
-
-    // Cascada: reflexión → ejercicio 3 → ejercicio 2
-    if (mostrarReflexion) {
-      setMostrarReflexion(false);
-      return;
-    }
-    if (!ejerciciosOcultos.has(2)) {
-      setEjerciciosOcultos(prev => new Set([...prev, 2]));
-      return;
-    }
-    if (!ejerciciosOcultos.has(1)) {
-      setEjerciciosOcultos(prev => new Set([...prev, 1]));
-    }
-  }, [fichaLocal, mostrarReflexion, ejerciciosOcultos, esDosHojasObligatorio]);
-
-  const setRef = (key) => (el) => { sectionRefs.current[key] = el; };
-
-  // ── Gestión de edición ──
-
-  const saveValue = (key, val) => {
-    const simples = ["titulo", "explicacion", "concepto_clave", "texto", "consigna", "reflexion", "pregunta_reflexion", "actividad"];
-    if (simples.includes(key)) { setFichaLocal(f => ({ ...f, [key]: val })); return; }
-    if (key.startsWith("pregunta_")) {
-      const i = +key.slice(9);
-      setFichaLocal(f => { const a = [...(f.preguntas || [])]; a[i] = val; return { ...f, preguntas: a }; });
-      return;
-    }
-    if (key.startsWith("ejercicio_")) {
-      const parts = key.split("_");
-      const i = +parts[1];
-      const sub = parts[2];
-      if (!sub) return; // key antigua sin subkey
-      if (sub === "enunciado") {
-        setFichaLocal(f => { const e = [...(f.ejercicios || [])]; e[i] = { ...e[i], enunciado: val }; return { ...f, ejercicios: e }; });
-      } else if (sub === "oracion") {
-        const j = +parts[3];
-        setFichaLocal(f => { const e = [...(f.ejercicios || [])]; const o = [...(e[i].oraciones || [])]; o[j] = val; e[i] = { ...e[i], oraciones: o }; return { ...f, ejercicios: e }; });
-      } else if (sub === "fila") {
-        const j = +parts[3];
-        setFichaLocal(f => { const e = [...(f.ejercicios || [])]; const fi = [...(e[i].filas || [])]; fi[j] = val; e[i] = { ...e[i], filas: fi }; return { ...f, ejercicios: e }; });
-      } else if (sub === "afirmacion") {
-        const j = +parts[3];
-        setFichaLocal(f => { const e = [...(f.ejercicios || [])]; const af = [...(e[i].afirmaciones || [])]; af[j] = val; e[i] = { ...e[i], afirmaciones: af }; return { ...f, ejercicios: e }; });
-      }
-      return;
-    }
-    if (key.startsWith("item_")) {
-      const i = +key.slice(5);
-      setItemsLocal(prev => { const a = [...prev]; a[i] = { ...a[i], texto: val }; return a; });
-    }
-  };
-
-  const isEjercicioKey = (k) => k && k.startsWith("ejercicio_") && k.split("_").length === 2;
-
-  const saveEjercicioDraft = (key) => {
-    if (!editDraft || typeof editDraft !== 'object') return;
-    const idx = +key.split("_")[1];
-    setFichaLocal(f => {
-      const e = [...(f.ejercicios || [])];
-      e[idx] = { ...editDraft };
-      return { ...f, ejercicios: e };
-    });
-  };
-
-  const saveCampo = (key) => {
-    if (!key || !textareaRef.current) return;
-    const val = textareaRef.current.value;
-    saveValue(key, val);
-    setPlanosLocal(prev => ({ ...prev, [key]: val }));
-  };
-
-  const startEdit = (key) => {
-    if (editandoCampo) {
-      if (isEjercicioKey(editandoCampo) && editDraft) saveEjercicioDraft(editandoCampo);
-      else saveCampo(editandoCampo);
-    }
-    if (isEjercicioKey(key)) {
-      const idx = +key.split("_")[1];
-      const ejercicio = (fichaLocal.ejercicios || [])[idx];
-      if (ejercicio && typeof ejercicio === "object") {
-        setEditDraft({ ...ejercicio });
-      }
-    } else {
-      setEditDraft(null);
-    }
-    setEditandoCampo(key);
-  };
-
-  const confirmEdit = () => {
-    if (isEjercicioKey(editandoCampo) && editDraft) saveEjercicioDraft(editandoCampo);
-    else saveCampo(editandoCampo);
-    setEditandoCampo(null);
-    setEditDraft(null);
-  };
-
-  // ── Textarea reutilizable ──
-
-  const estiloTextarea = {
-    width: "100%", boxSizing: "border-box",
-    fontFamily: "inherit", fontSize: "inherit", lineHeight: "inherit",
-    color: C.texto, border: `1.5px solid ${C.acento}`, borderRadius: 4,
-    padding: "6px 8px", resize: "vertical", background: "#fff",
-  };
-
-  const renderTextarea = (minRows = 2) => {
-    const textoInicial = planosLocal[editandoCampo] || '';
-    const tabla = tablasLocal[editandoCampo];
-    return (
-      <>
-        <textarea
-          ref={textareaRef}
-          autoFocus
-          defaultValue={textoInicial}
-          rows={Math.max(minRows, textoInicial.split('\n').length + 1)}
-          style={estiloTextarea}
-        />
-        {tabla && (
-          <div
-            dangerouslySetInnerHTML={{ __html: tabla }}
-            style={{ marginTop: 8, opacity: 0.55, pointerEvents: "none", fontSize: "inherit" }}
-          />
-        )}
-      </>
-    );
-  };
-
-  // ── Render de ejercicio tipado ──
-
-  const ejercicioTieneContenido = (ejercicio) => {
-    if (typeof ejercicio === "string") return ejercicio.trim().length > 0;
-    if (ejercicio.tipo === "completar_oraciones") return Array.isArray(ejercicio.oraciones) && ejercicio.oraciones.length > 0;
-    if (ejercicio.tipo === "tabla") return Array.isArray(ejercicio.filas) && ejercicio.filas.length > 0;
-    if (ejercicio.tipo === "verdadero_falso") return Array.isArray(ejercicio.afirmaciones) && ejercicio.afirmaciones.length > 0;
-    if (ejercicio.tipo === "preguntas_comprension") {
-      if (!Array.isArray(ejercicio.preguntas) || ejercicio.preguntas.length === 0) {
-        console.log("[preguntas_comprension] Sin array preguntas — JSON completo:", JSON.stringify(ejercicio, null, 2));
-        return false;
-      }
-      return true;
-    }
-    // Todos los demás tipos (situacion_problematica, resolver_operaciones, etc.) solo necesitan enunciado
-    return !!ejercicio.enunciado;
-  };
-
-  const renderEjercicioItem = (ejercicio, idx, nRespuesta = 3) => {
-    if (!ejercicio || !ejercicioTieneContenido(ejercicio)) return null;
-    const keyEjercicio = `ejercicio_${idx}`;
-    const editando = editandoCampo === keyEjercicio && editDraft;
-    const numLabel = (
-      <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
-    );
-
-    // ── Modo edición: editor multi-campo controlado ──
-    if (editando) {
-      return (
-        <div key={idx} ref={setRef(keyEjercicio)}>
-          <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-            {numLabel}
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
-              <textarea
-                autoFocus
-                style={estiloTextarea}
-                value={editDraft.enunciado || ''}
-                onChange={e => setEditDraft(d => ({ ...d, enunciado: e.target.value }))}
-                rows={2}
-              />
-              {editDraft.tipo === "completar_oraciones" && (editDraft.oraciones || []).map((o, j) => (
-                <textarea
-                  key={j}
-                  style={estiloTextarea}
-                  value={o}
-                  onChange={e => setEditDraft(d => {
-                    const oraciones = [...(d.oraciones || [])];
-                    oraciones[j] = e.target.value;
-                    return { ...d, oraciones };
-                  })}
-                  rows={1}
-                />
-              ))}
-              {editDraft.tipo === "tabla" && (editDraft.filas || []).map((f, j) => {
-                const rowStr = Array.isArray(f) ? f.join(' | ') : (f || '');
-                return (
-                  <textarea
-                    key={j}
-                    style={estiloTextarea}
-                    value={rowStr}
-                    onChange={e => setEditDraft(d => {
-                      const filas = [...(d.filas || [])];
-                      filas[j] = e.target.value.split(' | ');
-                      return { ...d, filas };
-                    })}
-                    rows={1}
-                    placeholder={`Fila ${j + 1} — columnas separadas por " | "`}
-                  />
-                );
-              })}
-              {editDraft.tipo === "verdadero_falso" && (editDraft.afirmaciones || []).map((a, j) => (
-                <textarea
-                  key={j}
-                  style={estiloTextarea}
-                  value={a}
-                  onChange={e => setEditDraft(d => {
-                    const afirmaciones = [...(d.afirmaciones || [])];
-                    afirmaciones[j] = e.target.value;
-                    return { ...d, afirmaciones };
-                  })}
-                  rows={1}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    // ── Modo display ──
-    const enunciadoEl = (
-      <div style={{ flex: 1 }}>
-        <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio.enunciado)} />
-      </div>
-    );
-
-    if (ejercicio.tipo === "completar_oraciones") {
-      return (
-        <div key={idx} ref={setRef(keyEjercicio)}>
-          <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 6 }}>
-            {numLabel}{enunciadoEl}
-          </div>
-          <div style={{ marginLeft: 24 }}>
-            {(ejercicio.oraciones || []).map((oracion, j) => (
-              <div key={j} style={{ marginBottom: 8 }}>
-                <div style={{ fontSize: 12, lineHeight: 1.6 }} dangerouslySetInnerHTML={renderHTMLConNegrita(oracion)} />
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-
-    if (ejercicio.tipo === "tabla") {
-      return (
-        <div key={idx} ref={setRef(keyEjercicio)}>
-          <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 8 }}>
-            {numLabel}{enunciadoEl}
-          </div>
-          <div style={{ marginLeft: 24 }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
-              <thead>
-                <tr>
-                  {(ejercicio.columnas || []).map((col, i) => (
-                    <th key={i} style={{ border: "0.5px solid #ddddd8", background: "#f5f5f0", padding: "4px 8px", fontWeight: 700, textAlign: "left" }}>{col}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {(ejercicio.filas || []).map((fila, i) => {
-                  const celdas = Array.isArray(fila) ? fila : [fila];
-                  return (
-                    <tr key={i}>
-                      {(ejercicio.columnas || []).map((_, j) => (
-                        <td key={j} style={{ border: "0.5px solid #ddddd8", padding: "4px 8px", height: 32 }}
-                          dangerouslySetInnerHTML={renderHTMLConNegrita(celdas[j] || '')}
-                        />
-                      ))}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      );
-    }
-
-    if (ejercicio.tipo === "verdadero_falso") {
-      return (
-        <div key={idx} ref={setRef(keyEjercicio)}>
-          <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 8 }}>
-            {numLabel}{enunciadoEl}
-          </div>
-          <div style={{ marginLeft: 24, display: "flex", flexDirection: "column", gap: 6 }}>
-            {(ejercicio.afirmaciones || []).map((afirmacion, j) => (
-              <div key={j} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ fontSize: 12, lineHeight: 1.5, flex: 1 }} dangerouslySetInnerHTML={renderHTMLConNegrita(afirmacion)} />
-                <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
-                  {["V", "F"].map(l => (
-                    <span key={l} style={{ border: `1px solid ${C.border}`, padding: "2px 7px", fontSize: 11, fontWeight: 700, borderRadius: 3 }}>{l}</span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-
-    if (ejercicio.tipo === "preguntas_comprension") {
-      return (
-        <div key={idx} ref={setRef(keyEjercicio)}>
-          <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 8 }}>
-            {numLabel}{enunciadoEl}
-          </div>
-          <div style={{ marginLeft: 24, display: "flex", flexDirection: "column", gap: 10 }}>
-            {(ejercicio.preguntas || []).map((pregunta, j) => (
-              <div key={j}>
-                <div style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, marginBottom: 4 }}
-                  dangerouslySetInnerHTML={renderHTMLConNegrita(`${j + 1}. ${pregunta}`)} />
-                <LineasRespuesta n={nRespuesta} />
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-
-    // Sin recuadro: el espacio de respuesta está integrado en los guiones del enunciado
-    if (ejercicio.tipo === "resolver_operaciones" || ejercicio.tipo === "completar_la_cuenta") {
-      const lineas = (ejercicio.enunciado || "").split(/\n|\\n/).map(l => l.trim()).filter(Boolean);
-      return (
-        <div key={idx} ref={setRef(keyEjercicio)}>
-          <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: lineas.length > 1 ? 4 : 0 }}>
-            {numLabel}
-            <div style={{ flex: 1 }}>
-              {lineas.length > 1
-                ? lineas.map((linea, j) => (
-                    <div key={j} style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, marginBottom: 12 }}
-                      dangerouslySetInnerHTML={renderHTMLConNegrita(linea)} />
-                  ))
-                : <div style={{ fontSize: 12, color: C.texto, lineHeight: 1.6 }}
-                    dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio.enunciado)} />
-              }
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    // Tipos desconocidos con enunciado (ej: exploracion_inicial, construccion_modelo, etc.)
-    if (!['completar_oraciones','tabla','verdadero_falso','preguntas_comprension',
-          'resolver_operaciones','completar_la_cuenta'].includes(ejercicio.tipo)) {
-      return (
-        <div key={idx} ref={setRef(keyEjercicio)}>
-          <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
-            {numLabel}{enunciadoEl}
-          </div>
-          <RecuadroRespuesta />
-        </div>
-      );
-    }
-
-    // Default: enunciado + recuadro (situacion_problematica, dibujar_y_explicar, texto_libre, etc.)
-    return (
-      <div key={idx} ref={setRef(keyEjercicio)}>
-        <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
-          {numLabel}{enunciadoEl}
-        </div>
-        <RecuadroRespuesta />
-      </div>
-    );
-  };
-
-  // ── Acciones ──
-
-  const handleImprimir = () => {
-    setImprimiendo(true);
-    setTimeout(() => { window.print(); setImprimiendo(false); }, 50);
-  };
-
+  // ── PDF multi-página ──
   const handleDescargarPDF = async () => {
     setIsDownloading(true);
-    const element = document.getElementById("ficha-imprimible");
-    if (!element) { console.error("No se encontró #ficha-imprimible"); setIsDownloading(false); return; }
+    const hojas = document.querySelectorAll(".ficha-hoja");
+    if (!hojas.length) { setIsDownloading(false); return; }
     const areaSlug = registro.area.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-    const filename = `tiza-${areaSlug}-${registro.grado}.pdf`;
-
-    // Ocultar recuadro temporalmente para que no aparezca en el PDF
-    const prevBorder = element.style.border;
-    const prevBorderRadius = element.style.borderRadius;
-    const prevBoxShadow = element.style.boxShadow;
-    element.style.border = "none";
-    element.style.borderRadius = "0";
-    element.style.boxShadow = "none";
-
-    const canvas = await html2canvas(element, { scale: 2, useCORS: true });
-
-    // Restaurar estilos originales
-    element.style.border = prevBorder;
-    element.style.borderRadius = prevBorderRadius;
-    element.style.boxShadow = prevBoxShadow;
-
-    const imgData = canvas.toDataURL("image/jpeg", 0.98);
     const pdf = new jsPDF("p", "mm", "a4");
-    const altoPagina = 297;
-    const anchoImg = 210;
-    const altoImg = (canvas.height * anchoImg) / canvas.width;
-    let posY = 0;
-    while (posY < altoImg) {
-      if (posY > 0) pdf.addPage();
-      pdf.addImage(imgData, "JPEG", 0, -posY, anchoImg, altoImg);
-      posY += altoPagina;
+    for (let i = 0; i < hojas.length; i++) {
+      const el = hojas[i];
+      el.style.boxShadow = "none";
+      const canvas = await html2canvas(el, { scale: 2, useCORS: true });
+      el.style.boxShadow = "";
+      const imgData = canvas.toDataURL("image/jpeg", 0.98);
+      const altoImg = (canvas.height * 210) / canvas.width;
+      if (i > 0) pdf.addPage();
+      pdf.addImage(imgData, "JPEG", 0, 0, 210, altoImg);
     }
-    pdf.save(filename);
+    pdf.save(`tiza-${areaSlug}-${registro.grado}.pdf`);
     setIsDownloading(false);
   };
 
   // ── Routing por tipo_ficha ──
 
   const renderFichaEspecializada = (FichaComponent) => (
-    <div className="contenedor-pagina" style={{ fontFamily: "system-ui, sans-serif", background: C.fondoApp, minHeight: "100vh" }}>
-      <nav style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "16px 32px", borderBottom: `0.5px solid ${C.btnBorder}`,
-        background: "rgba(248,248,244,0.95)", backdropFilter: "blur(8px)",
-        position: "sticky", top: 0, zIndex: 10
-      }} id="nav-ficha">
-        <button onClick={onInicio} style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-          <Logo size={22} />
-        </button>
-        <div style={{ display: "flex", gap: 10 }}>
-          <button
-            onClick={handleImprimir}
-            disabled={imprimiendo}
-            style={{
-              fontSize: 13, fontWeight: 600, padding: "8px 18px",
-              borderRadius: 7, border: `2px solid ${C.borderFuerte}`,
-              background: C.borderFuerte, color: C.acento, cursor: "pointer"
-            }}>
-            🖨 Imprimir ficha
-          </button>
-          <button
-            onClick={handleDescargarPDF}
-            style={{
-              fontSize: 13, fontWeight: 600, padding: "8px 18px",
-              borderRadius: 7, border: `2px solid ${C.acento}`,
-              background: C.acento, color: "#ffffff", cursor: "pointer"
-            }}>
-            ⬇ Descargar PDF
-          </button>
-          <button
-            onClick={onNueva}
-            style={{
-              fontSize: 13, fontWeight: 500, padding: "8px 18px",
-              borderRadius: 7, border: `1.5px solid ${C.btnBorder}`,
-              background: "transparent", color: "#0d1f1a", cursor: "pointer"
-            }}>
-            ✦ Crear otra
-          </button>
-        </div>
-      </nav>
-
-      <div className="contenedor-wrapper" style={{ maxWidth: 760, margin: "0 auto", padding: "28px 16px 60px" }}>
-        {validacion?.observaciones?.length > 0 && (
-          <div className="validacion-badge" style={{
-            background: "#fffbeb", border: "1px solid #f59e0b",
-            borderRadius: 8, padding: "12px 16px", marginBottom: 16,
-          }}>
-            <p style={{ fontSize: 13, fontWeight: 700, color: "#92400e", marginBottom: 8 }}>
-              ⚠ Revisá esta ficha antes de usar
-            </p>
-            <ul style={{ paddingLeft: 18, margin: 0, display: "flex", flexDirection: "column", gap: 4 }}>
-              {validacion.observaciones.map((obs, i) => (
-                <li key={i} style={{ fontSize: 12, color: "#92400e", lineHeight: 1.5 }}>
-                  <strong>{obs.criterio}:</strong> {obs.descripcion}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {ficha._mock && (
-          <div className="mock-banner" style={{
-            background: "#fffbeb", border: "1px solid #f6ad55",
-            borderRadius: 8, padding: "8px 14px", marginBottom: 16,
-            fontSize: 12, color: "#92400e"
-          }}>
-            ⚠️ Modo de prueba — ficha de ejemplo. Configurá ANTHROPIC_API_KEY para generar fichas reales.
-          </div>
-        )}
-        <FichaComponent ficha={ficha} registro={registro} />
-      </div>
-    </div>
+    <FichaComponent
+      ficha={ficha}
+      registro={registro}
+      validacion={validacion}
+      onNueva={onNueva}
+      onInicio={onInicio}
+    />
   );
 
   if (ficha.tipo_ficha === "practica") return renderFichaEspecializada(FichaPractica);
   if (ficha.tipo_ficha === "cierre") return renderFichaEspecializada(FichaCierre);
 
-  // ── Render (fallback para fichas sin tipo_ficha) ──
+  // ── Acciones del toolbar ──
+  const acciones = (
+    <>
+      {onInicio && <button className="ficha-word-toolbar-btn" onClick={onInicio} title="Inicio">🏠</button>}
+      <button className="ficha-word-toolbar-btn" onClick={() => window.print()} title="Imprimir">🖨</button>
+      {onNueva && <button className="ficha-word-toolbar-btn" onClick={onNueva} title="Nueva ficha">✦ Nueva</button>}
+    </>
+  );
 
-  return (
-    <div className="contenedor-pagina" style={{ fontFamily: "system-ui, sans-serif", background: C.fondoApp, minHeight: "100vh" }}>
+  // ── Encabezado con título ──
+  const encabezadoConTitulo = (
+    <div style={{ background: C.fondoHeader, borderBottom: `2.5px solid ${C.borderFuerte}`, borderRadius: "8px 8px 0 0", padding: "10px 16px", flexShrink: 0 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 10 }}>
+        <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojiLeft}</span>
+        <h2
+          contentEditable suppressContentEditableWarning
+          className="ficha-campo-editable"
+          style={{ fontSize: 26, fontWeight: 800, margin: 0, lineHeight: 1.25, letterSpacing: "-0.01em", textAlign: "center", flex: 1 }}
+        >
+          {tituloTexto}
+        </h2>
+        <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojiRight}</span>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
+        {["Nombre y apellido", "Fecha", "Grado / Sección"].map(label => (
+          <div key={label}>
+            <p style={{ fontSize: 9, color: C.muted, fontWeight: 700, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</p>
+            <div style={{ borderBottom: `2px solid ${C.borderFuerte}`, height: 20 }} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
-      {/* Nav */}
-      <nav style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "16px 32px", borderBottom: `0.5px solid ${C.btnBorder}`,
-        background: "rgba(248,248,244,0.95)", backdropFilter: "blur(8px)",
-        position: "sticky", top: 0, zIndex: 10
-      }} id="nav-ficha">
-        <button onClick={onInicio} style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-          <Logo size={22} />
-        </button>
-        <div style={{ display: "flex", gap: 10 }}>
-          <button
-            onClick={() => setMostrarReflexion(v => !v)}
-            style={{
-              fontSize: 13, fontWeight: 600, padding: "8px 18px",
-              borderRadius: 7, cursor: "pointer",
-              border: mostrarReflexion ? `2px solid ${C.acento}` : `2px solid ${C.border}`,
-              background: "transparent",
-              color: mostrarReflexion ? C.acento : C.muted,
-            }}>
-            👁 {mostrarReflexion ? "Ocultar reflexión" : "Mostrar reflexión"}
-          </button>
-          <button
-            onClick={handleImprimir}
-            disabled={imprimiendo}
-            style={{
-              fontSize: 13, fontWeight: 600, padding: "8px 18px",
-              borderRadius: 7, border: `2px solid ${C.borderFuerte}`,
-              background: C.borderFuerte, color: C.acento, cursor: "pointer"
-            }}>
-            🖨 Imprimir ficha
-          </button>
-          <button
-            onClick={handleDescargarPDF}
-            style={{
-              fontSize: 13, fontWeight: 600, padding: "8px 18px",
-              borderRadius: 7, border: `2px solid ${C.acento}`,
-              background: C.acento, color: "#ffffff", cursor: "pointer"
-            }}>
-            ⬇ Descargar PDF
-          </button>
-          <button
-            onClick={onNueva}
-            style={{
-              fontSize: 13, fontWeight: 500, padding: "8px 18px",
-              borderRadius: 7, border: `1.5px solid ${C.btnBorder}`,
-              background: "transparent", color: "#0d1f1a", cursor: "pointer"
-            }}>
-            ✦ Crear otra
-          </button>
+  // ── Encabezado sin título (hoja 2) ──
+  const encabezadoSinTitulo = (
+    <div style={{ background: C.fondoHeader, borderBottom: `2.5px solid ${C.borderFuerte}`, borderRadius: "8px 8px 0 0", padding: "10px 16px", flexShrink: 0 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
+        {["Nombre y apellido", "Fecha", "Grado / Sección"].map(label => (
+          <div key={label}>
+            <p style={{ fontSize: 9, color: C.muted, fontWeight: 700, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</p>
+            <div style={{ borderBottom: `2px solid ${C.borderFuerte}`, height: 20 }} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  // ── Footer ──
+  const footer = (num) => (
+    <div style={{ borderTop: `2px solid ${C.borderFuerte}`, borderRadius: "0 0 8px 8px", padding: "6px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: C.fondoHeader, flexShrink: 0 }}>
+      <span style={{ fontSize: 10, color: C.muted }}>tiza. · Diseño Curricular 2018</span>
+      <span style={{ fontSize: 10, color: C.muted }}>{gradoDisplay} · {registro.area} · {registro.bloque}</span>
+    </div>
+  );
+
+  // ── Banners de validación / modo prueba ──
+  const banners = (
+    <>
+      {validacion?.observaciones?.length > 0 && (
+        <div style={{ background: "#fffbeb", borderBottom: "1px solid #f59e0b", padding: "8px 16px" }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: "#92400e", margin: "0 0 4px" }}>⚠ Revisá esta ficha</p>
+          <ul style={{ paddingLeft: 16, margin: 0 }}>
+            {validacion.observaciones.map((obs, i) => (
+              <li key={i} style={{ fontSize: 11, color: "#92400e" }}><strong>{obs.criterio}:</strong> {obs.descripcion}</li>
+            ))}
+          </ul>
         </div>
-      </nav>
+      )}
+      {ficha._mock && (
+        <div style={{ background: "#fffbeb", borderBottom: "1px solid #f6ad55", padding: "8px 16px", fontSize: 11, color: "#92400e" }}>
+          ⚠️ Modo de prueba — ficha de ejemplo. Configurá ANTHROPIC_API_KEY para generar fichas reales.
+        </div>
+      )}
+    </>
+  );
 
-      {/* Contenedor */}
-      <div className="contenedor-wrapper" style={{ maxWidth: 760, margin: "0 auto", padding: "28px 16px 60px" }}>
-
-        {/* Badge de validación pedagógica */}
-        {validacion?.observaciones?.length > 0 && (
-          <div className="validacion-badge" style={{
-            background: "#fffbeb", border: "1px solid #f59e0b",
-            borderRadius: 8, padding: "12px 16px", marginBottom: 16,
-          }}>
-            <p style={{ fontSize: 13, fontWeight: 700, color: "#92400e", marginBottom: 8 }}>
-              ⚠ Revisá esta ficha antes de usar
-            </p>
-            <ul style={{ paddingLeft: 18, margin: 0, display: "flex", flexDirection: "column", gap: 4 }}>
-              {validacion.observaciones.map((obs, i) => (
-                <li key={i} style={{ fontSize: 12, color: "#92400e", lineHeight: 1.5 }}>
-                  <strong>{obs.criterio}:</strong> {obs.descripcion}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* Banner mock */}
-        {ficha._mock && (
-          <div className="mock-banner" style={{
-            background: "#fffbeb", border: "1px solid #f6ad55",
-            borderRadius: 8, padding: "8px 14px", marginBottom: 16,
-            fontSize: 12, color: "#92400e"
-          }}>
-            ⚠️ Modo de prueba — ficha de ejemplo. Configurá ANTHROPIC_API_KEY para generar fichas reales.
-          </div>
-        )}
-
-
-        {/* ── FICHA + BARRA LATERAL ── */}
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 0 }}>
-
-          {esDosHojasObligatorio ? (
-            <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-              {/* ── Hoja 1 ── */}
-              <div ref={refFicha} id="ficha-imprimible" className="ficha hoja-uno" style={{
-                background: C.fondo,
-                border: `2.5px solid ${C.borderFuerte}`,
-                borderRadius: 10,
-                width: "190mm",
-                minHeight: "277mm",
-                marginBottom: "10mm",
-                overflow: "visible",
-                fontFamily: "'Lexend Deca', sans-serif",
-                display: "flex",
-                flexDirection: "column",
-              }}>
-                {/* Encabezado Hoja 1: título + emojis + campos */}
-                <div style={{ background: C.fondoHeader, borderBottom: `2.5px solid ${C.borderFuerte}`, borderRadius: "8px 8px 0 0", padding: "10px 16px" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 10 }}>
-                    <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojiLeft}</span>
-                    <h2 style={{ fontSize: 26, fontWeight: 800, margin: 0, lineHeight: 1.25, letterSpacing: "-0.01em", textAlign: "center" }}>
-                      {renderTitulo(tituloTexto)}
-                    </h2>
-                    <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojiRight}</span>
-                  </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
-                    {["Nombre y apellido", "Fecha", "Grado / Sección"].map(label => (
-                      <div key={label}>
-                        <p className="dato-label" style={{ fontSize: 9, color: C.muted, fontWeight: 700, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</p>
-                        <div style={{ borderBottom: `2px solid ${C.borderFuerte}`, height: 20 }} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                {/* Cuerpo Hoja 1: solo explicación/texto */}
-                <div className="cuerpo-ficha ficha-contenido" style={{ padding: "10px 16px", flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
-                  {isPDL && registro.bloque === "Lectura de textos" ? (
-                    <div className="seccion">
-                      <SeccionHeader numero="1" titulo="Leemos" icono="📖" />
-                      <div ref={setRef("texto")}>
-                        {editandoCampo === "texto"
-                          ? renderTextarea(6)
-                          : <div className="explicacion" style={{ fontSize: 11, color: C.texto, lineHeight: 1.65, margin: 0, whiteSpace: "pre-line" }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.texto)} />
-                        }
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="seccion">
-                      <SeccionHeader numero="1" titulo={pregExplicacion || "Leemos juntos"} icono="📖" />
-                      {fichaLocal.concepto_clave && (
-                        <div style={{ background: "#eafaf4", borderLeft: "3px solid #00c48c", borderRadius: "0 6px 6px 0", padding: "8px 12px", marginBottom: 8 }}>
-                          <div ref={setRef("concepto_clave")}>
-                            {editandoCampo === "concepto_clave"
-                              ? renderTextarea(2)
-                              : <div className="concepto-clave-texto" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0, fontWeight: 500 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.concepto_clave)} />
-                            }
-                          </div>
-                        </div>
-                      )}
-                      <div ref={setRef("explicacion")}>
-                        {editandoCampo === "explicacion"
-                          ? renderTextarea(3)
-                          : <div className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.explicacion)} />
-                        }
-                      </div>
-                    </div>
-                  )}
-                </div>
-                {/* Footer Hoja 1 */}
-                <div style={{ borderTop: `2px solid ${C.borderFuerte}`, borderRadius: "0 0 8px 8px", padding: "6px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: C.fondoHeader }}>
-                  <span style={{ fontSize: 13, fontFamily: "'Lexend Deca', sans-serif", color: C.muted }}>1</span>
-                  <span style={{ fontSize: 13, fontFamily: "'Lexend Deca', sans-serif", color: C.muted }}>{gradoDisplay} · {registro.area} · {registro.bloque}</span>
-                </div>
-              </div>
-
-              {/* ── Hoja 2 ── */}
-              <div className="ficha hoja-dos" style={{
-                background: C.fondo,
-                border: `2.5px solid ${C.borderFuerte}`,
-                borderRadius: 10,
-                width: "190mm",
-                minHeight: "277mm",
-                overflow: "visible",
-                fontFamily: "'Lexend Deca', sans-serif",
-                display: "flex",
-                flexDirection: "column",
-              }}>
-                {/* Encabezado Hoja 2: solo campos, sin título ni emojis */}
-                <div style={{ background: C.fondoHeader, borderBottom: `2.5px solid ${C.borderFuerte}`, borderRadius: "8px 8px 0 0", padding: "10px 16px" }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
-                    {["Nombre y apellido", "Fecha", "Grado / Sección"].map(label => (
-                      <div key={label}>
-                        <p className="dato-label" style={{ fontSize: 9, color: C.muted, fontWeight: 700, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</p>
-                        <div style={{ borderBottom: `2px solid ${C.borderFuerte}`, height: 20 }} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                {/* Cuerpo Hoja 2: ejercicios con n=5 */}
-                <div className="cuerpo-ficha ficha-contenido" style={{ padding: "10px 16px", flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
-                  {isPDL && registro.bloque === "Lectura de textos" ? (
-                    <div className="seccion">
-                      <SeccionHeader numero="2" titulo="Respondé" icono="✍️" />
-                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                        {Array.isArray(fichaLocal.preguntas) && fichaLocal.preguntas.map((preg, idx) => (
-                          <div key={idx}>
-                            <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
-                              <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
-                              <div ref={setRef(`pregunta_${idx}`)} style={{ flex: 1 }}>
-                                {editandoCampo === `pregunta_${idx}`
-                                  ? renderTextarea(2)
-                                  : <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(preg)} />
-                                }
-                              </div>
-                            </div>
-                            <LineasRespuesta n={5} />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="seccion">
-                      <SeccionHeader numero="2" titulo="Tu turno" icono="✏️" />
-                      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                        {Array.isArray(fichaLocal.ejercicios) && fichaLocal.ejercicios.length > 0
-                          ? fichaLocal.ejercicios.map((ejercicio, idx) =>
-                              ejerciciosOcultos.has(idx) ? null : renderEjercicioItem(ejercicio, idx, 5)
-                            )
-                          : itemsLocal.map(({ num, texto }, idx) => (
-                            <div key={num}>
-                              <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
-                                <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{num}.</span>
-                                <div ref={setRef(`item_${idx}`)} style={{ flex: 1 }}>
-                                  {editandoCampo === `item_${idx}`
-                                    ? renderTextarea(2)
-                                    : <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(texto)} />
-                                  }
-                                </div>
-                              </div>
-                              {!tieneRespuestaEmbebida(texto) && <RecuadroRespuesta />}
-                            </div>
-                          ))
-                        }
-                      </div>
-                    </div>
-                  )}
-                </div>
-                {/* Footer Hoja 2 */}
-                <div style={{ borderTop: `2px solid ${C.borderFuerte}`, borderRadius: "0 0 8px 8px", padding: "6px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: C.fondoHeader }}>
-                  <span style={{ fontSize: 13, fontFamily: "'Lexend Deca', sans-serif", color: C.muted }}>2</span>
-                  <span style={{ fontSize: 13, fontFamily: "'Lexend Deca', sans-serif", color: C.muted }}>{gradoDisplay} · {registro.area} · {registro.bloque}</span>
-                </div>
-              </div>
+  // ── Layout dos hojas ──
+  if (esDosHojasObligatorio) {
+    const hoja1 = (
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, fontFamily: "'Lexend Deca', sans-serif", fontSize: 12, color: C.texto }}>
+        {banners}
+        {encabezadoConTitulo}
+        <div style={{ flex: 1, padding: "10px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
+          {isPDL && registro.bloque === "Lectura de textos" ? (
+            <div>
+              <SeccionHeader numero="1" titulo="Leemos" icono="📖" />
+              <EditableHtml
+                html={renderHTMLConNegrita(fichaLocal.texto).__html}
+                className="ficha-campo-editable"
+                style={{ fontSize: 11, color: C.texto, lineHeight: 1.65, whiteSpace: "pre-line" }}
+              />
             </div>
           ) : (
-          <div ref={refFicha} id="ficha-imprimible" className="ficha" style={{
-            flex: 1,
-            background: C.fondo,
-            border: `2.5px solid ${C.borderFuerte}`,
-            borderRadius: 10,
-            minHeight: "277mm",
-            maxHeight: "277mm",
-            overflow: "hidden",
-            fontFamily: "'Lexend Deca', sans-serif",
-          }}>
-
-            {/* Encabezado */}
-            <div style={{
-              background: C.fondoHeader,
-              borderBottom: `2.5px solid ${C.borderFuerte}`,
-              borderRadius: "8px 8px 0 0",
-              padding: "10px 16px"
-            }}>
-              {/* Título editable */}
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 10 }}>
-                <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojiLeft}</span>
-                <div ref={setRef("titulo")} style={{ flex: 1 }}>
-                  {editandoCampo === "titulo"
-                    ? renderTextarea(1)
-                    : (
-                      <h2 style={{ fontSize: 26, fontWeight: 800, margin: 0, lineHeight: 1.25, letterSpacing: "-0.01em", textAlign: "center" }}>
-                        {renderTitulo(tituloTexto)}
-                      </h2>
-                    )
-                  }
+            <div>
+              <SeccionHeader numero="1" titulo={pregExplicacion || "Leemos juntos"} icono="📖" />
+              {fichaLocal.concepto_clave && (
+                <div style={{ background: "#eafaf4", borderLeft: "3px solid #00c48c", borderRadius: "0 6px 6px 0", padding: "8px 12px", marginBottom: 8 }}>
+                  <EditableHtml
+                    html={renderHTMLConNegrita(fichaLocal.concepto_clave).__html}
+                    className="ficha-campo-editable"
+                    style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, fontWeight: 500 }}
+                  />
                 </div>
-                <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojiRight}</span>
-              </div>
+              )}
+              <EditableHtml
+                html={renderHTMLConNegrita(fichaLocal.explicacion).__html}
+                className="ficha-campo-editable"
+                style={{ fontSize: 12, color: C.texto, lineHeight: 1.6 }}
+              />
+            </div>
+          )}
+        </div>
+        {footer(1)}
+      </div>
+    );
 
-              {/* Datos alumno */}
-              <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
-                {["Nombre y apellido", "Fecha", "Grado / Sección"].map(label => (
-                  <div key={label}>
-                    <p className="dato-label" style={{
-                      fontSize: 9, color: C.muted, fontWeight: 700,
-                      marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em"
-                    }}>
-                      {label}
-                    </p>
-                    <div style={{ borderBottom: `2px solid ${C.borderFuerte}`, height: 20 }} />
+    const hoja2 = (
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, fontFamily: "'Lexend Deca', sans-serif", fontSize: 12, color: C.texto }}>
+        {encabezadoSinTitulo}
+        <div style={{ flex: 1, padding: "10px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
+          {isPDL && registro.bloque === "Lectura de textos" ? (
+            <div>
+              <SeccionHeader numero="2" titulo="Respondé" icono="✍️" />
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {Array.isArray(fichaLocal.preguntas) && fichaLocal.preguntas.map((preg, idx) => (
+                  <div key={idx}>
+                    <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
+                      <EditableHtml
+                        html={renderHTMLConNegrita(preg).__html}
+                        className="ficha-campo-editable"
+                        style={{ flex: 1, fontSize: 12, color: C.texto, lineHeight: 1.55 }}
+                      />
+                    </div>
+                    <LineasRespuesta n={5} />
                   </div>
                 ))}
               </div>
             </div>
-
-            {/* Cuerpo */}
-            <div className="cuerpo-ficha ficha-contenido" style={{ padding: "10px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
-
-              {isPDL ? (
-
-                /* ── PDL: Lectura ── */
-                registro.bloque === "Lectura de textos" ? (
-                  <>
-                    <div className="seccion">
-                      <SeccionHeader numero="1" titulo="Leemos" icono="📖" />
-                      <div ref={setRef("texto")}>
-                        {editandoCampo === "texto"
-                          ? renderTextarea(6)
-                          : <div className="explicacion" style={{ fontSize: 11, color: C.texto, lineHeight: 1.65, margin: 0, whiteSpace: "pre-line" }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.texto)} />
-                        }
+          ) : (
+            <div>
+              <SeccionHeader numero="2" titulo="Tu turno" icono="✏️" />
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {Array.isArray(fichaLocal.ejercicios) && fichaLocal.ejercicios.length > 0
+                  ? fichaLocal.ejercicios.map((ejercicio, idx) => (
+                      <div key={idx}>{renderEjercicioItem(ejercicio, idx, { editable: true })}</div>
+                    ))
+                  : itemsLocal.map(({ num, texto }, idx) => (
+                    <div key={num}>
+                      <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{num}.</span>
+                        <EditableHtml
+                          html={renderHTMLConNegrita(texto).__html}
+                          className="ficha-campo-editable"
+                          style={{ flex: 1, fontSize: 12, color: C.texto, lineHeight: 1.55 }}
+                        />
                       </div>
+                      {!tieneRespuestaEmbebida(texto) && <RecuadroRespuesta />}
                     </div>
-                    <div className="seccion">
-                      <SeccionHeader numero="2" titulo="Respondé" icono="✍️" />
-                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                        {Array.isArray(fichaLocal.preguntas) && fichaLocal.preguntas.map((preg, idx) => (
-                          <div key={idx}>
-                            <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
-                              <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
-                              <div ref={setRef(`pregunta_${idx}`)} style={{ flex: 1 }}>
-                                {editandoCampo === `pregunta_${idx}`
-                                  ? renderTextarea(2)
-                                  : <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(preg)} />
-                                }
-                              </div>
-                            </div>
-                            <LineasRespuesta n={3} />
+                  ))
+                }
+              </div>
+            </div>
+          )}
+        </div>
+        {footer(2)}
+      </div>
+    );
+
+    return (
+      <>
+        <FichaCanvas
+          paginas={[hoja1, hoja2]}
+          hojaId="ficha-imprimible"
+          onDescargar={handleDescargarPDF}
+          acciones={acciones}
+        />
+        <FeedbackButton isDownloading={isDownloading} />
+      </>
+    );
+  }
+
+  // ── Layout página única ──
+
+  const hojaContenido = (
+    <div style={{ display: "flex", flexDirection: "column", flex: 1, fontFamily: "'Lexend Deca', sans-serif", fontSize: 12, color: C.texto }}>
+      {banners}
+      {encabezadoConTitulo}
+      <div style={{ flex: 1, padding: "10px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
+
+        {isPDL ? (
+
+          registro.bloque === "Lectura de textos" ? (
+            /* ── PDL: Lectura ── */
+            <>
+              <div>
+                <SeccionHeader numero="1" titulo="Leemos" icono="📖" />
+                <EditableHtml
+                  html={renderHTMLConNegrita(fichaLocal.texto).__html}
+                  className="ficha-campo-editable"
+                  style={{ fontSize: 11, color: C.texto, lineHeight: 1.65, whiteSpace: "pre-line" }}
+                />
+              </div>
+              <div>
+                <SeccionHeader numero="2" titulo="Respondé" icono="✍️" />
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {Array.isArray(fichaLocal.preguntas) && fichaLocal.preguntas.map((preg, idx) => (
+                    <div key={idx}>
+                      <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
+                        <EditableHtml
+                          html={renderHTMLConNegrita(preg).__html}
+                          className="ficha-campo-editable"
+                          style={{ flex: 1, fontSize: 12, color: C.texto, lineHeight: 1.55 }}
+                        />
+                      </div>
+                      <LineasRespuesta n={3} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+
+          ) : registro.bloque === "Escritura de textos" ? (
+            /* ── PDL: Escritura ── */
+            <>
+              <div>
+                <SeccionHeader numero="1" titulo="¡A escribir!" icono="✏️" />
+                <EditableHtml
+                  html={renderHTMLConNegrita(fichaLocal.consigna).__html}
+                  className="ficha-campo-editable"
+                  style={{ fontSize: 12, color: C.texto, lineHeight: 1.6 }}
+                />
+              </div>
+              {Array.isArray(fichaLocal.orientaciones) && fichaLocal.orientaciones.length > 0 && (
+                <div>
+                  <SeccionHeader numero="2" titulo="Antes de escribir, pensá…" icono="💭" />
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    {fichaLocal.orientaciones.map((orientacion, idx) => (
+                      <div key={idx} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                        <span style={{ fontSize: 12, color: C.muted, flexShrink: 0, marginTop: 1 }}>→</span>
+                        <EditableHtml
+                          html={renderHTMLConNegrita(orientacion).__html}
+                          className="ficha-campo-editable"
+                          style={{ flex: 1, fontSize: 12, color: C.texto, lineHeight: 1.5 }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div>
+                <SeccionHeader
+                  numero={Array.isArray(fichaLocal.orientaciones) && fichaLocal.orientaciones.length > 0 ? "3" : "2"}
+                  titulo="Mi texto"
+                  icono="📝"
+                />
+                {gradoEsUno
+                  ? Array.from({ length: 8 }).map((_, i) => <LineaDoble key={i} />)
+                  : Array.from({ length: 8 }).map((_, i) => <LineaEscritura key={i} />)
+                }
+              </div>
+            </>
+
+          ) : (
+            /* ── PDL: Ortografía / otros ── */
+            <>
+              <div>
+                <SeccionHeader numero="1" titulo="La regla" icono="📚" />
+                {fichaLocal.concepto_clave && (
+                  <div style={{ background: "#eafaf4", borderLeft: "3px solid #00c48c", borderRadius: "0 6px 6px 0", padding: "8px 12px", marginBottom: 8 }}>
+                    <EditableHtml
+                      html={renderHTMLConNegrita(fichaLocal.concepto_clave).__html}
+                      className="ficha-campo-editable"
+                      style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, fontWeight: 500 }}
+                    />
+                  </div>
+                )}
+                <EditableHtml
+                  html={renderHTMLConNegrita(fichaLocal.explicacion).__html}
+                  className="ficha-campo-editable"
+                  style={{ fontSize: 12, color: C.texto, lineHeight: 1.6 }}
+                />
+                {fichaLocal.ejemplo && (
+                  <div style={{ background: "#f7f7f0", borderRadius: 6, padding: "8px 12px", border: `1px solid ${C.border}`, marginTop: 6 }}>
+                    <p style={{ fontSize: 10, color: C.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Ejemplo</p>
+                    <EditableHtml
+                      html={renderHTMLConNegrita(fichaLocal.ejemplo).__html}
+                      className="ficha-campo-editable"
+                      style={{ fontSize: 12, color: C.texto, lineHeight: 1.6 }}
+                    />
+                  </div>
+                )}
+              </div>
+              <div>
+                <SeccionHeader numero="2" titulo="Practicamos" icono="✏️" />
+                {Array.isArray(fichaLocal.ejercicios) && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {fichaLocal.ejercicios.map((ejercicio, idx) =>
+                      typeof ejercicio === "string" ? (
+                        <div key={idx}>
+                          <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
+                            <EditableHtml
+                              html={renderHTMLConNegrita(ejercicio).__html}
+                              className="ficha-campo-editable"
+                              style={{ flex: 1, fontSize: 12, color: C.texto, lineHeight: 1.5 }}
+                            />
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  </>
-
-                /* ── PDL: Escritura ── */
-                ) : registro.bloque === "Escritura de textos" ? (
-                  <>
-                    <div className="seccion">
-                      <SeccionHeader numero="1" titulo="¡A escribir!" icono="✏️" />
-                      <div ref={setRef("consigna")}>
-                        {editandoCampo === "consigna"
-                          ? renderTextarea(3)
-                          : <div className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.consigna)} />
-                        }
-                      </div>
-                    </div>
-                    {Array.isArray(fichaLocal.orientaciones) && fichaLocal.orientaciones.length > 0 && (
-                      <div className="seccion">
-                        <SeccionHeader numero="2" titulo="Antes de escribir, pensá…" icono="💭" />
-                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                          {fichaLocal.orientaciones.map((orientacion, idx) => (
-                            <div key={idx} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                              <span style={{ fontSize: 12, color: C.muted, flexShrink: 0, marginTop: 1 }}>→</span>
-                              <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(orientacion)} />
-                            </div>
-                          ))}
+                          {!tieneRespuestaEmbebida(ejercicio) && <RecuadroRespuesta />}
                         </div>
-                      </div>
+                      ) : (
+                        <div key={idx}>{renderEjercicioItem(ejercicio, idx, { editable: true })}</div>
+                      )
                     )}
-                    <div className="seccion">
-                      <SeccionHeader numero="3" titulo="Mi texto" icono="📝" />
-                      {gradoEsUno
-                        ? Array.from({ length: 8 }).map((_, i) => <LineaDoble key={i} />)
-                        : Array.from({ length: 8 }).map((_, i) => <LineaEscritura key={i} />)
-                      }
-                    </div>
-                  </>
+                  </div>
+                )}
+              </div>
+            </>
+          )
 
-                /* ── PDL: Ortografía ── */
-                ) : (
-                  <>
-                    <div className="seccion">
-                      <SeccionHeader numero="1" titulo="La regla" icono="📚" />
-                      {fichaLocal.concepto_clave && (
-                        <div style={{ background: "#eafaf4", borderLeft: "3px solid #00c48c", borderRadius: "0 6px 6px 0", padding: "8px 12px", marginBottom: 8 }}>
-                          <div ref={setRef("concepto_clave")}>
-                            {editandoCampo === "concepto_clave"
-                              ? renderTextarea(2)
-                              : <div className="concepto-clave-texto" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0, fontWeight: 500 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.concepto_clave)} />
-                            }
-                          </div>
-                        </div>
-                      )}
-                      <div ref={setRef("explicacion")}>
-                        {editandoCampo === "explicacion"
-                          ? renderTextarea(3)
-                          : <div className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: "0 0 6px" }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.explicacion)} />
-                        }
-                      </div>
-                      {fichaLocal.ejemplo && (
-                        <div style={{ background: "#f7f7f0", borderRadius: 6, padding: "8px 12px", border: `1px solid ${C.border}` }}>
-                          <p style={{ fontSize: 10, color: C.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Ejemplo</p>
-                          <div className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.ejemplo)} />
-                        </div>
-                      )}
-                    </div>
-                    <div className="seccion">
-                      <SeccionHeader numero="2" titulo="Practicamos" icono="✏️" />
-                      {Array.isArray(fichaLocal.ejercicios) && (
-                        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                          {fichaLocal.ejercicios.map((ejercicio, idx) =>
-                            typeof ejercicio === "string"
-                              ? (
-                                <div key={idx}>
-                                  <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
-                                    <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
-                                    <div ref={setRef(`ejercicio_${idx}`)} style={{ flex: 1 }}>
-                                      {editandoCampo === `ejercicio_${idx}`
-                                        ? renderTextarea(2)
-                                        : <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio)} />
-                                      }
-                                    </div>
-                                  </div>
-                                  {!tieneRespuestaEmbebida(ejercicio) && <RecuadroRespuesta />}
-                                </div>
-                              )
-                              : renderEjercicioItem(ejercicio, idx)
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )
+        ) : (
 
-              ) : (
-
-                /* ── No PDL: Matemática, Ciencias, etc. ── */
-                (() => {
-                  const tieneExplicacion = !!(fichaLocal.explicacion || fichaLocal.concepto_clave || fichaLocal.ejemplo);
-                  const numTuTurno = tieneExplicacion ? 2 : 1;
-                  const numReflexion = tieneExplicacion ? 3 : 2;
-                  return (
-                <>
-                  {tieneExplicacion && (
-                  <div className="seccion">
+          /* ── No PDL: Matemática, Ciencias, etc. ── */
+          (() => {
+            const tieneExplicacion = !!(fichaLocal.explicacion || fichaLocal.concepto_clave || fichaLocal.ejemplo);
+            const numTuTurno = tieneExplicacion ? 2 : 1;
+            const numReflexion = tieneExplicacion ? 3 : 2;
+            return (
+              <>
+                {tieneExplicacion && (
+                  <div>
                     <SeccionHeader numero="1" titulo={pregExplicacion || "Leemos juntos"} icono="📖" />
                     {fichaLocal.concepto_clave && (
                       <div style={{ background: "#eafaf4", borderLeft: "3px solid #00c48c", borderRadius: "0 6px 6px 0", padding: "8px 12px", marginBottom: 8 }}>
-                        <div ref={setRef("concepto_clave")}>
-                          {editandoCampo === "concepto_clave"
-                            ? renderTextarea(2)
-                            : <div className="concepto-clave-texto" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, margin: 0, fontWeight: 500 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.concepto_clave)} />
-                          }
-                        </div>
+                        <EditableHtml
+                          html={renderHTMLConNegrita(fichaLocal.concepto_clave).__html}
+                          className="ficha-campo-editable"
+                          style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, fontWeight: 500 }}
+                        />
                       </div>
                     )}
-                    <div ref={setRef("explicacion")}>
-                      {editandoCampo === "explicacion"
-                        ? renderTextarea(3)
-                        : <div className="explicacion" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.explicacion)} />
-                      }
-                    </div>
+                    <EditableHtml
+                      html={renderHTMLConNegrita(fichaLocal.explicacion).__html}
+                      className="ficha-campo-editable"
+                      style={{ fontSize: 12, color: C.texto, lineHeight: 1.6 }}
+                    />
                   </div>
-                  )}
+                )}
 
-                  <div className="seccion">
-                    <SeccionHeader numero={numTuTurno} titulo="Tu turno" icono="✏️" />
-                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                      {Array.isArray(fichaLocal.ejercicios) && fichaLocal.ejercicios.length > 0
-                        ? fichaLocal.ejercicios.map((ejercicio, idx) =>
-                            ejerciciosOcultos.has(idx) ? null : renderEjercicioItem(ejercicio, idx)
-                          )
-                        : itemsLocal.map(({ num, texto }, idx) => (
-                          <div key={num}>
-                            <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
-                              <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{num}.</span>
-                              <div ref={setRef(`item_${idx}`)} style={{ flex: 1 }}>
-                                {editandoCampo === `item_${idx}`
-                                  ? renderTextarea(2)
-                                  : <div className="ejercicio-enunciado" style={{ fontSize: 12, color: C.texto, lineHeight: 1.55, margin: 0 }} dangerouslySetInnerHTML={renderHTMLConNegrita(texto)} />
-                                }
-                              </div>
-                            </div>
-                            {!tieneRespuestaEmbebida(texto) && <RecuadroRespuesta />}
-                          </div>
+                <div>
+                  <SeccionHeader numero={numTuTurno} titulo="Tu turno" icono="✏️" />
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {Array.isArray(fichaLocal.ejercicios) && fichaLocal.ejercicios.length > 0
+                      ? fichaLocal.ejercicios.map((ejercicio, idx) => (
+                          <div key={idx}>{renderEjercicioItem(ejercicio, idx, { editable: true })}</div>
                         ))
-                      }
-                    </div>
+                      : itemsLocal.map(({ num, texto }, idx) => (
+                        <div key={num}>
+                          <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{num}.</span>
+                            <EditableHtml
+                              html={renderHTMLConNegrita(texto).__html}
+                              className="ficha-campo-editable"
+                              style={{ flex: 1, fontSize: 12, color: C.texto, lineHeight: 1.55 }}
+                            />
+                          </div>
+                          {!tieneRespuestaEmbebida(texto) && <RecuadroRespuesta />}
+                        </div>
+                      ))
+                    }
                   </div>
+                </div>
 
-                  {mostrarReflexion && (fichaLocal.reflexion || fichaLocal.pregunta_reflexion) && (
-                    <div className="seccion">
-                      <SeccionHeader numero={numReflexion} titulo="Reflexionamos" icono="💭" />
-                      <div ref={setRef("reflexion")}>
-                        {editandoCampo === "reflexion"
-                          ? renderTextarea(2)
-                          : <div className="reflexion-texto" style={{ fontSize: 12, color: C.texto, fontStyle: "italic", lineHeight: 1.55, marginBottom: 6 }} dangerouslySetInnerHTML={renderHTMLConNegrita(fichaLocal.reflexion || fichaLocal.pregunta_reflexion)} />
-                        }
-                      </div>
-                      <LineasRespuesta n={2} />
-                    </div>
-                  )}
-                </>
-                  );
-                })()
-              )}
+                {(fichaLocal.reflexion || fichaLocal.pregunta_reflexion) && (
+                  <div>
+                    <SeccionHeader numero={numReflexion} titulo="Reflexionamos" icono="💭" />
+                    <EditableHtml
+                      html={renderHTMLConNegrita(fichaLocal.reflexion || fichaLocal.pregunta_reflexion).__html}
+                      className="ficha-campo-editable"
+                      style={{ fontSize: 12, color: C.texto, fontStyle: "italic", lineHeight: 1.55 }}
+                    />
+                    <LineasRespuesta n={2} />
+                  </div>
+                )}
+              </>
+            );
+          })()
 
-            </div>
+        )}
 
-            {/* Footer */}
-            <div style={{
-              borderTop: `2px solid ${C.borderFuerte}`,
-              borderRadius: "0 0 8px 8px",
-              padding: "6px 16px",
-              display: "flex", justifyContent: "space-between", alignItems: "center",
-              background: C.fondoHeader
-            }}>
-              <span style={{ fontSize: 13, fontFamily: "'Lexend Deca', sans-serif", color: C.muted }}>tiza. · Diseño Curricular 2018</span>
-              <span style={{ fontSize: 13, fontFamily: "'Lexend Deca', sans-serif", color: C.muted }}>{gradoDisplay} · {registro.area} · {registro.bloque}</span>
-            </div>
-
-          </div>
-          )} {/* end esDosHojasObligatorio */}
-
-          {/* ── Barra lateral de edición ── */}
-          <div className="sidebar-edicion" style={{
-            width: 48, flexShrink: 0, position: "relative", alignSelf: "stretch",
-          }}>
-            {Object.entries(posiciones).map(([key, top]) => (
-              editandoCampo === key ? (
-                <button
-                  key={key}
-                  onClick={confirmEdit}
-                  style={{
-                    position: "absolute",
-                    top: Math.max(0, top),
-                    left: 8,
-                    width: 36,
-                    background: C.acento,
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: 6,
-                    padding: "5px 0",
-                    fontSize: 10,
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    lineHeight: 1.3,
-                    textAlign: "center",
-                  }}
-                >
-                  Listo
-                </button>
-              ) : (
-                <button
-                  key={key}
-                  onClick={() => startEdit(key)}
-                  style={{
-                    position: "absolute",
-                    top: Math.max(0, top),
-                    left: 8,
-                    width: 36,
-                    background: "#fff",
-                    border: `1.5px solid ${C.border}`,
-                    borderRadius: 6,
-                    padding: "4px 0",
-                    fontSize: 14,
-                    cursor: "pointer",
-                    lineHeight: 1,
-                    textAlign: "center",
-                    color: C.muted,
-                  }}
-                >
-                  ✏️
-                </button>
-              )
-            ))}
-          </div>
-
-        </div>
       </div>
-
-      {/* CSS */}
-      <style>{`
-        @media print {
-          * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          @page { size: A4; margin: 10mm; }
-          .hoja-dos { page-break-before: always; }
-
-          html, body { margin: 0; padding: 0; width: 190mm; }
-
-          #nav-ficha,
-          .btn-imprimir,
-          .sidebar-edicion,
-          .validacion-badge,
-          .mock-banner { display: none !important; }
-
-          .contenedor-pagina {
-            background: white !important;
-            min-height: auto !important;
-            margin: 0 !important;
-            padding: 0 !important;
-          }
-
-          .contenedor-wrapper {
-            max-width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-          }
-
-          .ficha {
-            width: 190mm !important;
-            max-width: 190mm !important;
-            min-height: 277mm !important;
-            margin: 0 !important;
-            border: none !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
-            display: flex !important;
-            flex-direction: column !important;
-            overflow: visible !important;
-            font-family: 'Lexend Deca', sans-serif !important;
-          }
-
-          .cuerpo-ficha { flex: 1 !important; }
-
-          .explicacion,
-          .ejercicio-enunciado,
-          .reflexion-texto,
-          .concepto-clave-texto,
-          .dato-label { font-size: 13px !important; }
-
-          .seccion:last-of-type { flex: 1; }
-        }
-      `}</style>
-      <FeedbackButton isDownloading={isDownloading} />
+      {footer(1)}
     </div>
+  );
+
+  return (
+    <>
+      <FichaCanvas
+        paginas={[hojaContenido]}
+        hojaId="ficha-imprimible"
+        onDescargar={handleDescargarPDF}
+        acciones={acciones}
+      />
+      <FeedbackButton isDownloading={isDownloading} />
+    </>
   );
 }
