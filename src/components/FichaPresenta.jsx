@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { House, Printer } from "@phosphor-icons/react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import FeedbackButton from "./FeedbackButton.jsx";
@@ -99,9 +100,9 @@ export default function FichaPresenta({ ficha, registro, validacion, onNueva, on
   const acciones = (
     <>
       {onInicio && (
-        <button className="ficha-word-toolbar-btn" onClick={onInicio} title="Inicio">🏠</button>
+        <button className="ficha-word-toolbar-btn" onClick={onInicio} title="Inicio"><House size={18} /></button>
       )}
-      <button className="ficha-word-toolbar-btn" onClick={handleImprimir} title="Imprimir">🖨</button>
+      <button className="ficha-word-toolbar-btn" onClick={handleImprimir} title="Imprimir"><Printer size={18} /></button>
       {onNueva && (
         <button className="ficha-word-toolbar-btn" onClick={onNueva} title="Nueva ficha">✦ Nueva</button>
       )}

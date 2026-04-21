@@ -6,6 +6,7 @@ export default function FeedbackButton({ isDownloading }) {
       href="https://docs.google.com/forms/d/e/1FAIpQLSdf7onmbIprlcs3jg9-7ZleYS9PFkD4VIYjSJlkv3ykdZM5nQ/viewform"
       target="_blank"
       rel="noopener noreferrer"
+      className="feedback-button"
       style={{
         position: "fixed",
         bottom: 24,

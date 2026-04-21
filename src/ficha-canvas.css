@@ -69,8 +69,8 @@
 }
 
 .ficha-word-toolbar-pdf-btn {
-  background: #FF6B2B;
-  color: white;
+  background: #00c48c;
+  color: #004733;
   border: none;
   border-radius: 4px;
   padding: 6px 16px;
@@ -80,7 +80,7 @@
   height: 32px;
   transition: filter 0.12s;
 }
-.ficha-word-toolbar-pdf-btn:hover { filter: brightness(1.1); }
+.ficha-word-toolbar-pdf-btn:hover { filter: brightness(0.92); }
 
 /* ── Área de trabajo (escritorio gris) ── */
 .ficha-canvas-wrapper {

@@ -120,7 +120,7 @@ export function RecuadroRespuesta() {
       minHeight: 40,
       border: "0.5px solid #ddddd8",
       borderRadius: 6,
-      background: "transparent",
+      background: "repeating-linear-gradient(to bottom, transparent, transparent 27px, #d8d8d0 27px, #d8d8d0 28px)",
       marginTop: 4,
       resize: "vertical",
       overflow: "hidden",
@@ -189,16 +189,6 @@ function getAndamiajeStyle() {
         borderRadius: 10,
         padding: "6px 8px",
         position: "relative",
-      },
-      labelStyle: { fontSize: 7, fontWeight: 700, color: "#00c48c", display: "block", marginBottom: 2 },
-      isPostit: false,
-    };
-  } else if (r < 0.55) {
-    return {
-      containerStyle: {
-        border: "1.5px solid #00c48c",
-        borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%",
-        padding: "6px 8px",
       },
       labelStyle: { fontSize: 7, fontWeight: 700, color: "#00c48c", display: "block", marginBottom: 2 },
       isPostit: false,
