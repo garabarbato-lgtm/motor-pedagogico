@@ -120,7 +120,7 @@ export function RecuadroRespuesta() {
       minHeight: 40,
       border: "0.5px solid #ddddd8",
       borderRadius: 6,
-      background: "repeating-linear-gradient(to bottom, transparent, transparent 27px, #d8d8d0 27px, #d8d8d0 28px)",
+      background: "transparent",
       marginTop: 4,
       resize: "vertical",
       overflow: "hidden",
@@ -415,6 +415,7 @@ export function renderEjercicioItem(ejercicio, idx, { hideNum = false, editable 
                 : <div style={{ fontSize: 13, color: C.texto, lineHeight: 1.6 }}
                     dangerouslySetInnerHTML={renderHTMLConNegrita(ejercicio.enunciado)} />
               }
+              <RecuadroRespuesta />
             </div>
           </div>
         </div>
