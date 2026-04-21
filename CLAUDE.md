@@ -8,10 +8,26 @@ Un docente selecciona grado, área y contenido → el sistema genera explicació
 
 ## Estado actual
 
-- Base curricular corregida: 251 registros, 4 áreas, 6 grados → archivo dc_pba_base_curricular_corregida.json
-- Motor de generación probado: API de Claude genera recursos con estructura título + explicación + ejemplo + actividad
-- Prototipos de test en HTML funcionando correctamente
-- Repositorio: aún no creado — es el primer paso
+**MVP en producción desde abril 2026** → [fichastiza.vercel.app](https://fichastiza.vercel.app)
+
+**Stack en producción:**
+- Frontend: React 18 + Vite
+- Backend: Vercel Functions
+- API: Claude Haiku
+- PDF: html2canvas + jsPDF
+- Base curricular: 435 registros del DC PBA (dc_pba_base_curricular_corregida.json)
+- Iconos: @phosphor-icons/react
+- Fuente: Lexend Deca
+
+**Funcionalidades implementadas:**
+- Flujo en 4 pasos: grado → área → contenido → ficha generada
+- 4 tipos de ficha: Trabajo, Práctica, Cierre y Presentación
+- Edición inline de todos los campos (modo Word con toolbar fija)
+- Exportación PDF multi-página (html2canvas + jsPDF)
+- Impresión directa (oculta toolbar y feedback button)
+- Retry automático (1 vez) + mensajes de error diferenciados por tipo
+- Botón de feedback flotante (Google Form)
+- Landing con HowItWorks, AboutTiza y SloganSlider
 
 ## Base de datos curricular
 
@@ -72,24 +88,21 @@ Respondé SOLO con el JSON, sin texto adicional ni markdown.
 
 Modelo: claude-sonnet-4-20250514 — max_tokens: 1000
 
-## Arquitectura planificada
+## Backlog — Próximos pasos (fuente: Notion Hoja de ruta)
 
-| Componente | Tecnología | Descripción |
-|-----------|-----------|-------------|
-| Frontend | HTML/CSS/JS o React | Selector grado → área → bloque → contenido → generar |
-| Base de datos | Supabase (gratuito) | JSON curricular + fichas guardadas |
-| Backend | Vercel Functions | Llama a la API de Claude |
-| Repositorio | GitHub | Control de versiones |
-| Hosting | Vercel | Deploy automático desde GitHub |
+En orden de prioridad / menor dependencia primero:
 
-## Próximos pasos en orden
+1. **Analytics básicos** (Infraestructura) — Integrar Vercel Analytics (2 líneas). Trackear: ficha generada, PDF descargado, área seleccionada. Ya disponible en el proyecto, sin costo.
 
-1. Crear repositorio en GitHub y subir dc_pba_base_curricular_corregida.json
-2. Construir el front: selector de grado/área/contenido + generador
-3. Conectar con la API de Claude (backend con Vercel Functions)
-4. Validación pedagógica automática del recurso generado
-5. Generador de fichas descargables (PDF)
-6. Biblioteca de fichas guardadas
+2. **Onboarding primer uso** (UI/UX) — Modal simple que aparece solo la primera visita (flag en localStorage). Mostrar ejemplo precargado + CTA "Empezá eligiendo tu grado". No sobreingenierizar.
+
+3. **Compartir ficha por link único** (Output/UI/UX) — Botón "Compartir" en Paso 4. Fase 1: encodar estado en URL (base64 o params), sin Supabase. Fase 2 (con auth): guardar por ID.
+
+4. **Sistema de autenticación** (Infraestructura) — Supabase Auth. Login con Google o email/contraseña. Prerrequisito bloqueante para la biblioteca. No implementar auth custom.
+
+5. **Biblioteca de fichas guardadas** (Output) — Requiere auth. Asociar fichas a docente en Supabase.
+
+> Nota: "Manejo de errores de API y timeouts" figura Pendiente en Notion pero ya está implementado (commit 45ba69f: retry automático + timeout 55s + mensajes por tipo de error).
 
 ## Decisiones pedagógicas — NO revertir sin consultar
 
@@ -97,14 +110,28 @@ Modelo: claude-sonnet-4-20250514 — max_tokens: 1000
 - Estructura del recurso: título + explicación breve + ejemplo concreto + actividad significativa
 - PDL organizado por tipo de práctica (lectura, escritura, ortografía) en lugar de ámbitos del DC
 - Ortografía en PDL especifica el tema exacto por grado (ej: tilde en hiato en 5°)
-- Base: 251 registros limpios — no agregar sin validar contra el DC PBA
+- Base: 435 registros limpios — no agregar sin validar contra el DC PBA
+
+## Decisiones de UI — NO revertir sin consultar
+
+- Paleta ficha: fondo `#ffffff`, acento `#00c48c`, texto `#0d1f1a`, muted `#555555`
+- Pills/Andamiaje: sin formas ovaladas — solo recuadros, post-it, borde izquierdo, sombra o doble borde
+- Espacio de respuesta por tipo de ejercicio:
+  - Preguntas / texto libre → `LineasRespuesta`
+  - Cuentas / dibujos / `situacion_problematica` / `resolver_operaciones` / `completar_la_cuenta` → `RecuadroRespuesta` (caja sin líneas)
+  - Tablas y V/F → estructura inline, sin espacio adicional
+- Iconos: @phosphor-icons/react (no emojis en toolbar)
+- Botón PDF: verde `#00c48c`, no naranja
+- FeedbackButton: clase CSS `feedback-button` para ocultarlo en impresión
 
 ## Notas técnicas
 
 - API key de Claude: variable de entorno ANTHROPIC_API_KEY
-- El JSON curricular se carga desde el repositorio o desde Supabase
+- El JSON curricular se carga desde el repositorio (dc_pba_base_curricular_corregida.json)
+- Modelo en producción: Claude Haiku (api/generate.js)
+- Timeout Vercel Function: 55s con runPipeline
+- GitHub: github.com/garabarbato-lgtm/motor-pedagogico
 - No usar npm install -g @anthropic-ai/claude-code — método deprecado
-- Siempre usar el instalador nativo
 
 PROTOCOLO DE DELEGACIÓN POR VOLUMEN (TOKEN SAVING)
 Claude actúa como Arquitecto Principal de tiza. La delegación en Gemini no es obligatoria por tipo de tarea, sino por densidad de tokens y extensión de la respuesta.
