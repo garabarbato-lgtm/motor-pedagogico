@@ -4,12 +4,15 @@ import Generador from './components/Generador.jsx'
 import FichaTrabajo from './components/FichaTrabajo.jsx'
 import DevTestFichas from './components/DevTestFichas.jsx'
 import OnboardingModal from './components/OnboardingModal.jsx'
+import Biblioteca from './components/Biblioteca.jsx'
+import { useAuth } from './hooks/useAuth.js'
 
 export default function App() {
   const [vista, setVista] = useState('landing')
   const [fichaData, setFichaData] = useState(null)
   const [registroData, setRegistroData] = useState(null)
   const [validacionData, setValidacionData] = useState(null)
+  const { user, loading, loginConGoogle, logout } = useAuth()
 
   if (new URLSearchParams(window.location.search).get("dev") === "fichas") {
     return <DevTestFichas />;
@@ -35,6 +38,18 @@ export default function App() {
         ficha={fichaData}
         registro={registroData}
         validacion={validacionData}
+        user={user}
+        onNueva={() => setVista('generador')}
+        onInicio={() => setVista('landing')}
+      />
+    )
+  }
+
+  if (vista === 'biblioteca') {
+    return (
+      <Biblioteca
+        user={user}
+        onVerFicha={() => {}}
         onNueva={() => setVista('generador')}
         onInicio={() => setVista('landing')}
       />
@@ -44,7 +59,13 @@ export default function App() {
   return (
     <>
       <OnboardingModal onEmpezar={() => setVista('generador')} />
-      <Landing onEmpezar={() => setVista('generador')} />
+      <Landing
+        onEmpezar={() => setVista('generador')}
+        user={user}
+        onLogin={loginConGoogle}
+        onLogout={logout}
+        onBiblioteca={() => setVista('biblioteca')}
+      />
     </>
   )
 }
