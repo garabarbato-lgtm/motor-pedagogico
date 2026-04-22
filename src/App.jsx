@@ -3,6 +3,7 @@ import Landing from './components/Landing.jsx'
 import Generador from './components/Generador.jsx'
 import FichaTrabajo from './components/FichaTrabajo.jsx'
 import DevTestFichas from './components/DevTestFichas.jsx'
+import OnboardingModal from './components/OnboardingModal.jsx'
 
 export default function App() {
   const [vista, setVista] = useState('landing')
@@ -40,5 +41,10 @@ export default function App() {
     )
   }
 
-  return <Landing onEmpezar={() => setVista('generador')} />
+  return (
+    <>
+      <OnboardingModal onEmpezar={() => setVista('generador')} />
+      <Landing onEmpezar={() => setVista('generador')} />
+    </>
+  )
 }
