@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { supabase } from "../lib/supabase.js";
 import { House, Printer } from "@phosphor-icons/react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -130,7 +131,41 @@ function LineaDoble() {
 
 // ── Componente principal ──
 
-export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onInicio }) {
+function GuardarFichaBtn({ ficha, registro, userId }) {
+  const [estado, setEstado] = useState('idle') // idle | guardando | guardado | error
+
+  async function guardar() {
+    if (estado === 'guardado') return
+    setEstado('guardando')
+    const { error } = await supabase.from('fichas').insert({
+      user_id: userId,
+      titulo: ficha.titulo,
+      area: registro?.area || '',
+      grado: registro?.grado || '',
+      bloque: registro?.bloque || null,
+      tipo_ficha: registro?.tipo_ficha || 'trabajo',
+      ficha_data: ficha,
+      registro_data: registro,
+    })
+    setEstado(error ? 'error' : 'guardado')
+    if (error) setTimeout(() => setEstado('idle'), 3000)
+  }
+
+  const label = { idle: '☁ Guardar', guardando: 'Guardando...', guardado: '✓ Guardada', error: 'Error' }
+  return (
+    <button
+      className="ficha-word-toolbar-btn"
+      onClick={guardar}
+      disabled={estado === 'guardando' || estado === 'guardado'}
+      title="Guardar en mi biblioteca"
+      style={estado === 'guardado' ? { color: '#00c48c' } : estado === 'error' ? { color: '#e53e3e' } : {}}
+    >
+      {label[estado]}
+    </button>
+  )
+}
+
+export default function FichaTrabajo({ ficha, registro, validacion, user, onNueva, onInicio }) {
   if (!ficha || !registro) return null;
 
   const [isDownloading, setIsDownloading] = useState(false);
@@ -226,6 +261,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, onNueva, onI
       {onInicio && <button className="ficha-word-toolbar-btn" onClick={onInicio} title="Inicio"><House size={18} /></button>}
       <button className="ficha-word-toolbar-btn" onClick={() => window.print()} title="Imprimir"><Printer size={18} /></button>
       {onNueva && <button className="ficha-word-toolbar-btn" onClick={onNueva} title="Nueva ficha">✦ Nueva</button>}
+      {user && <GuardarFichaBtn ficha={ficha} registro={registro} userId={user.id} />}
     </>
   );
 

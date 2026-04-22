@@ -166,7 +166,7 @@ function AboutTiza() {
 
 /* ── LANDING ── */
 
-export default function Landing({ onEmpezar }) {
+export default function Landing({ onEmpezar, user, onLogin, onLogout, onBiblioteca }) {
   const scrollIndicatorRef = useRef(null);
   const heroBadgeRef = useRef(null);
   const heroTitleRef = useRef(null);
@@ -205,6 +205,28 @@ export default function Landing({ onEmpezar }) {
             onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })}
             style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", cursor: "pointer" }}
           >¿Cómo funciona?</span>
+          {user ? (
+            <>
+              <span
+                onClick={onBiblioteca}
+                style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", cursor: "pointer" }}
+              >Mis fichas</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                {user.user_metadata?.avatar_url && (
+                  <img src={user.user_metadata.avatar_url} alt="" style={{ width: 28, height: 28, borderRadius: "50%", border: "2px solid rgba(255,255,255,0.3)" }} />
+                )}
+                <span
+                  onClick={onLogout}
+                  style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}
+                >Salir</span>
+              </div>
+            </>
+          ) : (
+            <span
+              onClick={onLogin}
+              style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", cursor: "pointer" }}
+            >Ingresar</span>
+          )}
           <button
             onClick={onEmpezar}
             style={{ fontSize: 13, fontWeight: 700, padding: "9px 22px", borderRadius: 9, border: "none", background: C.acento, color: C.btn, cursor: "pointer", transition: "all 0.2s" }}
