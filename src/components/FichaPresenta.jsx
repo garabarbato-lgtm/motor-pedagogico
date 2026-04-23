@@ -79,6 +79,9 @@ export default function FichaPresenta({ ficha, registro, validacion, onNueva, on
   const tieneAndamiaje = (ficha.ejercicios || []).some(e => e?.andamiaje);
   const mostrarPill = !!(pill?.contenido && !tieneAndamiaje);
 
+  // Máximo 2 ejercicios para que la ficha entre en una hoja
+  const ejercicios = (ficha.ejercicios || []).filter(Boolean).slice(0, 2);
+
   const handleDescargarPDF = async () => {
     setIsDownloading(true);
     const element = document.getElementById("ficha-imprimible");
@@ -148,10 +151,10 @@ export default function FichaPresenta({ ficha, registro, validacion, onNueva, on
       </div>
 
       {/* ── Cuerpo ── */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
 
         {/* Sección 1: Leemos juntos */}
-        <div style={{ flex: "0 0 65%", display: "flex", flexDirection: "column", padding: "12px 16px", borderBottom: `1.5px solid ${C.borderFuerte}`, overflow: "hidden" }}>
+        <div style={{ display: "flex", flexDirection: "column", padding: "12px 16px", borderBottom: `1.5px solid ${C.borderFuerte}` }}>
           <SeccionHeader numero="1" titulo="Leemos juntos" icono="📖" />
           <div style={{ display: "flex", flexDirection: "row", gap: 12, alignItems: "flex-start" }}>
             <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
@@ -183,17 +186,14 @@ export default function FichaPresenta({ ficha, registro, validacion, onNueva, on
         </div>
 
         {/* Sección 2: Tu turno */}
-        <div style={{ flex: "0 0 35%", display: "flex", flexDirection: "column", padding: "12px 16px", overflow: "hidden" }}>
+        <div style={{ display: "flex", flexDirection: "column", padding: "12px 16px" }}>
           <SeccionHeader numero="2" titulo="Tu turno" icono="✏️" />
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {(ficha.ejercicios || []).map((ejercicio, idx) => {
-              if (!ejercicio) return null;
-              return (
-                <div key={idx}>
-                  {renderEjercicioItem(ejercicio, idx, { editable: true })}
-                </div>
-              );
-            })}
+            {ejercicios.map((ejercicio, idx) => (
+              <div key={idx}>
+                {renderEjercicioItem(ejercicio, idx, { editable: true })}
+              </div>
+            ))}
           </div>
         </div>
 

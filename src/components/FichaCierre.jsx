@@ -1,9 +1,14 @@
+import { useState } from "react";
+import { House, Printer } from "@phosphor-icons/react";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import {
   C, renderTitulo,
   Andamiaje,
   renderEjercicioItem,
 } from "./utils.jsx";
 import FichaCanvas from "./FichaCanvas.jsx";
+import FeedbackButton from "./FeedbackButton.jsx";
 
 const BADGE_COLORS = {
   "Nivel 1": "#888888",
@@ -12,8 +17,34 @@ const BADGE_COLORS = {
   "Punto de descanso": "#0d1f1a",
 };
 
-export default function FichaCierre({ ficha, registro }) {
+export default function FichaCierre({ ficha, registro, onNueva, onInicio }) {
   if (!ficha || !registro) return null;
+
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDescargarPDF = async () => {
+    setIsDownloading(true);
+    const element = document.getElementById("ficha-imprimible");
+    if (!element) { setIsDownloading(false); return; }
+    const areaSlug = registro.area.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    element.style.boxShadow = "none";
+    const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+    element.style.boxShadow = "";
+    const imgData = canvas.toDataURL("image/jpeg", 0.98);
+    const pdf = new jsPDF("p", "mm", "a4");
+    const altoImg = (canvas.height * 210) / canvas.width;
+    pdf.addImage(imgData, "JPEG", 0, 0, 210, altoImg);
+    pdf.save(`tiza-${areaSlug}-${registro.grado}.pdf`);
+    setIsDownloading(false);
+  };
+
+  const acciones = (
+    <>
+      {onInicio && <button className="ficha-word-toolbar-btn" onClick={onInicio} title="Inicio"><House size={18} /></button>}
+      <button className="ficha-word-toolbar-btn" onClick={() => window.print()} title="Imprimir"><Printer size={18} /></button>
+      {onNueva && <button className="ficha-word-toolbar-btn" onClick={onNueva} title="Nueva ficha">✦ Nueva</button>}
+    </>
+  );
 
   const emojis = Array.isArray(ficha.emojis) && ficha.emojis.length ? ficha.emojis : ["📝"];
   const emojiLeft = emojis[0];
@@ -174,9 +205,14 @@ export default function FichaCierre({ ficha, registro }) {
   );
 
   return (
-    <FichaCanvas
-      paginas={[contenido]}
-      hojaId="ficha-imprimible"
-    />
+    <>
+      <FichaCanvas
+        paginas={[contenido]}
+        hojaId="ficha-imprimible"
+        onDescargar={handleDescargarPDF}
+        acciones={acciones}
+      />
+      <FeedbackButton isDownloading={isDownloading} />
+    </>
   );
 }
