@@ -240,7 +240,7 @@ export default function Landing({ onEmpezar, user, onLogin, onLogout, onBibliote
 
       {/* ── HERO ── */}
       <section style={{ minHeight: "calc(100vh - 62px)", display: "flex", alignItems: "center", background: "#ffffff", position: "relative", padding: "80px 64px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center", maxWidth: 1100, margin: "0 auto", width: "100%" }}>
+        <div className="hero-grid-mobile" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center", maxWidth: 1100, margin: "0 auto", width: "100%" }}>
           <div>
             <div ref={heroBadgeRef} style={{ display: "inline-flex", alignItems: "center", gap: 7, background: C.lbg, border: "1px solid #b0e8d4", borderRadius: 99, padding: "5px 14px", marginBottom: 28 }}>
               <div style={{ width: 7, height: 7, borderRadius: "50%", background: C.acento }} />
@@ -275,7 +275,7 @@ export default function Landing({ onEmpezar, user, onLogin, onLogout, onBibliote
             </div>
           </div>
 
-          <div ref={heroDemoRef} style={{ display: "flex", justifyContent: "center" }}>
+          <div ref={heroDemoRef} className="hero-demo-hide-mobile" style={{ display: "flex", justifyContent: "center" }}>
             <div style={{ width: 340 }}>
               <LandingDemoCard />
               <p style={{ textAlign: "center", fontSize: 11, color: C.faded, marginTop: 12 }}>~15 segundos · Alineada al DC PBA 2018</p>
