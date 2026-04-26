@@ -183,13 +183,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
 
   const itemsLocal = parsearActividad(ficha.actividad).items;
 
-  const esDosHojasObligatorio =
-    ficha.tipo_ficha === "presentacion" &&
-    (
-      registro.area === "Ciencias Sociales" ||
-      registro.area === "Ciencias Naturales" ||
-      (registro.area === "Prácticas del Lenguaje" && registro.bloque === "Lectura de textos")
-    );
+  const esDosHojasObligatorio = false;
 
   // Delegar a FichaPresenta para presentaciones de una sola página
   if (ficha?.tipo_ficha === "presentacion" && !esDosHojasObligatorio) {
