@@ -47,14 +47,17 @@ function stripMarkdown(str) {
 
 function formatearFracciones(texto) {
   if (!texto) return texto;
-  return texto.replace(/<frac>(\d+)\/(\d+)<\/frac>/g, (_, num, den) =>
+  const s = typeof texto === "string" ? texto : String(texto);
+  return s.replace(/<frac>(\d+)\/(\d+)<\/frac>/g, (_, num, den) =>
     `<span style="display:inline-flex;flex-direction:column;align-items:center;font-size:0.9em;line-height:1.1;vertical-align:middle;margin:0 4px;"><span style="border-bottom:1.5px solid currentColor;padding:0 4px;">${num}</span><span style="padding:0 4px;">${den}</span></span>`
   );
 }
 
 function renderHTMLConNegrita(str) {
-  if (!str) return { __html: "" };
-  const html = formatearFracciones(str)
+  if (str === null || str === undefined) return { __html: "" };
+  const s = typeof str === "string" ? str : String(str);
+  if (!s) return { __html: "" };
+  const html = formatearFracciones(s)
     .replace(/_{1,}/g, '<span style="font-family:Arial;letter-spacing:1px;">_______</span>')
     .replace(/^#{1,6}\s+/gm, "")
     .replace(/^[•\-]\s+/gm, "")
