@@ -192,6 +192,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
         ficha={ficha}
         registro={registro}
         validacion={validacion}
+        user={user}
         onNueva={onNueva}
         onInicio={onInicio}
       />
