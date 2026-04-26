@@ -140,9 +140,10 @@ export function LineasRespuesta({ n = 4 }) {
         minHeight: n * 28,
         resize: "vertical",
         overflow: "hidden",
-        borderBottom: "0.5px solid #ddddd8",
         padding: "4px 2px",
         lineHeight: "28px",
+        backgroundImage: "repeating-linear-gradient(to bottom, transparent 0px, transparent 27px, #bbbbbb 27px, #bbbbbb 28px)",
+        backgroundPositionY: "4px",
       }}
     />
   );

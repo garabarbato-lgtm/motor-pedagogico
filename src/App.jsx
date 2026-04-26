@@ -6,6 +6,7 @@ import DevTestFichas from './components/DevTestFichas.jsx'
 import OnboardingModal from './components/OnboardingModal.jsx'
 import Biblioteca from './components/Biblioteca.jsx'
 import { useAuth } from './hooks/useAuth.js'
+import { supabase } from './lib/supabase.js'
 
 export default function App() {
   const [vista, setVista] = useState('landing')
@@ -49,7 +50,19 @@ export default function App() {
     return (
       <Biblioteca
         user={user}
-        onVerFicha={() => {}}
+        onVerFicha={async (id) => {
+          const { data } = await supabase
+            .from('fichas')
+            .select('ficha_data, registro_data')
+            .eq('id', id)
+            .single()
+          if (data) {
+            setFichaData(data.ficha_data)
+            setRegistroData(data.registro_data)
+            setValidacionData(null)
+            setVista('ficha')
+          }
+        }}
         onNueva={() => setVista('generador')}
         onInicio={() => setVista('landing')}
       />
