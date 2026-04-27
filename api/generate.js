@@ -467,7 +467,7 @@ FORMATO (JSON estricto, sin markdown):
   "escalera": [
     { "rotulo": "Nivel 1", "nombre": "nombre creativo para este nivel", "ejercicio": { "tipo": "situacion_problematica", "enunciado": "consigna del nivel 1" }, "andamiaje": ${incluirAndamiaje ? '"pista breve escrita directamente al alumno, sin tecnicismos, máximo 3 líneas"' : "null"} },
     { "rotulo": "Nivel 2", "nombre": "nombre creativo para este nivel", "ejercicio": { "tipo": "completar_oraciones", "enunciado": "...", "oraciones": ["..."] }, "andamiaje": null },
-    { "rotulo": "Nivel 3", "nombre": "nombre creativo para este nivel", "ejercicio": { "tipo": "verdadero_falso", "enunciado": "...", "afirmaciones": ["..."] }, "andamiaje": null },
+    { "rotulo": "Nivel 3", "nombre": "nombre creativo para este nivel", "ejercicio": { "tipo": "describir_con_palabras", "enunciado": "consigna que exige justificar, crear o producir" }, "andamiaje": null },
     { "rotulo": "Punto de descanso", "nombre": "nombre creativo para este nivel", "ejercicio": { "tipo": "preguntas_comprension", "enunciado": "Respondé:", "preguntas": ["pregunta única de reflexión o metacognición"] }, "andamiaje": null }
   ]
 }
@@ -737,6 +737,13 @@ function buildValidatorPrompt(fichaGenerada, contenido, tipoFicha) {
   } else if (_tipo === "cierre") {
     const ok = Array.isArray(fichaGenerada.escalera) && fichaGenerada.escalera.length === 4;
     if (!ok) return `Devolvé únicamente el siguiente JSON sin modificarlo:\n{"aprobada":false,"puntaje":0,"problemas":[{"criterio":"ESTRUCTURA_COMPLETA","descripcion":"Ficha de cierre incompleta: escalera debe tener exactamente 4 peldaños."}],"feedback_para_regenerar":"Regenerar la ficha con escalera de exactamente 4 elementos."}`;
+
+    const nivel3 = fichaGenerada.escalera.find(p => p?.rotulo === "Nivel 3");
+    const tipoNivel3 = nivel3?.ejercicio?.tipo;
+    const tiposProhibidosNivel3 = ["verdadero_falso", "completar_oraciones"];
+    if (tiposProhibidosNivel3.includes(tipoNivel3)) {
+      return `Devolvé únicamente el siguiente JSON sin modificarlo:\n{"aprobada":false,"puntaje":0,"problemas":[{"criterio":"COHERENCIA_CURRICULAR","descripcion":"Nivel 3 usa '${tipoNivel3}', que es de baja demanda cognitiva. Debe exigir justificar, crear o producir."}],"feedback_para_regenerar":"Regenerar la ficha: Nivel 3 debe usar describir_con_palabras, texto_libre, causa_y_consecuencia, inventar_el_problema o dibujar_y_explicar. Nunca verdadero_falso ni completar_oraciones en Nivel 3."}`;
+    }
   }
   // Si no hay tipo_ficha o es desconocido: caer al bloque de validación existente
 
