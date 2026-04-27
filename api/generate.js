@@ -714,6 +714,54 @@ Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdow
 }
 
 // ─────────────────────────────────────────────
+// VALIDACIÓN ESTRUCTURAL (sin API)
+// ─────────────────────────────────────────────
+function validateStructure(ficha) {
+  const tipo = ficha?.tipo_ficha;
+
+  if (tipo === "presentacion") {
+    const ok = Array.isArray(ficha.explicacion?.parrafos)
+      && ficha.explicacion.parrafos.length > 0
+      && Array.isArray(ficha.ejercicios);
+    if (!ok) return {
+      aprobada: false, puntaje: 0,
+      problemas: [{ criterio: "ESTRUCTURA_COMPLETA", descripcion: "Ficha de presentación incompleta: falta explicacion.parrafos o ejercicios." }],
+      feedback_para_regenerar: "Regenerar la ficha incluyendo explicacion.parrafos (array con al menos 1 elemento) y ejercicios (array)."
+    };
+  }
+
+  if (tipo === "practica") {
+    const ok = typeof ficha.concepto_clave === "string"
+      && ficha.concepto_clave.trim() !== ""
+      && Array.isArray(ficha.ejercicios);
+    if (!ok) return {
+      aprobada: false, puntaje: 0,
+      problemas: [{ criterio: "ESTRUCTURA_COMPLETA", descripcion: "Ficha de práctica incompleta: falta concepto_clave o ejercicios." }],
+      feedback_para_regenerar: "Regenerar la ficha incluyendo concepto_clave (string no vacío) y ejercicios (array)."
+    };
+  }
+
+  if (tipo === "cierre") {
+    const okEscalera = Array.isArray(ficha.escalera) && ficha.escalera.length === 4;
+    if (!okEscalera) return {
+      aprobada: false, puntaje: 0,
+      problemas: [{ criterio: "ESTRUCTURA_COMPLETA", descripcion: "Ficha de cierre incompleta: escalera debe tener exactamente 4 peldaños." }],
+      feedback_para_regenerar: "Regenerar la ficha con escalera de exactamente 4 elementos."
+    };
+
+    const nivel3 = ficha.escalera.find(p => p?.rotulo === "Nivel 3");
+    const tipoNivel3 = nivel3?.ejercicio?.tipo;
+    if (["verdadero_falso", "completar_oraciones"].includes(tipoNivel3)) return {
+      aprobada: false, puntaje: 0,
+      problemas: [{ criterio: "COHERENCIA_CURRICULAR", descripcion: `Nivel 3 usa '${tipoNivel3}', que es de baja demanda cognitiva. Debe exigir justificar, crear o producir.` }],
+      feedback_para_regenerar: "Regenerar la ficha: Nivel 3 debe usar describir_con_palabras, texto_libre, causa_y_consecuencia, inventar_el_problema o dibujar_y_explicar. Nunca verdadero_falso ni completar_oraciones en Nivel 3."
+    };
+  }
+
+  return null;
+}
+
+// ─────────────────────────────────────────────
 // PROMPT VALIDADOR (general + PDL)
 // ─────────────────────────────────────────────
 function buildValidatorPrompt(fichaGenerada, contenido, tipoFicha) {
@@ -721,31 +769,6 @@ function buildValidatorPrompt(fichaGenerada, contenido, tipoFicha) {
   if (contenido.area === "Prácticas del Lenguaje") {
     return buildPDLValidatorPrompt(fichaGenerada, contenido, tipoFicha);
   }
-
-  // ── Validación estructural temprana por tipo_ficha ──
-  const _tipo = fichaGenerada.tipo_ficha;
-  if (_tipo === "presentacion") {
-    const ok = Array.isArray(fichaGenerada.explicacion?.parrafos)
-      && fichaGenerada.explicacion.parrafos.length > 0
-      && Array.isArray(fichaGenerada.ejercicios);
-    if (!ok) return `Devolvé únicamente el siguiente JSON sin modificarlo:\n{"aprobada":false,"puntaje":0,"problemas":[{"criterio":"ESTRUCTURA_COMPLETA","descripcion":"Ficha de presentación incompleta: falta explicacion.parrafos o ejercicios."}],"feedback_para_regenerar":"Regenerar la ficha incluyendo explicacion.parrafos (array con al menos 1 elemento) y ejercicios (array)."}`;
-  } else if (_tipo === "practica") {
-    const ok = typeof fichaGenerada.concepto_clave === "string"
-      && fichaGenerada.concepto_clave.trim() !== ""
-      && Array.isArray(fichaGenerada.ejercicios);
-    if (!ok) return `Devolvé únicamente el siguiente JSON sin modificarlo:\n{"aprobada":false,"puntaje":0,"problemas":[{"criterio":"ESTRUCTURA_COMPLETA","descripcion":"Ficha de práctica incompleta: falta concepto_clave o ejercicios."}],"feedback_para_regenerar":"Regenerar la ficha incluyendo concepto_clave (string no vacío) y ejercicios (array)."}`;
-  } else if (_tipo === "cierre") {
-    const ok = Array.isArray(fichaGenerada.escalera) && fichaGenerada.escalera.length === 4;
-    if (!ok) return `Devolvé únicamente el siguiente JSON sin modificarlo:\n{"aprobada":false,"puntaje":0,"problemas":[{"criterio":"ESTRUCTURA_COMPLETA","descripcion":"Ficha de cierre incompleta: escalera debe tener exactamente 4 peldaños."}],"feedback_para_regenerar":"Regenerar la ficha con escalera de exactamente 4 elementos."}`;
-
-    const nivel3 = fichaGenerada.escalera.find(p => p?.rotulo === "Nivel 3");
-    const tipoNivel3 = nivel3?.ejercicio?.tipo;
-    const tiposProhibidosNivel3 = ["verdadero_falso", "completar_oraciones"];
-    if (tiposProhibidosNivel3.includes(tipoNivel3)) {
-      return `Devolvé únicamente el siguiente JSON sin modificarlo:\n{"aprobada":false,"puntaje":0,"problemas":[{"criterio":"COHERENCIA_CURRICULAR","descripcion":"Nivel 3 usa '${tipoNivel3}', que es de baja demanda cognitiva. Debe exigir justificar, crear o producir."}],"feedback_para_regenerar":"Regenerar la ficha: Nivel 3 debe usar describir_con_palabras, texto_libre, causa_y_consecuencia, inventar_el_problema o dibujar_y_explicar. Nunca verdadero_falso ni completar_oraciones en Nivel 3."}`;
-    }
-  }
-  // Si no hay tipo_ficha o es desconocido: caer al bloque de validación existente
 
   const tipoFichaGenerada = fichaGenerada.tipo_ficha;
 
@@ -905,10 +928,9 @@ async function runPipeline(contenido, tipoFicha) {
     maxTokens
   );
 
-  // VALIDAR el primer intento
-  let validacion = await callAPI(
-    buildValidatorPrompt(ficha, contenido, tipoFicha)
-  );
+  // VALIDAR el primer intento (estructural sin API, luego semántica con LLM)
+  let validacion = validateStructure(ficha)
+    ?? await callAPI(buildValidatorPrompt(ficha, contenido, tipoFicha));
 
   // Si aprobó, devolvemos directo
   if (validacion.aprobada && validacion.puntaje >= 80) {
@@ -928,10 +950,9 @@ async function runPipeline(contenido, tipoFicha) {
     maxTokens
   );
 
-  // Validar el segundo intento
-  validacion = await callAPI(
-    buildValidatorPrompt(ficha, contenido, tipoFicha)
-  );
+  // Validar el segundo intento (estructural sin API, luego semántica con LLM)
+  validacion = validateStructure(ficha)
+    ?? await callAPI(buildValidatorPrompt(ficha, contenido, tipoFicha));
 
   return {
     ficha,
