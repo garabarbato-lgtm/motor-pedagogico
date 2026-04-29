@@ -185,3 +185,65 @@ Claude tiene permiso para ejecutar comandos de terminal y debe usar el CLI de Ge
 
 **Restricción de seguridad:**
 Claude siempre debe pedir confirmación al usuario antes de ejecutar el comando de terminal de Gemini.
+
+---
+
+## Reglas de comportamiento (Karpathy skills)
+
+Fuente: https://github.com/forrestchang/andrej-karpathy-skills
+
+Estas reglas reducen errores comunes de LLM al codear. Sesgo hacia cautela sobre velocidad. Para tareas triviales, usar criterio.
+
+### 1. Pensar antes de codear
+**No asumir. No ocultar confusión. Exponer tradeoffs.**
+
+Antes de implementar:
+- Explicitar supuestos. Si hay duda, preguntar.
+- Si existen múltiples interpretaciones, presentarlas — no elegir en silencio.
+- Si hay un enfoque más simple, decirlo. Empujar de vuelta cuando corresponda.
+- Si algo no está claro, frenar. Nombrar la confusión. Preguntar.
+
+### 2. Simplicidad primero
+**Código mínimo que resuelva el problema. Nada especulativo.**
+
+- Sin features fuera de lo pedido.
+- Sin abstracciones para código de uso único.
+- Sin "flexibilidad" o "configurabilidad" no solicitada.
+- Sin manejo de errores para escenarios imposibles.
+- Si escribís 200 líneas y podrían ser 50, reescribir.
+
+Pregunta clave: "¿Un senior diría que esto está sobrecomplicado?" Si sí, simplificar.
+
+### 3. Cambios quirúrgicos
+**Tocar solo lo necesario. Limpiar solo el propio desorden.**
+
+Al editar código existente:
+- No "mejorar" código, comentarios o formato adyacente.
+- No refactorizar lo que no está roto.
+- Respetar el estilo existente, aunque uno lo haría distinto.
+- Si se nota código muerto no relacionado, mencionarlo — no borrarlo.
+
+Cuando los cambios dejan huérfanos:
+- Eliminar imports/variables/funciones que TUS cambios dejaron sin uso.
+- No remover código muerto preexistente salvo que lo pidan.
+
+Test: cada línea cambiada debe trazar directamente al pedido del usuario.
+
+### 4. Ejecución guiada por objetivos
+**Definir criterios de éxito. Iterar hasta verificar.**
+
+Transformar tareas en objetivos verificables:
+- "Agregar validación" → "Escribir tests para inputs inválidos, luego hacerlos pasar"
+- "Arreglar el bug" → "Escribir un test que lo reproduzca, luego hacerlo pasar"
+- "Refactorizar X" → "Asegurar que los tests pasan antes y después"
+
+Para tareas multi-paso, declarar un plan breve:
+```
+1. [Paso] → verificar: [check]
+2. [Paso] → verificar: [check]
+3. [Paso] → verificar: [check]
+```
+
+Criterios de éxito fuertes permiten iterar independientemente. Criterios débiles ("que funcione") requieren clarificación constante.
+
+**Estas reglas funcionan si:** hay menos cambios innecesarios en los diffs, menos reescrituras por sobrecomplicación, y las preguntas aclaratorias aparecen antes de implementar, no después de equivocarse.
