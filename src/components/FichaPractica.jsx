@@ -113,6 +113,8 @@ export default function FichaPractica({ ficha, registro, onNueva, onInicio }) {
         hojaId="ficha-imprimible"
         onDescargar={handleDescargarPDF}
         acciones={acciones}
+        ficha={ficha}
+        registro={registro}
       />
       <FeedbackButton isDownloading={isDownloading} />
     </>
