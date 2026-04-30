@@ -211,6 +211,8 @@ export default function FichaCierre({ ficha, registro, onNueva, onInicio }) {
         hojaId="ficha-imprimible"
         onDescargar={handleDescargarPDF}
         acciones={acciones}
+        ficha={ficha}
+        registro={registro}
       />
       <FeedbackButton isDownloading={isDownloading} />
     </>
