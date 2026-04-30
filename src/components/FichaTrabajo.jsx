@@ -189,7 +189,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
   const esDosHojasObligatorio = false;
 
   // Delegar a FichaPresenta para presentaciones de una sola página
-  if (ficha?.tipo_ficha === "presentacion" && !esDosHojasObligatorio) {
+  if ((ficha?.tipo_ficha === "presentacion" || ficha?.tipo_ficha === "ortografia_pdl_presentacion") && !esDosHojasObligatorio) {
     return (
       <FichaPresenta
         ficha={ficha}
