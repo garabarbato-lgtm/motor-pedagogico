@@ -454,6 +454,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
           hojaId="ficha-imprimible"
           onDescargar={handleDescargarPDF}
           acciones={acciones}
+          ficha={ficha}
+          registro={registro}
         />
         <FeedbackButton isDownloading={isDownloading} />
       </>
@@ -751,6 +753,8 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
         hojaId="ficha-imprimible"
         onDescargar={handleDescargarPDF}
         acciones={acciones}
+        ficha={ficha}
+        registro={registro}
       />
       <FeedbackButton isDownloading={isDownloading} />
     </>
