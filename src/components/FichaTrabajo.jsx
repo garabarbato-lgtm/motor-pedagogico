@@ -341,6 +341,16 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
           {isPDL && registro.bloque === "Lectura de textos" ? (
             <div>
               <SeccionHeader numero="1" titulo="Leemos" icono="📖" />
+              {Array.isArray(fichaLocal.glosario) && fichaLocal.glosario.length > 0 && (
+                <div style={{ background: "#EFF6FF", border: "1px solid #BFDBFE", borderRadius: 6, padding: "8px 12px", marginBottom: 8 }}>
+                  <p style={{ fontSize: 10, color: "#1E40AF", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 4px" }}>📚 Palabras nuevas</p>
+                  {fichaLocal.glosario.map((item, i) => (
+                    <p key={i} style={{ fontSize: 11, color: C.texto, lineHeight: 1.5, margin: "0 0 2px" }}>
+                      <strong>{item.palabra}</strong>: {item.definicion}
+                    </p>
+                  ))}
+                </div>
+              )}
               <EditableHtml
                 html={renderHTMLConNegrita(fichaLocal.texto).__html}
                 className="ficha-campo-editable"
@@ -379,19 +389,32 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
             <div>
               <SeccionHeader numero="2" titulo="Respondé" icono="✍️" />
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {Array.isArray(fichaLocal.preguntas) && fichaLocal.preguntas.map((preg, idx) => (
-                  <div key={idx}>
-                    <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
-                      <EditableHtml
-                        html={renderHTMLConNegrita(preg).__html}
-                        className="ficha-campo-editable"
-                        style={{ flex: 1, fontSize: 12, color: C.texto, lineHeight: 1.55 }}
-                      />
+                {Array.isArray(fichaLocal.preguntas) && fichaLocal.preguntas.map((preg, idx) => {
+                  const pregTexto = typeof preg === "string" ? preg : preg.pregunta;
+                  const pista = typeof preg === "object" ? preg.pista : null;
+                  const inicioRespuesta = typeof preg === "object" ? preg.inicio_respuesta : null;
+                  return (
+                    <div key={idx}>
+                      <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 2 }}>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
+                        <EditableHtml
+                          html={renderHTMLConNegrita(pregTexto).__html}
+                          className="ficha-campo-editable"
+                          style={{ flex: 1, fontSize: 12, color: C.texto, lineHeight: 1.55 }}
+                        />
+                      </div>
+                      {pista && (
+                        <p style={{ fontSize: 10, color: "#1E40AF", background: "#EFF6FF", borderRadius: 4, padding: "2px 8px", margin: "0 0 4px 24px" }}>
+                          💡 {pista}
+                        </p>
+                      )}
+                      {inicioRespuesta && (
+                        <p style={{ fontSize: 11, color: C.muted, fontStyle: "italic", margin: "0 0 2px 24px" }}>{inicioRespuesta} ___</p>
+                      )}
+                      <LineasRespuesta n={5} />
                     </div>
-                    <LineasRespuesta n={5} />
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ) : (
@@ -452,6 +475,16 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
             <>
               <div>
                 <SeccionHeader numero="1" titulo="Leemos" icono="📖" />
+                {Array.isArray(fichaLocal.glosario) && fichaLocal.glosario.length > 0 && (
+                  <div style={{ background: "#EFF6FF", border: "1px solid #BFDBFE", borderRadius: 6, padding: "8px 12px", marginBottom: 8 }}>
+                    <p style={{ fontSize: 10, color: "#1E40AF", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 4px" }}>📚 Palabras nuevas</p>
+                    {fichaLocal.glosario.map((item, i) => (
+                      <p key={i} style={{ fontSize: 11, color: C.texto, lineHeight: 1.5, margin: "0 0 2px" }}>
+                        <strong>{item.palabra}</strong>: {item.definicion}
+                      </p>
+                    ))}
+                  </div>
+                )}
                 <EditableHtml
                   html={renderHTMLConNegrita(fichaLocal.texto).__html}
                   className="ficha-campo-editable"
@@ -461,119 +494,179 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
               <div>
                 <SeccionHeader numero="2" titulo="Respondé" icono="✍️" />
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {Array.isArray(fichaLocal.preguntas) && fichaLocal.preguntas.map((preg, idx) => (
-                    <div key={idx}>
-                      <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
-                        <EditableHtml
-                          html={renderHTMLConNegrita(preg).__html}
-                          className="ficha-campo-editable"
-                          style={{ flex: 1, fontSize: 12, color: C.texto, lineHeight: 1.55 }}
-                        />
+                  {Array.isArray(fichaLocal.preguntas) && fichaLocal.preguntas.map((preg, idx) => {
+                    const pregTexto = typeof preg === "string" ? preg : preg.pregunta;
+                    const pista = typeof preg === "object" ? preg.pista : null;
+                    const inicioRespuesta = typeof preg === "object" ? preg.inicio_respuesta : null;
+                    return (
+                      <div key={idx}>
+                        <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 2 }}>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
+                          <EditableHtml
+                            html={renderHTMLConNegrita(pregTexto).__html}
+                            className="ficha-campo-editable"
+                            style={{ flex: 1, fontSize: 12, color: C.texto, lineHeight: 1.55 }}
+                          />
+                        </div>
+                        {pista && (
+                          <p style={{ fontSize: 10, color: "#1E40AF", background: "#EFF6FF", borderRadius: 4, padding: "2px 8px", margin: "0 0 4px 24px" }}>
+                            💡 {pista}
+                          </p>
+                        )}
+                        {inicioRespuesta && (
+                          <p style={{ fontSize: 11, color: C.muted, fontStyle: "italic", margin: "0 0 2px 24px" }}>{inicioRespuesta} ___</p>
+                        )}
+                        <LineasRespuesta n={3} />
                       </div>
-                      <LineasRespuesta n={3} />
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </>
 
           ) : registro.bloque === "Escritura de textos" ? (
             /* ── PDL: Escritura ── */
-            <>
-              <div>
-                <SeccionHeader numero="1" titulo="¡A escribir!" icono="✏️" />
-                <EditableHtml
-                  html={renderHTMLConNegrita(fichaLocal.consigna).__html}
-                  className="ficha-campo-editable"
-                  style={{ fontSize: 12, color: C.texto, lineHeight: 1.6 }}
-                />
-              </div>
-              {Array.isArray(fichaLocal.orientaciones) && fichaLocal.orientaciones.length > 0 && (
+            fichaLocal.fase === "planificacion" ? (
+              <>
                 <div>
-                  <SeccionHeader numero="2" titulo="Antes de escribir, pensá…" icono="💭" />
-                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                    {fichaLocal.orientaciones.map((orientacion, idx) => (
-                      <div key={idx} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                        <span style={{ fontSize: 12, color: C.muted, flexShrink: 0, marginTop: 1 }}>→</span>
-                        <EditableHtml
-                          html={renderHTMLConNegrita(orientacion).__html}
-                          className="ficha-campo-editable"
-                          style={{ flex: 1, fontSize: 12, color: C.texto, lineHeight: 1.5 }}
-                        />
+                  <SeccionHeader numero="1" titulo="Antes de escribir, pensá..." icono="💭" />
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {Array.isArray(fichaLocal.preguntas_previas) && fichaLocal.preguntas_previas.map((preg, idx) => (
+                      <div key={idx} style={{ marginBottom: 8 }}>
+                        <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                          <span style={{ fontSize: 12, color: C.muted, flexShrink: 0, marginTop: 1 }}>→</span>
+                          <EditableHtml html={renderHTMLConNegrita(preg).__html} className="ficha-campo-editable" style={{ flex: 1, fontSize: 12, color: C.texto, lineHeight: 1.5 }} />
+                        </div>
+                        <LineasRespuesta n={2} />
                       </div>
                     ))}
                   </div>
                 </div>
-              )}
-              <div>
-                <SeccionHeader
-                  numero={Array.isArray(fichaLocal.orientaciones) && fichaLocal.orientaciones.length > 0 ? "3" : "2"}
-                  titulo="Mi texto"
-                  icono="📝"
-                />
-                {gradoEsUno
-                  ? Array.from({ length: 8 }).map((_, i) => <LineaDoble key={i} />)
-                  : Array.from({ length: 8 }).map((_, i) => <LineaEscritura key={i} />)
-                }
-              </div>
-            </>
+                <div>
+                  <SeccionHeader numero="2" titulo="Organizá tus ideas" icono="📋" />
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {Array.isArray(fichaLocal.organizador) && fichaLocal.organizador.map((item, idx) => (
+                      <div key={idx} style={{ marginBottom: 4 }}>
+                        <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                          <span style={{ fontSize: 12, color: C.muted, flexShrink: 0, marginTop: 1 }}>→</span>
+                          <EditableHtml html={renderHTMLConNegrita(item).__html} className="ficha-campo-editable" style={{ flex: 1, fontSize: 12, color: C.texto, lineHeight: 1.5 }} />
+                        </div>
+                        <LineasRespuesta n={1} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <SeccionHeader numero="3" titulo="Mi borrador" icono="📝" />
+                  <EditableHtml html={renderHTMLConNegrita(fichaLocal.consigna_borrador).__html} className="ficha-campo-editable" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6, marginBottom: 8 }} />
+                  <LineasRespuesta n={8} />
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <SeccionHeader numero="1" titulo="¡A escribir!" icono="✏️" />
+                  <EditableHtml html={renderHTMLConNegrita(fichaLocal.consigna).__html} className="ficha-campo-editable" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6 }} />
+                </div>
+                {Array.isArray(fichaLocal.orientaciones) && fichaLocal.orientaciones.length > 0 && (
+                  <div>
+                    <SeccionHeader numero="2" titulo="Antes de escribir, pensá…" icono="💭" />
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      {fichaLocal.orientaciones.map((orientacion, idx) => (
+                        <div key={idx} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                          <span style={{ fontSize: 12, color: C.muted, flexShrink: 0, marginTop: 1 }}>→</span>
+                          <EditableHtml html={renderHTMLConNegrita(orientacion).__html} className="ficha-campo-editable" style={{ flex: 1, fontSize: 12, color: C.texto, lineHeight: 1.5 }} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div>
+                  <SeccionHeader numero={Array.isArray(fichaLocal.orientaciones) && fichaLocal.orientaciones.length > 0 ? "3" : "2"} titulo="Mi texto" icono="📝" />
+                  {gradoEsUno
+                    ? Array.from({ length: 8 }).map((_, i) => <LineaDoble key={i} />)
+                    : Array.from({ length: 8 }).map((_, i) => <LineaEscritura key={i} />)
+                  }
+                </div>
+              </>
+            )
 
           ) : (
-            /* ── PDL: Ortografía / otros ── */
-            <>
-              <div>
-                <SeccionHeader numero="1" titulo="La regla" icono="📚" />
-                {fichaLocal.concepto_clave && (
-                  <div style={{ background: "#eafaf4", borderLeft: "3px solid #00c48c", borderRadius: "0 6px 6px 0", padding: "8px 12px", marginBottom: 8 }}>
-                    <EditableHtml
-                      html={renderHTMLConNegrita(fichaLocal.concepto_clave).__html}
-                      className="ficha-campo-editable"
-                      style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, fontWeight: 500 }}
-                    />
+            /* ── PDL: Ortografía ── */
+            fichaLocal.momento === "presentacion" ? (
+              <>
+                <div>
+                  <SeccionHeader numero="1" titulo="La regla" icono="📚" />
+                  {fichaLocal.concepto_clave && (
+                    <div style={{ background: "#eafaf4", borderLeft: "3px solid #00c48c", borderRadius: "0 6px 6px 0", padding: "8px 12px", marginBottom: 8 }}>
+                      <EditableHtml html={renderHTMLConNegrita(fichaLocal.concepto_clave).__html} className="ficha-campo-editable" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, fontWeight: 500 }} />
+                    </div>
+                  )}
+                  <EditableHtml html={renderHTMLConNegrita(fichaLocal.explicacion).__html} className="ficha-campo-editable" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6 }} />
+                  {fichaLocal.ejemplo && (
+                    <div style={{ background: "#f7f7f0", borderRadius: 6, padding: "8px 12px", border: `1px solid ${C.border}`, marginTop: 6 }}>
+                      <p style={{ fontSize: 10, color: C.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Ejemplo</p>
+                      <EditableHtml html={renderHTMLConNegrita(fichaLocal.ejemplo).__html} className="ficha-campo-editable" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6 }} />
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <SeccionHeader numero="2" titulo="Practicamos" icono="✏️" />
+                  {fichaLocal.ejercicio_guiado && renderEjercicioItem(fichaLocal.ejercicio_guiado, 0, { editable: true })}
+                </div>
+              </>
+            ) : fichaLocal.momento === "cierre" ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {Array.isArray(fichaLocal.escalera) && fichaLocal.escalera.map((peldaño, idx) => (
+                  <div key={idx} style={{ border: `1.5px solid ${C.borderFuerte}`, borderRadius: 8, padding: 12 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, paddingBottom: 6, borderBottom: `1px solid ${C.border}` }}>
+                      <span style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", color: C.acento }}>{peldaño.rotulo}</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: C.texto }}>{peldaño.nombre}</span>
+                    </div>
+                    {renderEjercicioItem(peldaño.ejercicio, idx, { editable: true })}
+                    {peldaño.ejercicio?.tipo === "texto_libre" && <LineasRespuesta n={6} />}
                   </div>
-                )}
-                <EditableHtml
-                  html={renderHTMLConNegrita(fichaLocal.explicacion).__html}
-                  className="ficha-campo-editable"
-                  style={{ fontSize: 12, color: C.texto, lineHeight: 1.6 }}
-                />
-                {fichaLocal.ejemplo && (
-                  <div style={{ background: "#f7f7f0", borderRadius: 6, padding: "8px 12px", border: `1px solid ${C.border}`, marginTop: 6 }}>
-                    <p style={{ fontSize: 10, color: C.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Ejemplo</p>
-                    <EditableHtml
-                      html={renderHTMLConNegrita(fichaLocal.ejemplo).__html}
-                      className="ficha-campo-editable"
-                      style={{ fontSize: 12, color: C.texto, lineHeight: 1.6 }}
-                    />
-                  </div>
-                )}
+                ))}
               </div>
-              <div>
-                <SeccionHeader numero="2" titulo="Practicamos" icono="✏️" />
-                {Array.isArray(fichaLocal.ejercicios) && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                    {fichaLocal.ejercicios.map((ejercicio, idx) =>
-                      typeof ejercicio === "string" ? (
-                        <div key={idx}>
-                          <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
-                            <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
-                            <EditableHtml
-                              html={renderHTMLConNegrita(ejercicio).__html}
-                              className="ficha-campo-editable"
-                              style={{ flex: 1, fontSize: 12, color: C.texto, lineHeight: 1.5 }}
-                            />
+            ) : (
+              <>
+                <div>
+                  <SeccionHeader numero="1" titulo="La regla" icono="📚" />
+                  {fichaLocal.concepto_clave && (
+                    <div style={{ background: "#eafaf4", borderLeft: "3px solid #00c48c", borderRadius: "0 6px 6px 0", padding: "8px 12px", marginBottom: 8 }}>
+                      <EditableHtml html={renderHTMLConNegrita(fichaLocal.concepto_clave).__html} className="ficha-campo-editable" style={{ fontSize: 12, color: C.texto, lineHeight: 1.5, fontWeight: 500 }} />
+                    </div>
+                  )}
+                  <EditableHtml html={renderHTMLConNegrita(fichaLocal.explicacion).__html} className="ficha-campo-editable" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6 }} />
+                  {fichaLocal.ejemplo && (
+                    <div style={{ background: "#f7f7f0", borderRadius: 6, padding: "8px 12px", border: `1px solid ${C.border}`, marginTop: 6 }}>
+                      <p style={{ fontSize: 10, color: C.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Ejemplo</p>
+                      <EditableHtml html={renderHTMLConNegrita(fichaLocal.ejemplo).__html} className="ficha-campo-editable" style={{ fontSize: 12, color: C.texto, lineHeight: 1.6 }} />
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <SeccionHeader numero="2" titulo="Practicamos" icono="✏️" />
+                  {Array.isArray(fichaLocal.ejercicios) && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                      {fichaLocal.ejercicios.map((ejercicio, idx) =>
+                        typeof ejercicio === "string" ? (
+                          <div key={idx}>
+                            <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 4 }}>
+                              <span style={{ fontSize: 12, fontWeight: 700, color: C.acento, minWidth: 16, flexShrink: 0 }}>{idx + 1}.</span>
+                              <EditableHtml html={renderHTMLConNegrita(ejercicio).__html} className="ficha-campo-editable" style={{ flex: 1, fontSize: 12, color: C.texto, lineHeight: 1.5 }} />
+                            </div>
+                            {!tieneRespuestaEmbebida(ejercicio) && <RecuadroRespuesta />}
                           </div>
-                          {!tieneRespuestaEmbebida(ejercicio) && <RecuadroRespuesta />}
-                        </div>
-                      ) : (
-                        <div key={idx}>{renderEjercicioItem(ejercicio, idx, { editable: true })}</div>
-                      )
-                    )}
-                  </div>
-                )}
-              </div>
-            </>
+                        ) : (
+                          <div key={idx}>{renderEjercicioItem(ejercicio, idx, { editable: true })}</div>
+                        )
+                      )}
+                    </div>
+                  )}
+                </div>
+              </>
+            )
           )
 
         ) : (

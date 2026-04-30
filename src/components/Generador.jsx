@@ -658,6 +658,28 @@ export default function Generador({ onFichaGenerada, onVolver }) {
 
   const curricular = curricularData;
   const gradoNum = gradoData?.valores[0] || "1";
+  const isPDL = area === "Prácticas del Lenguaje";
+
+  // Configuración dinámica del selector de momento según área y tipo de ficha PDL
+  const momentoConfig = (() => {
+    if (!isPDL) return {
+      mostrar: true,
+      label: "Momento didáctico",
+      opciones: ["Presentación", "Práctica", "Cierre / Integración"],
+    };
+    if (tipoFicha === "Escritura de textos") return {
+      mostrar: true,
+      label: "Fase de escritura",
+      opciones: ["Planificación", "Producción"],
+    };
+    if (tipoFicha === "Ortografía") return {
+      mostrar: true,
+      label: "Momento didáctico",
+      opciones: ["Presentación", "Práctica", "Cierre"],
+    };
+    // Lectura de textos: no se pregunta el momento
+    return { mostrar: false };
+  })();
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -835,7 +857,13 @@ export default function Generador({ onFichaGenerada, onVolver }) {
     let payload, registroParaFicha;
     if (isPDL) {
       payload = {
-        contenido: { grado: gradoNum, area, tipoTexto: genero },
+        contenido: {
+          grado: gradoNum, area, tipoTexto: genero,
+          contexto_pedagogico: {
+            momento: momento || null,
+            nivelGrupo: nivelGrupo || null,
+          },
+        },
         tipoFicha,
       };
       registroParaFicha = {
@@ -1130,7 +1158,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                   const activo = area === a.nombre;
                   return (
                     <button key={a.nombre}
-                      onClick={() => { setArea(a.nombre); setAreaConfig(a); setRegistro(null); setTipoFicha(null); setGenero(null); }}
+                      onClick={() => { setArea(a.nombre); setAreaConfig(a); setRegistro(null); setTipoFicha(null); setGenero(null); setMomento(null); }}
                       style={{ width: "100%", padding: "14px 16px", textAlign: "left", border: "none", borderBottom: `1px solid ${C.bordeHover}`, background: activo ? C.verdeClaroBg : "transparent", cursor: "pointer", display: "flex", alignItems: "center", gap: 12, transition: "background 0.15s", fontFamily: "'Lexend', sans-serif" }}
                       onMouseEnter={e => { if (!activo) e.currentTarget.style.background = "#F0FBF7"; }}
                       onMouseLeave={e => { if (!activo) e.currentTarget.style.background = "transparent"; }}
@@ -1288,24 +1316,28 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                     <span>Volver</span>
                   </button>
 
-                  {/* Momento didáctico */}
-                  <p style={{ fontSize: 11, fontWeight: 700, color: C.textoMuted, textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 10px" }}>Momento didáctico</p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
-                    {["Presentación", "Práctica", "Cierre / Integración"].map((op) => (
-                      <button key={op} onClick={() => setMomento(momento === op ? null : op)} style={{
-                        border: `1.5px solid ${momento === op ? "#00c48c" : "#D4E6DE"}`,
-                        background: momento === op ? "#00c48c" : "#fff",
-                        color: momento === op ? "#004733" : "#004733",
-                        borderRadius: 999, padding: "7px 16px", fontSize: 14, cursor: "pointer",
-                        transition: "all 0.2s ease", fontFamily: "'Lexend', sans-serif",
-                        fontWeight: momento === op ? 700 : 400,
-                        boxShadow: momento === op ? "0 2px 8px rgba(0,196,140,0.25)" : "none",
-                      }}
-                        onMouseEnter={e => { if (momento !== op) { e.currentTarget.style.background = "#E6FAF3"; e.currentTarget.style.borderColor = "#00c48c"; e.currentTarget.style.color = "#004733"; } }}
-                        onMouseLeave={e => { if (momento !== op) { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "#D4E6DE"; e.currentTarget.style.color = "#004733"; } }}
-                      >{op}</button>
-                    ))}
-                  </div>
+                  {/* Momento didáctico / Fase — condicional según área y tipo PDL */}
+                  {momentoConfig.mostrar && (
+                    <>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: C.textoMuted, textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 10px" }}>{momentoConfig.label}</p>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
+                        {momentoConfig.opciones.map((op) => (
+                          <button key={op} onClick={() => setMomento(momento === op ? null : op)} style={{
+                            border: `1.5px solid ${momento === op ? "#00c48c" : "#D4E6DE"}`,
+                            background: momento === op ? "#00c48c" : "#fff",
+                            color: "#004733",
+                            borderRadius: 999, padding: "7px 16px", fontSize: 14, cursor: "pointer",
+                            transition: "all 0.2s ease", fontFamily: "'Lexend', sans-serif",
+                            fontWeight: momento === op ? 700 : 400,
+                            boxShadow: momento === op ? "0 2px 8px rgba(0,196,140,0.25)" : "none",
+                          }}
+                            onMouseEnter={e => { if (momento !== op) { e.currentTarget.style.background = "#E6FAF3"; e.currentTarget.style.borderColor = "#00c48c"; } }}
+                            onMouseLeave={e => { if (momento !== op) { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "#D4E6DE"; } }}
+                          >{op}</button>
+                        ))}
+                      </div>
+                    </>
+                  )}
 
                   {/* Nivel del grupo */}
                   <p style={{ fontSize: 11, fontWeight: 700, color: C.textoMuted, textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 10px" }}>Nivel del grupo</p>

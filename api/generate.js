@@ -15,9 +15,56 @@ function limitePalabras(grado) {
 // PROMPTS PDL — LECTURA DE TEXTOS
 // ─────────────────────────────────────────────
 function buildPDLLecturaPrompt(contenido, feedback = null) {
+  const nivel = contenido.contexto_pedagogico?.nivelGrupo || "Sin adaptación";
   const feedbackSection = feedback
     ? `\n\nATENCIÓN: El intento anterior fue rechazado por las siguientes razones:\n${feedback}\nCorregí estos problemas en esta nueva versión.`
     : "";
+
+  // ── Instrucciones y formato de preguntas según nivel del grupo ──
+  let instruccionNivel;
+  let formatoPreguntas;
+  let formatoGlosario = "";
+
+  if (nivel === "Necesita más apoyo") {
+    instruccionNivel = `Nivel del grupo: Necesita más apoyo.
+- Generá un glosario con 2 o 3 palabras difíciles del texto y su definición en lenguaje simple para el alumno.
+- Marcá con **doble asterisco** las palabras del glosario cuando aparezcan en el texto.
+- Las preguntas deben ser LITERALES: la respuesta se encuentra textualmente en el texto.
+- En cada pregunta incluí una pista corta que diga en qué parte del texto buscar la respuesta (ej: "Buscá en el primer párrafo.").
+- En la pregunta más difícil, además de la pista, escribí el comienzo de la respuesta en "inicio_respuesta" (ej: "El personaje fue..."). En las otras preguntas, "inicio_respuesta" debe ser null.`;
+
+    formatoGlosario = `  "glosario": [
+    { "palabra": "palabra difícil", "definicion": "qué significa en palabras simples" }
+  ],`;
+
+    formatoPreguntas = `  "preguntas": [
+    { "pregunta": "primera pregunta literal", "pista": "Buscá en el primer párrafo.", "inicio_respuesta": null },
+    { "pregunta": "segunda pregunta literal (la más difícil)", "pista": "Mirá hacia el final del texto.", "inicio_respuesta": "El personaje fue..." }
+  ]`;
+
+  } else if (nivel === "Puede más") {
+    instruccionNivel = `Nivel del grupo: Puede más.
+- Las preguntas deben ser principalmente INFERENCIALES: requieren interpretar, relacionar ideas o ir más allá del texto.
+- Incluí al menos una pregunta de opinión o que conecte con la experiencia del alumno o con otro texto.
+- No incluir pistas ni glosario.`;
+
+    formatoPreguntas = `  "preguntas": [
+    "pregunta inferencial",
+    "pregunta inferencial",
+    "pregunta de opinión o conexión con la experiencia del alumno"
+  ]`;
+
+  } else {
+    instruccionNivel = `Nivel del grupo: Sin adaptación.
+- Las preguntas deben ser una mezcla de LITERALES (la respuesta está en el texto) e INFERENCIALES (requieren interpretar).
+- No incluir pistas ni glosario.`;
+
+    formatoPreguntas = `  "preguntas": [
+    "pregunta literal",
+    "pregunta inferencial",
+    "tercera pregunta (opcional)"
+  ]`;
+  }
 
   return `Sos un docente experto en nivel primario de la Provincia de Buenos Aires.
 Generá una ficha de lectura para ${contenido.grado}° grado de Prácticas del Lenguaje.
@@ -26,11 +73,13 @@ Tipo de texto: ${contenido.tipoTexto}
 Práctica lectora: ${contenido.practica}
 ${feedbackSection}
 
+${instruccionNivel}
+
 La ficha debe tener:
 1. Un texto breve del tipo indicado, adecuado al grado, con vocabulario claro.
 2. Entre 2 y 3 preguntas de comprensión enfocadas en la práctica elegida.
 
-Criterios:
+Criterios generales:
 - El texto no debe superar ${limitePalabras(contenido.grado)}
 - Las preguntas deben estar formuladas en lenguaje de alumno, no de docente
 - No usar terminología técnica en las consignas
@@ -39,7 +88,6 @@ Criterios:
 - Si el tipo de texto es noticia: respetar estructura periodística (título, copete, cuerpo)
 - Si el tipo de texto es obra de teatro: incluir al menos dos personajes y acotaciones
 - Si el tipo de texto es historieta: describir las viñetas con texto ya que no hay imágenes
-- Si un ejercicio requiere una tabla para completar, generarla en HTML dentro del recuadro de respuesta con este estilo: bordes finos (border: 0.5px solid #ddddd8), encabezados de columna en negrita con fondo #f5f5f0, celdas vacías con height: 32px para que el alumno escriba, width: 100%. IMPORTANTE: Las celdas que el alumno debe completar DEBEN estar vacías (sin texto, solo el espacio). La tabla va DENTRO del recuadro de respuesta, debajo del enunciado.
 - Marcá con **doble asterisco** los nombres propios, datos importantes y conceptos clave del texto
 - El título debe tener dos partes separadas por dos puntos cuando sea posible. Mayúscula solo en la primera letra.
 - Elegí 1 o 2 emojis relevantes al tipo de texto para decorar el título.
@@ -48,12 +96,9 @@ FORMATO DE RESPUESTA (JSON estricto, sin markdown):
 {
   "emojis": ["emoji1"],
   "titulo": "título atractivo para el alumno",
+${formatoGlosario}
   "texto": "el texto completo generado",
-  "preguntas": [
-    "primera pregunta de comprensión",
-    "segunda pregunta de comprensión",
-    "tercera pregunta (opcional)"
-  ]
+${formatoPreguntas}
 }
 
 Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdown.`;
@@ -63,14 +108,50 @@ Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdow
 // PROMPTS PDL — ESCRITURA DE TEXTOS
 // ─────────────────────────────────────────────
 function buildPDLEscrituraPrompt(contenido, feedback = null) {
+  const momento = contenido.contexto_pedagogico?.momento || 'Producción';
+  const nivel = contenido.contexto_pedagogico?.nivelGrupo || "Sin adaptación";
   const feedbackSection = feedback
     ? `\n\nATENCIÓN: El intento anterior fue rechazado por las siguientes razones:\n${feedback}\nCorregí estos problemas en esta nueva versión.`
     : "";
 
+  if (momento === 'Planificación') {
+    return `Sos un docente experto en nivel primario de la Provincia de Buenos Aires.
+Generá una ficha de PLANIFICACIÓN de escritura para ${contenido.grado}° grado de Prácticas del Lenguaje.
+
+Tipo de texto a planificar: ${contenido.tipoTexto}
+Nivel del grupo: ${nivel}
+${feedbackSection}
+
+La ficha debe tener:
+1. Preguntas previas para organizar la tarea (qué voy a escribir, para quién, qué va a pasar, etc.)
+2. Un organizador de ideas o esquema (elementos clave que no pueden faltar en este tipo de texto)
+3. Una consigna breve para realizar un primer borrador
+
+Criterios:
+- El lenguaje debe ser cercano y motivador para un niño
+- El organizador debe presentarse como una lista de ítems para completar
+- El título debe tener dos partes separadas por dos puntos cuando sea posible. Mayúscula solo en la primera letra.
+- Elegí 1 o 2 emojis relevantes al tipo de texto.
+
+FORMATO DE RESPUESTA (JSON estricto, sin markdown):
+{
+  "emojis": ["emoji1"],
+  "titulo": "título atractivo para el alumno",
+  "fase": "planificacion",
+  "preguntas_previas": ["pregunta 1", "pregunta 2", "pregunta 3"],
+  "organizador": ["ítem a completar 1", "ítem a completar 2", "ítem a completar 3"],
+  "consigna_borrador": "breve indicación para empezar el borrador"
+}
+
+Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdown.`;
+  }
+
+  // Caso por defecto: Producción
   return `Sos un docente experto en nivel primario de la Provincia de Buenos Aires.
-Generá una ficha de escritura para ${contenido.grado}° grado de Prácticas del Lenguaje.
+Generá una ficha de PRODUCCIÓN de escritura para ${contenido.grado}° grado de Prácticas del Lenguaje.
 
 Tipo de texto a producir: ${contenido.tipoTexto}
+Nivel del grupo: ${nivel}
 ${feedbackSection}
 
 La ficha debe tener:
@@ -79,9 +160,8 @@ La ficha debe tener:
 3. NO escribir el texto — ese espacio lo completa el alumno
 
 Criterios:
-- La consigna debe ser concreta y alcanzable para el grado
+- La consigna debe ser concreta y alcanzable para el grado y el nivel del grupo (${nivel})
 - Las orientaciones deben ser preguntas simples, no instrucciones complejas
-- El lenguaje debe ser cercano y motivador para un niño
 - Marcá con **doble asterisco** los datos importantes y conceptos clave de la consigna
 - El título debe tener dos partes separadas por dos puntos cuando sea posible. Mayúscula solo en la primera letra.
 - Elegí 1 o 2 emojis relevantes al tipo de texto a producir.
@@ -90,6 +170,7 @@ FORMATO DE RESPUESTA (JSON estricto, sin markdown):
 {
   "emojis": ["emoji1"],
   "titulo": "título atractivo para el alumno",
+  "fase": "produccion",
   "consigna": "la consigna motivadora (máximo 3 oraciones)",
   "orientaciones": [
     "primera orientación en forma de pregunta",
@@ -105,52 +186,44 @@ Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdow
 // PROMPTS PDL — ORTOGRAFÍA
 // ─────────────────────────────────────────────
 function buildPDLOrtografiaPrompt(contenido, feedback = null) {
+  const momento = contenido.contexto_pedagogico?.momento || 'Práctica';
   const feedbackSection = feedback
     ? `\n\nATENCIÓN: El intento anterior fue rechazado por las siguientes razones:\n${feedback}\nCorregí estos problemas en esta nueva versión.`
     : "";
 
+  let momentInstruction = "";
+  let formatResponse = "";
+
+  if (momento === 'Presentación') {
+    momentInstruction = `\nTIPO DE FICHA: Presentación (introducción de la regla por primera vez).\nCRITERIOS:\n- Explicación clara de la regla ortográfica para el grado.\n- Un solo ejercicio guiado muy simple de reconocimiento inicial.\n- Marcá con **doble asterisco** las palabras clave en la explicación y el enunciado.`;
+    formatResponse = `{\n  "emojis": ["emoji1"],\n  "titulo": "título: con la regla",\n  "momento": "presentacion",\n  "concepto_clave": "la regla en una oración clara",\n  "explicacion": "explicación de la regla (máximo 3 oraciones)",\n  "ejemplo": "ejemplo concreto",\n  "ejercicio_guiado": { "tipo": "completar_oraciones", "enunciado": "Enunciado del ejercicio simple", "oraciones": ["Oración con _______ para completar."] }\n}`;
+  } else if (momento === 'Cierre') {
+    momentInstruction = `\nTIPO DE FICHA: Cierre (escalera de niveles).\nCRITERIOS:\n- SIN explicación ni concepto clave.\n- Escalera de 4 peldaños con demanda cognitiva creciente.\n- Nivel 1 (baja): completar_oraciones o tabla.\n- Nivel 2 (media): verdadero_falso u ordenar palabras.\n- Nivel 3 (alta): texto_libre donde el alumno produce oraciones usando la regla. NUNCA verdadero_falso ni completar_oraciones.\n- Punto de descanso: preguntas_comprension con UNA pregunta de reflexión.\n- LÍMITE: máximo 4 items por ejercicio.`;
+    formatResponse = `{\n  "emojis": ["emoji1"],\n  "titulo": "título: creativo",\n  "momento": "cierre",\n  "escalera": [\n    { "rotulo": "Nivel 1", "nombre": "nombre creativo", "ejercicio": { "tipo": "completar_oraciones", "enunciado": "...", "oraciones": ["..."] }, "andamiaje": null },\n    { "rotulo": "Nivel 2", "nombre": "nombre creativo", "ejercicio": { "tipo": "verdadero_falso", "enunciado": "...", "afirmaciones": ["..."] }, "andamiaje": null },\n    { "rotulo": "Nivel 3", "nombre": "nombre creativo", "ejercicio": { "tipo": "texto_libre", "enunciado": "Escribí oraciones usando la regla..." }, "andamiaje": null },\n    { "rotulo": "Punto de descanso", "nombre": "nombre creativo", "ejercicio": { "tipo": "preguntas_comprension", "enunciado": "Respondé:", "preguntas": ["¿Cuándo usamos esta regla?"] }, "andamiaje": null }\n  ]\n}`;
+  } else {
+    momentInstruction = `\nTIPO DE FICHA: Práctica (consolidación).\nCRITERIOS:\n- Explicación breve (máximo 2 oraciones) + ejemplo concreto.\n- Generá EXACTAMENTE 3 ejercicios variados.\n- LÍMITE DE ITEMS: máximo 4 items por ejercicio.\n- Marcá con **doble asterisco** las palabras clave.`;
+    formatResponse = `{\n  "emojis": ["emoji1"],\n  "titulo": "título: con la regla",\n  "concepto_clave": "la regla en una oración clara",\n  "explicacion": "explicación breve (máximo 2 oraciones)",\n  "ejemplo": "ejemplo concreto",\n  "ejercicios": [\n    { "tipo": "completar_oraciones", "enunciado": "...", "oraciones": ["..."] },\n    { "tipo": "tabla", "enunciado": "...", "columnas": ["..."], "filas": [["", ""]] },\n    { "tipo": "verdadero_falso", "enunciado": "...", "afirmaciones": ["..."] }\n  ]\n}`;
+  }
+
   return `Sos un docente experto en nivel primario de la Provincia de Buenos Aires.
 Generá una ficha de ortografía para ${contenido.grado}° grado.
 
-Regla ortográfica: ${contenido.tipoTexto}
+Regla ortográfica: ${contenido.tipoTexto}${momentInstruction}
 ${feedbackSection}
 
-CRITERIOS:
-- Explicación breve y clara (máximo 2 oraciones) + ejemplo concreto
-- IMPORTANTE: Generá EXACTAMENTE 3 ejercicios, ni más ni menos. Si generás un cuarto ejercicio el sistema lo va a ignorar y quedará incompleto. Máximo 3.
-- Vocabulario conocido para el grado, en contexto de oraciones o textos breves
-- Marcá con **doble asterisco** las palabras clave en la explicación y los enunciados
-- Título: dos partes separadas por dos puntos, mayúscula solo en la primera letra
-- Elegí 1 o 2 emojis relevantes a la regla para "emojis"
+CRITERIOS GENERALES:
+- Vocabulario conocido para el grado, en contexto de oraciones o textos breves.
+- Título: dos partes separadas por dos puntos, mayúscula solo en la primera letra.
+- Elegí 1 o 2 emojis relevantes a la regla.
 
 TIPOS DE EJERCICIO:
-- "texto_libre": corrección, escritura libre o respuestas abiertas
-- "completar_oraciones": array "oraciones" con strings con _______ (5+ guiones) en el espacio
-- "tabla": "columnas" = encabezados. "filas" = array de arrays donde cada sub-array tiene un valor por columna. IMPORTANTE: Las celdas que el alumno debe completar DEBEN ser strings vacíos (""). NUNCA concatenar varias columnas en un solo string.
-- "verdadero_falso": array "afirmaciones" para evaluar con V/F
-LÍMITE DE ITEMS: Cada ejercicio puede tener como máximo 4 items (oraciones, afirmaciones o filas). Nunca más de 4.
+- "completar_oraciones": array "oraciones" con _______ (5+ guiones).
+- "tabla": "columnas" + "filas" (string vacío "" = celda a completar). NUNCA concatenar columnas.
+- "verdadero_falso": array "afirmaciones" para V/F.
+- "texto_libre": corrección o escritura libre.
 
 FORMATO (JSON estricto, sin markdown):
-{
-  "emojis": ["emoji1"],
-  "titulo": "título: con la regla",
-  "concepto_clave": "la regla en una oración clara",
-  "explicacion": "explicación breve (máximo 2 oraciones)",
-  "ejemplo": "ejemplo concreto",
-  "ejercicios": [
-    {
-      "tipo": "completar_oraciones",
-      "enunciado": "Completá con mb o mp:",
-      "oraciones": ["Hay que te___lar de frío.", "La ___olsa pesa mucho."]
-    },
-    {
-      "tipo": "tabla",
-      "enunciado": "Clasificá estas palabras:",
-      "columnas": ["Con mb", "Con mp"],
-      "filas": [["también", ""], ["", "campo"], ["ambiente", ""], ["", "trampa"]]
-    }
-  ]
-}
+${formatResponse}
 
 Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdown.`;
 }
@@ -686,6 +759,7 @@ DATOS:
 - Tipo de ficha: ${tipoFicha}
 - Tipo de texto / Regla: ${contenido.tipoTexto}
 ${contenido.practica ? `- Práctica lectora: ${contenido.practica}` : ""}
+${contenido.indicadores_de_avance?.length > 0 ? `\nMODOS DE CONOCER (DC PBA) — contexto de referencia:\n${contenido.indicadores_de_avance.map(i => `- ${i}`).join("\n")}` : ""}
 
 FICHA A REVISAR:
 ${fichaTexto}
@@ -739,6 +813,14 @@ function validateStructure(ficha) {
       problemas: [{ criterio: "ESTRUCTURA_COMPLETA", descripcion: "Ficha de práctica incompleta: falta concepto_clave o ejercicios." }],
       feedback_para_regenerar: "Regenerar la ficha incluyendo concepto_clave (string no vacío) y ejercicios (array)."
     };
+  }
+
+  // PDL — chequeos estructurales
+  if (tipo === "lectura_pdl") {
+    const ok = typeof ficha.texto === "string" && ficha.texto.trim() !== "" && Array.isArray(ficha.preguntas) && ficha.preguntas.length >= 2;
+    if (!ok) return { aprobada: false, puntaje: 0, problemas: [{ criterio: "ESTRUCTURA_COMPLETA", descripcion: "Ficha PDL Lectura: falta texto o preguntas (mínimo 2)." }], feedback_para_regenerar: "Regenerar incluyendo texto (string) y preguntas (array con al menos 2 elementos)." };
+    const necesitaApoyo = ficha.preguntas.some(p => typeof p === "object");
+    if (necesitaApoyo && !Array.isArray(ficha.glosario)) return { aprobada: false, puntaje: 0, problemas: [{ criterio: "ESTRUCTURA_COMPLETA", descripcion: "Nivel 'Necesita más apoyo': falta glosario." }], feedback_para_regenerar: "Agregar campo glosario (array con al menos 1 entrada { palabra, definicion })." };
   }
 
   if (tipo === "cierre") {
@@ -927,6 +1009,15 @@ async function runPipeline(contenido, tipoFicha) {
     buildGeneratorPrompt(contenido, tipoFicha, null, contenido.indicadores_de_avance || []),
     maxTokens
   );
+
+  // PASO 5 — Etiquetar fichas PDL con tipo_ficha interno
+  if (isPDL) {
+    const momento = contenido.contexto_pedagogico?.momento || "";
+    const slug = momento.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "_");
+    if (tipoFicha === "Lectura de textos")    ficha.tipo_ficha = "lectura_pdl";
+    else if (tipoFicha === "Escritura de textos") ficha.tipo_ficha = `escritura_pdl${slug ? `_${slug}` : ""}`;
+    else if (tipoFicha === "Ortografía")      ficha.tipo_ficha = `ortografia_pdl${slug ? `_${slug}` : ""}`;
+  }
 
   // VALIDAR el primer intento (estructural sin API, luego semántica con LLM)
   let validacion = validateStructure(ficha)
