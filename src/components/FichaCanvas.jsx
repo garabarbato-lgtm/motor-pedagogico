@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { exportFichaToDocx } from "../utils/docxExport.js";
 import "../ficha-canvas.css";
 
 const FONT_SIZES = [
@@ -64,7 +63,7 @@ export default function FichaCanvas({ paginas = [], onDescargar, hojaId, accione
           <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
             {acciones}
             {ficha && registro && (
-              <button className="ficha-word-toolbar-btn" onClick={() => exportFichaToDocx(ficha, registro, hojaId)} title="Descargar Word">⬇ Word</button>
+              <button className="ficha-word-toolbar-btn" onClick={async () => { const { exportFichaToDocx } = await import("../utils/docxExport.js"); exportFichaToDocx(ficha, registro, hojaId); }} title="Descargar Word">⬇ Word</button>
             )}
             {onDescargar && (
               <button className="ficha-word-toolbar-pdf-btn" onClick={onDescargar}>⬇ Descargar PDF</button>
