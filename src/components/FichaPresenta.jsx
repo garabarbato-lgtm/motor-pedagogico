@@ -251,6 +251,8 @@ export default function FichaPresenta({ ficha, registro, validacion, user, onNue
         hojaId="ficha-imprimible"
         onDescargar={handleDescargarPDF}
         acciones={acciones}
+        ficha={ficha}
+        registro={registro}
       />
       <FeedbackButton isDownloading={isDownloading} />
     </>
