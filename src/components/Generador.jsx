@@ -992,7 +992,13 @@ export default function Generador({ onFichaGenerada, onVolver }) {
           <PasoWrap onMount={(el) => { pasoWrapEl.current = el; }}>
             {/* Logo */}
             <div style={{ marginBottom: 40, textAlign: "center" }}>
-              <Logo size={32} />
+              <button
+                onClick={onVolver}
+                style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "inline-flex", alignItems: "center", gap: 8, color: C.verdeOscuro }}
+                title="Volver al inicio"
+              >
+                <Logo size={32} />
+              </button>
             </div>
 
             {/* Buscador grande */}
@@ -1474,7 +1480,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                       <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.verdeAcento, animation: "pulse 1.2s ease-in-out infinite" }} />
                       <span style={{ fontSize: 13, color: C.textoPrincipal, fontWeight: 500 }}>{retryMessage || getMensaje(msgIdx)}</span>
                     </div>
-                    <p style={{ fontSize: 11, color: C.textoMuted, marginTop: 8 }}>Promedio: ~15 segundos · No cierres la pestaña</p>
+                    <p style={{ fontSize: 11, color: C.textoMuted, marginTop: 8 }}>Promedio: ~30 segundos · No cierres la pestaña</p>
                   </div>
 
                   {/* Shimmer skeleton de la ficha */}

@@ -323,7 +323,7 @@ export default function Landing({ onEmpezar, user, onLogin, onLogout, onBibliote
           <span style={{ fontSize: 12, fontWeight: 800, color: C.acento, background: "#e0faf2", padding: "6px 16px", borderRadius: 20, textTransform: "uppercase", letterSpacing: "0.05em" }}>
             Simple y Pedagógico
           </span>
-          <h2 style={{ fontFamily: "'Lexend', sans-serif", fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 300, color: C.texto, marginTop: 20, fontStyle: "italic" }}>
+          <h2 style={{ fontFamily: "'Lexend', sans-serif", fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 300, color: C.btn, marginTop: 24 }}>
             ¿Cómo funciona?
           </h2>
         </div>
