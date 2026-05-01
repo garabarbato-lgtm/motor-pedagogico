@@ -100,8 +100,8 @@ function HowItWorks({ onEmpezar }) {
   ];
 
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 40px" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 48 }}>
+    <div className="howitworks-container" style={{ maxWidth: 1100, margin: "0 auto", padding: "0 40px" }}>
+      <div className="howitworks-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 48 }}>
         {steps.map((step, i) => (
           <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
             <div style={{ width: 64, height: 64, background: "#f0fdf9", borderRadius: 16, border: "1px solid #b0e8d4", display: "flex", alignItems: "center", justifyContent: "center", color: C.btn, marginBottom: 24, boxShadow: "0 2px 8px rgba(0,71,51,0.06)" }}>
@@ -115,6 +115,7 @@ function HowItWorks({ onEmpezar }) {
       <div style={{ marginTop: 64, textAlign: "center" }}>
         <button
           onClick={onEmpezar}
+          className="howitworks-btn"
           style={{ display: "inline-flex", alignItems: "center", gap: 12, padding: "18px 40px", borderRadius: 16, background: C.acento, color: C.btn, fontSize: 18, fontWeight: 700, border: "none", cursor: "pointer", boxShadow: "0 6px 20px rgba(0,196,140,0.3)", transition: "all 0.2s" }}
           onMouseEnter={e => { e.currentTarget.style.background = "#00d498"; e.currentTarget.style.transform = "translateY(-2px)"; }}
           onMouseLeave={e => { e.currentTarget.style.background = C.acento; e.currentTarget.style.transform = "none"; }}
@@ -134,7 +135,7 @@ function HowItWorks({ onEmpezar }) {
 
 function AboutTiza() {
   return (
-    <div style={{ maxWidth: 720, margin: "0 auto", padding: "80px 40px", textAlign: "center" }}>
+    <div className="about-container" style={{ maxWidth: 720, margin: "0 auto", padding: "80px 40px", textAlign: "center" }}>
       <div style={{ marginBottom: 48 }}>
         <span style={{ fontSize: 12, fontWeight: 800, color: C.acento, background: "#e0faf2", padding: "6px 16px", borderRadius: 20, textTransform: "uppercase", letterSpacing: "0.1em" }}>
           Nuestra Esencia
@@ -196,11 +197,11 @@ export default function Landing({ onEmpezar, user, onLogin, onLogout, onBibliote
     <div id="landing-scroll" style={{ fontFamily: "'Lexend', sans-serif", width: "100%", height: "100vh", overflowY: "auto", background: C.fondo, scrollBehavior: "smooth" }}>
 
       {/* ── NAV ── */}
-      <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 40px", background: C.btn, boxShadow: "0 4px 20px rgba(0,0,0,0.1)", position: "sticky", top: 0, zIndex: 100 }}>
+      <nav className="landing-nav" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 40px", background: C.btn, boxShadow: "0 4px 20px rgba(0,0,0,0.1)", position: "sticky", top: 0, zIndex: 100 }}>
         <div onClick={() => document.getElementById("landing-scroll")?.scrollTo({ top: 0, behavior: "smooth" })} style={{ cursor: "pointer" }}>
           <Logo size={28} color="#ffffff" />
         </div>
-        <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
+        <div className="landing-nav-links" style={{ display: "flex", gap: 24, alignItems: "center" }}>
           <span
             onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })}
             style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", cursor: "pointer" }}
@@ -236,10 +237,18 @@ export default function Landing({ onEmpezar, user, onLogin, onLogout, onBibliote
             Generar recurso ✦
           </button>
         </div>
+        {/* Botón visible solo en mobile */}
+        <button
+          className="landing-nav-mobile-btn"
+          onClick={onEmpezar}
+          style={{ display: "none", fontSize: 12, fontWeight: 700, padding: "8px 16px", borderRadius: 8, border: "none", background: C.acento, color: C.btn, cursor: "pointer" }}
+        >
+          Empezar ✦
+        </button>
       </nav>
 
       {/* ── HERO ── */}
-      <section style={{ minHeight: "calc(100vh - 62px)", display: "flex", alignItems: "center", background: "#ffffff", position: "relative", padding: "80px 64px" }}>
+      <section className="landing-hero" style={{ minHeight: "calc(100vh - 62px)", display: "flex", alignItems: "center", background: "#ffffff", position: "relative", padding: "80px 64px" }}>
         <div className="hero-grid-mobile" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center", maxWidth: 1100, margin: "0 auto", width: "100%" }}>
           <div>
             <div ref={heroBadgeRef} style={{ display: "inline-flex", alignItems: "center", gap: 7, background: C.lbg, border: "1px solid #b0e8d4", borderRadius: 99, padding: "5px 14px", marginBottom: 28 }}>
@@ -290,14 +299,14 @@ export default function Landing({ onEmpezar, user, onLogin, onLogout, onBibliote
       </section>
 
       {/* ── STRIP 01/02/03 ── */}
-      <section style={{ background: C.app, borderTop: "1px solid " + C.lborder, padding: "20px 64px" }}>
-        <div style={{ display: "flex", maxWidth: 1100, margin: "0 auto" }}>
+      <section className="landing-strip" style={{ background: C.app, borderTop: "1px solid " + C.lborder, padding: "20px 64px" }}>
+        <div className="landing-strip-inner" style={{ display: "flex", maxWidth: 1100, margin: "0 auto" }}>
           {[
             { n: "01", t: "Elegís el contenido",   s: "Grado, área y bloque del DC PBA" },
             { n: "02", t: "Personalizás opciones", s: "Momento, nivel y contexto del grupo" },
             { n: "03", t: "Descargás la ficha",    s: "PDF profesional listo para el aula" },
           ].map((step, i) => (
-            <div key={i} style={{ flex: 1, display: "flex", alignItems: "center", gap: 14, paddingRight: i < 2 ? 32 : 0, paddingLeft: i > 0 ? 32 : 0, borderRight: i < 2 ? "1px solid " + C.lborder : "none" }}>
+            <div key={i} className="landing-strip-item" style={{ flex: 1, display: "flex", alignItems: "center", gap: 14, paddingRight: i < 2 ? 32 : 0, paddingLeft: i > 0 ? 32 : 0, borderRight: i < 2 ? "1px solid " + C.lborder : "none" }}>
               <div style={{ width: 40, height: 40, borderRadius: 10, background: C.btn, color: C.acento, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, flexShrink: 0 }}>{step.n}</div>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: C.btn, marginBottom: 2 }}>{step.t}</div>

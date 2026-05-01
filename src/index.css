@@ -8,5 +8,69 @@
   }
   .hero-grid-mobile {
     grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+
+  /* Nav */
+  .landing-nav {
+    padding: 12px 16px !important;
+  }
+  .landing-nav-links {
+    display: none !important;
+  }
+  .landing-nav-mobile-btn {
+    display: block !important;
+  }
+
+  /* Hero */
+  .landing-hero {
+    padding: 40px 20px !important;
+    min-height: unset !important;
+  }
+
+  /* Strip 01/02/03 */
+  .landing-strip {
+    padding: 16px 20px !important;
+  }
+  .landing-strip-inner {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  .landing-strip-item {
+    border-right: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    border-bottom: 1px solid #D4E6DE;
+    padding-bottom: 12px !important;
+  }
+  .landing-strip-item:last-child {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* How it works */
+  .howitworks-container {
+    padding: 0 20px !important;
+  }
+  .howitworks-grid {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+  .howitworks-btn {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 14px 24px !important;
+    font-size: 15px !important;
+  }
+
+  /* About */
+  .about-container {
+    padding: 48px 20px !important;
+  }
+
+  /* Secciones con padding horizontal grande */
+  .landing-section-pad {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
   }
 }
