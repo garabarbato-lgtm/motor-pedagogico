@@ -217,7 +217,7 @@ CRITERIOS GENERALES:
 - Elegí 1 o 2 emojis relevantes a la regla.
 
 TIPOS DE EJERCICIO:
-- "completar_oraciones": array "oraciones" con _______ (5+ guiones).
+- "completar_oraciones": array "oraciones" con _______ (5+ guiones). CRÍTICO: la oración tiene SOLO el espacio vacío. NUNCA incluyas la respuesta ni la división silábica entre paréntesis junto al espacio. Incorrecto: "Mi _______ (CÁ-ma-ra) saca fotos". Correcto: "Mi _______ saca fotos".
 - "tabla": "columnas" + "filas" (string vacío "" = celda a completar). NUNCA concatenar columnas.
 - "verdadero_falso": array "afirmaciones" para V/F.
 - "texto_libre": corrección o escritura libre.
