@@ -64,7 +64,7 @@ export default function Biblioteca({ user, onVerFicha, onNueva, onInicio }) {
         </div>
       </div>
 
-      <div style={{ maxWidth: 720, margin: '0 auto', padding: '40px 24px' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '40px 24px' }}>
         <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: C.texto, margin: '0 0 8px' }}>Mis fichas</h1>
         <p style={{ color: C.muted, fontSize: '0.9rem', margin: '0 0 32px' }}>
           {user.user_metadata?.full_name || user.email}
