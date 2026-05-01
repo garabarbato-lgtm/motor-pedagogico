@@ -59,7 +59,7 @@ export default function FichaPractica({ ficha, registro, onNueva, onInicio }) {
           </h2>
           <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojis[1] || emojis[0]}</span>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
+        <div className="ficha-header-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
           {["Nombre y apellido", "Fecha", "Grado / Sección"].map(label => (
             <div key={label}>
               <p style={{ fontSize: 9, color: C.muted, fontWeight: 700, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</p>

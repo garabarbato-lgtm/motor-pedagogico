@@ -288,7 +288,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
         </h2>
         <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojiRight}</span>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
+      <div className="ficha-header-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
         {["Nombre y apellido", "Fecha", "Grado / Sección"].map(label => (
           <div key={label}>
             <p style={{ fontSize: 9, color: C.muted, fontWeight: 700, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</p>
@@ -302,7 +302,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
   // ── Encabezado sin título (hoja 2) ──
   const encabezadoSinTitulo = (
     <div style={{ background: C.fondoHeader, borderBottom: `2.5px solid ${C.borderFuerte}`, borderRadius: "8px 8px 0 0", padding: "10px 16px", flexShrink: 0 }}>
-      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
+      <div className="ficha-header-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
         {["Nombre y apellido", "Fecha", "Grado / Sección"].map(label => (
           <div key={label}>
             <p style={{ fontSize: 9, color: C.muted, fontWeight: 700, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</p>

@@ -193,7 +193,26 @@
 @media (max-width: 768px) {
   .ficha-canvas-wrapper { padding: 52px 0 16px; }
   .ficha-hoja { width: 100%; min-height: unset; margin-bottom: 16px; }
-  .ficha-word-toolbar { padding: 4px 8px; gap: 2px; }
+  .ficha-word-toolbar {
+    padding: 4px 8px;
+    gap: 2px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+  }
+  .ficha-word-toolbar-group { flex-shrink: 0; }
+  .ficha-header-grid {
+    grid-template-columns: 1fr !important;
+    gap: 6px !important;
+  }
+}
+
+/* Restaurar grid en impresión */
+@media print {
+  .ficha-header-grid {
+    grid-template-columns: 2fr 1fr 1fr !important;
+    gap: 10px !important;
+  }
 }
 
 /* ── Print ── */
