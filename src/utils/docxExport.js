@@ -96,21 +96,26 @@ function bloqueTitulo(tituloTexto) {
   return new Paragraph({ children, alignment: AlignmentType.CENTER, spacing: { after: 200 } });
 }
 
+// Ancho de contenido = 12240 (Letter) - 864*2 (márgenes) = 10512 DXA
+const CONTENT_WIDTH = 10512;
+
 function tablaCamposAlumno() {
-  const campo = (label) => new TableCell({
+  const COL = Math.floor(CONTENT_WIDTH / 3); // 3504 DXA cada columna
+  const campo = (label, w) => new TableCell({
     children: [
       new Paragraph({ children: [run(label, { size: 16, color: MUTED, bold: true })], spacing: { after: 40 } }),
       new Paragraph({ border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: BORDER } }, children: [run("")], spacing: { before: 240 } }),
     ],
-    width: { size: 33, type: WidthType.PERCENTAGE },
+    width: { size: w, type: WidthType.DXA },
     borders: { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE } },
     margins: { right: 160 },
   });
 
   return new Table({
-    width: { size: 100, type: WidthType.PERCENTAGE },
+    width: { size: CONTENT_WIDTH, type: WidthType.DXA },
+    columnWidths: [COL, COL, CONTENT_WIDTH - COL * 2],
     borders: { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE }, insideH: { style: BorderStyle.NONE }, insideV: { style: BorderStyle.NONE } },
-    rows: [new TableRow({ children: [campo("NOMBRE Y APELLIDO"), campo("FECHA"), campo("GRADO / SECCIÓN")] })],
+    rows: [new TableRow({ children: [campo("NOMBRE Y APELLIDO", COL), campo("FECHA", COL), campo("GRADO / SECCIÓN", CONTENT_WIDTH - COL * 2)] })],
   });
 }
 
@@ -170,24 +175,36 @@ function renderEjercicio(ej, idx) {
     bloques.push(...lineasRespuesta(3));
   } else if (tipo === "tabla" && Array.isArray(ej.columnas) && Array.isArray(ej.filas)) {
     const colCount = ej.columnas.length;
-    const headerCells = ej.columnas.map(col =>
+    const colW = Math.floor(CONTENT_WIDTH / colCount);
+    const colWidths = Array.from({ length: colCount }, (_, i) =>
+      i === colCount - 1 ? CONTENT_WIDTH - colW * (colCount - 1) : colW
+    );
+    const border = { style: BorderStyle.SINGLE, size: 4, color: BORDER };
+    const cellBorders = { top: border, bottom: border, left: border, right: border };
+    const headerCells = ej.columnas.map((col, i) =>
       new TableCell({
         children: [new Paragraph({ children: [run(strip(col), { bold: true, color: VERDE })], alignment: AlignmentType.CENTER })],
-        shading: { type: ShadingType.SOLID, color: VERDE_BG },
-        width: { size: Math.floor(100 / colCount), type: WidthType.PERCENTAGE },
+        shading: { type: ShadingType.CLEAR, color: VERDE_BG },
+        width: { size: colWidths[i], type: WidthType.DXA },
+        borders: cellBorders,
+        margins: { top: 80, bottom: 80, left: 120, right: 120 },
       })
     );
     const bodyRows = ej.filas.map(fila =>
       new TableRow({
-        children: fila.map(celda =>
+        children: fila.map((celda, i) =>
           new TableCell({
             children: [new Paragraph({ children: [run(strip(celda || ""))], spacing: { before: 80, after: 80 } })],
+            width: { size: colWidths[i], type: WidthType.DXA },
+            borders: cellBorders,
+            margins: { top: 80, bottom: 80, left: 120, right: 120 },
           })
         ),
       })
     );
     bloques.push(new Table({
-      width: { size: 100, type: WidthType.PERCENTAGE },
+      width: { size: CONTENT_WIDTH, type: WidthType.DXA },
+      columnWidths: colWidths,
       rows: [new TableRow({ children: headerCells }), ...bodyRows],
     }));
   } else {
