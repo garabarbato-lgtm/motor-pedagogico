@@ -13,10 +13,14 @@ Un docente selecciona grado, área y contenido → el sistema genera explicació
 **Stack en producción:**
 - Frontend: React 18 + Vite
 - Backend: Vercel Functions
-- API: Claude Haiku
+- API: Claude Haiku 4.5 (`claude-haiku-4-5-20251001`)
 - PDF: html2canvas + jsPDF
-- Base curricular: 435 registros del DC PBA (dc_pba_base_curricular_corregida.json)
-- Iconos: @phosphor-icons/react
+- Word: docx + file-saver
+- Auth/DB: Supabase (Google login + fichas guardadas)
+- Analytics: @vercel/analytics (inyectado en main.jsx)
+- Animaciones: gsap
+- Base curricular: dc_pba_base_curricular_corregida.json
+- Iconos: @phosphor-icons/react + lucide-react
 - Fuente: Lexend Deca
 
 **Funcionalidades implementadas:**
@@ -24,10 +28,15 @@ Un docente selecciona grado, área y contenido → el sistema genera explicació
 - 4 tipos de ficha: Trabajo, Práctica, Cierre y Presentación
 - Edición inline de todos los campos (modo Word con toolbar fija)
 - Exportación PDF multi-página (html2canvas + jsPDF)
+- Exportación Word (.docx) con diseño tiza
 - Impresión directa (oculta toolbar y feedback button)
 - Retry automático (1 vez) + mensajes de error diferenciados por tipo
 - Botón de feedback flotante (Google Form)
 - Landing con HowItWorks, AboutTiza y SloganSlider
+- Onboarding primer uso (modal con localStorage, solo primera visita)
+- Analytics básicos (Vercel Analytics, pageviews automáticos)
+- Autenticación con Google (Supabase Auth)
+- Biblioteca de fichas guardadas por docente (Supabase)
 
 ## Base de datos curricular
 
@@ -88,21 +97,17 @@ Respondé SOLO con el JSON, sin texto adicional ni markdown.
 
 Modelo: claude-sonnet-4-20250514 — max_tokens: 1000
 
-## Backlog — Próximos pasos (fuente: Notion Hoja de ruta)
+## Backlog — Próximos pasos
 
-En orden de prioridad / menor dependencia primero:
+Todo el backlog original está implementado. Próximas iteraciones posibles:
 
-1. **Analytics básicos** (Infraestructura) — Integrar Vercel Analytics (2 líneas). Trackear: ficha generada, PDF descargado, área seleccionada. Ya disponible en el proyecto, sin costo.
+1. **Compartir ficha por link único** — Botón "Compartir" en Paso 4. Fase 1: encodar estado en URL (base64 o params). Fase 2: guardar por ID en Supabase (ya tiene auth).
 
-2. **Onboarding primer uso** (UI/UX) — Modal simple que aparece solo la primera visita (flag en localStorage). Mostrar ejemplo precargado + CTA "Empezá eligiendo tu grado". No sobreingenierizar.
+2. **Analytics de eventos** — Los pageviews son automáticos con Vercel Analytics. Falta trackear eventos custom: ficha generada, PDF descargado, área seleccionada, Word descargado.
 
-3. **Compartir ficha por link único** (Output/UI/UX) — Botón "Compartir" en Paso 4. Fase 1: encodar estado en URL (base64 o params), sin Supabase. Fase 2 (con auth): guardar por ID.
+3. **Mejoras de la Biblioteca** — Búsqueda/filtro por área o grado. Previsualización sin salir de la lista.
 
-4. **Sistema de autenticación** (Infraestructura) — Supabase Auth. Login con Google o email/contraseña. Prerrequisito bloqueante para la biblioteca. No implementar auth custom.
-
-5. **Biblioteca de fichas guardadas** (Output) — Requiere auth. Asociar fichas a docente en Supabase.
-
-> Nota: "Manejo de errores de API y timeouts" figura Pendiente en Notion pero ya está implementado (commit 45ba69f: retry automático + timeout 55s + mensajes por tipo de error).
+4. **Compartir ficha con alumnos** — Link público (sin login) que carga la ficha en modo lectura.
 
 ## Decisiones pedagógicas — NO revertir sin consultar
 
@@ -128,7 +133,8 @@ En orden de prioridad / menor dependencia primero:
 
 - API key de Claude: variable de entorno ANTHROPIC_API_KEY
 - El JSON curricular se carga desde el repositorio (dc_pba_base_curricular_corregida.json)
-- Modelo en producción: Claude Haiku (api/generate.js)
+- Modelo en producción: `claude-haiku-4-5-20251001` (api/generate.js, línea 957)
+- Supabase URL/key: vars de entorno `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`
 - Timeout Vercel Function: 55s con runPipeline
 - GitHub: github.com/garabarbato-lgtm/motor-pedagogico
 - No usar npm install -g @anthropic-ai/claude-code — método deprecado
