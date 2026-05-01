@@ -15,7 +15,8 @@ const C = {
 const pasos = [
   { num: '1', label: 'Elegís grado, área y contenido' },
   { num: '2', label: 'Claude genera la ficha al instante' },
-  { num: '3', label: 'Editás, imprimís o descargás el PDF' },
+  { num: '3', label: 'Editás, descargás en PDF o Word, e imprimís' },
+  { num: '4', label: 'Guardás tus fichas en la biblioteca (con cuenta)' },
 ]
 
 export default function OnboardingModal({ onEmpezar }) {
