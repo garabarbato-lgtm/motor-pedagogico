@@ -135,10 +135,19 @@ function LineaDoble() {
 // ── Componente principal ──
 
 function GuardarFichaBtn({ ficha, registro, userId }) {
-  const [estado, setEstado] = useState('idle') // idle | guardando | guardado | error
+  const [estado, setEstado] = useState('idle') // idle | verificando | guardando | guardado | duplicado | error
 
   async function guardar() {
-    if (estado === 'guardado') return
+    if (estado === 'guardado' || estado === 'duplicado') return
+    setEstado('verificando')
+    const { count } = await supabase
+      .from('fichas')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('titulo', ficha.titulo)
+      .eq('area', registro?.area || '')
+      .eq('grado', registro?.grado || '')
+    if (count > 0) { setEstado('duplicado'); return }
     setEstado('guardando')
     const { error } = await supabase.from('fichas').insert({
       user_id: userId,
@@ -154,14 +163,14 @@ function GuardarFichaBtn({ ficha, registro, userId }) {
     if (error) setTimeout(() => setEstado('idle'), 3000)
   }
 
-  const label = { idle: '☁ Guardar', guardando: 'Guardando...', guardado: '✓ Guardada', error: 'Error' }
+  const label = { idle: '☁ Guardar', verificando: 'Verificando...', guardando: 'Guardando...', guardado: '✓ Guardada', duplicado: '✓ Ya guardada', error: 'Error' }
   return (
     <button
       className="ficha-word-toolbar-btn"
       onClick={guardar}
-      disabled={estado === 'guardando' || estado === 'guardado'}
+      disabled={estado === 'verificando' || estado === 'guardando' || estado === 'guardado' || estado === 'duplicado'}
       title="Guardar en mi biblioteca"
-      style={estado === 'guardado' ? { color: '#00c48c' } : estado === 'error' ? { color: '#e53e3e' } : {}}
+      style={estado === 'guardado' || estado === 'duplicado' ? { color: '#00c48c' } : estado === 'error' ? { color: '#e53e3e' } : {}}
     >
       {label[estado]}
     </button>

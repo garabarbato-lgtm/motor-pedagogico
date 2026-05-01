@@ -23,12 +23,14 @@ export default function Biblioteca({ user, onVerFicha, onNueva, onInicio }) {
   const [fichas, setFichas] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [confirmandoId, setConfirmandoId] = useState(null)
 
   useEffect(() => {
     async function cargar() {
       const { data, error } = await supabase
         .from('fichas')
         .select('id, created_at, titulo, area, grado, bloque, tipo_ficha')
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
 
       if (error) setError('No se pudieron cargar las fichas.')
@@ -36,11 +38,12 @@ export default function Biblioteca({ user, onVerFicha, onNueva, onInicio }) {
       setLoading(false)
     }
     cargar()
-  }, [])
+  }, [user.id])
 
   async function eliminar(id) {
     await supabase.from('fichas').delete().eq('id', id)
     setFichas(f => f.filter(x => x.id !== id))
+    setConfirmandoId(null)
   }
 
   return (
@@ -115,12 +118,29 @@ export default function Biblioteca({ user, onVerFicha, onNueva, onInicio }) {
                   >
                     Ver
                   </button>
-                  <button
-                    onClick={() => eliminar(f.id)}
-                    style={{ fontSize: '0.8rem', padding: '6px 14px', borderRadius: 7, border: '1px solid #fed7d7', background: '#fff5f5', color: '#c53030', cursor: 'pointer' }}
-                  >
-                    Eliminar
-                  </button>
+                  {confirmandoId === f.id ? (
+                    <>
+                      <button
+                        onClick={() => eliminar(f.id)}
+                        style={{ fontSize: '0.8rem', padding: '6px 14px', borderRadius: 7, border: '1px solid #fed7d7', background: '#c53030', color: '#fff', cursor: 'pointer', fontWeight: 700 }}
+                      >
+                        Confirmar
+                      </button>
+                      <button
+                        onClick={() => setConfirmandoId(null)}
+                        style={{ fontSize: '0.8rem', padding: '6px 14px', borderRadius: 7, border: `1px solid ${C.border}`, background: C.white, color: C.muted, cursor: 'pointer' }}
+                      >
+                        Cancelar
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => setConfirmandoId(f.id)}
+                      style={{ fontSize: '0.8rem', padding: '6px 14px', borderRadius: 7, border: '1px solid #fed7d7', background: '#fff5f5', color: '#c53030', cursor: 'pointer' }}
+                    >
+                      Eliminar
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
