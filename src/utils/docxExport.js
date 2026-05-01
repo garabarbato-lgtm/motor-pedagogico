@@ -371,7 +371,8 @@ function buildContenido(ficha, editables) {
 // ── Función principal ──
 
 export async function exportFichaToDocx(ficha, registro, hojaId = "ficha-imprimible") {
-  const tituloTexto = (ficha.titulo || "").replace(/\*\*(.*?)\*\*/g, "$1").replace(/\*(.*?)\*/g, "$1").trim();
+  const t = (ficha.titulo || "").replace(/\*\*(.*?)\*\*/g, "$1").replace(/\*(.*?)\*/g, "$1").trim();
+  const tituloTexto = t.charAt(0).toUpperCase() + t.slice(1);
   const editables = leerEditables(hojaId);
 
   const children = [

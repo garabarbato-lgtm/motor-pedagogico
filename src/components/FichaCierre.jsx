@@ -76,10 +76,7 @@ export default function FichaCierre({ ficha, registro, onNueva, onInicio, user }
   const emojis = Array.isArray(ficha.emojis) && ficha.emojis.length ? ficha.emojis : ["📝"];
   const emojiLeft = emojis[0];
   const emojiRight = emojis[1] || emojis[0];
-  const tituloTexto = (ficha.titulo || "")
-    .replace(/\*\*(.*?)\*\*/g, "$1")
-    .replace(/\*(.*?)\*/g, "$1")
-    .trim();
+  const tituloTexto = (() => { const t = (ficha.titulo || "").replace(/\*\*(.*?)\*\*/g, "$1").replace(/\*(.*?)\*/g, "$1").trim(); return t.charAt(0).toUpperCase() + t.slice(1); })();
   const gradoDisplay = `${registro.grado}° grado`;
   const escalera = Array.isArray(ficha.escalera) ? ficha.escalera : [];
 

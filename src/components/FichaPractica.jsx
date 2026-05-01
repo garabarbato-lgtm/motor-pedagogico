@@ -41,7 +41,7 @@ export default function FichaPractica({ ficha, registro, onNueva, onInicio, user
   const [isDownloading, setIsDownloading] = useState(false);
 
   const emojis = Array.isArray(ficha.emojis) && ficha.emojis.length ? ficha.emojis : ["📝"];
-  const tituloTexto = (ficha.titulo || "").replace(/\*\*(.*?)\*\*/g, "$1").replace(/\*(.*?)\*/g, "$1").trim();
+  const tituloTexto = (() => { const t = (ficha.titulo || "").replace(/\*\*(.*?)\*\*/g, "$1").replace(/\*(.*?)\*/g, "$1").trim(); return t.charAt(0).toUpperCase() + t.slice(1); })();
   const gradoDisplay = `${registro.grado}° grado`;
   const ejercicios = Array.isArray(ficha.ejercicios) ? ficha.ejercicios : [];
 
