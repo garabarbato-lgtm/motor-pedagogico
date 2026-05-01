@@ -690,6 +690,14 @@ export default function Generador({ onFichaGenerada, onVolver }) {
     return () => window.removeEventListener("resize", check);
   }, []);
 
+  // Mobile finder: paso activo derivado del estado
+  const mobileStep = !gradoData ? 0 : !area ? 1 : !registro ? 2 : 3;
+  const mobileBack = () => {
+    if (mobileStep === 3) setRegistro(null);
+    else if (mobileStep === 2) { setArea(null); setAreaConfig(null); }
+    else if (mobileStep === 1) { setGradoData(null); setArea(null); setAreaConfig(null); }
+  };
+
   // ── Datos derivados ────────────────────────────────────────────────────
   const areasDisponibles = useMemo(() => {
     if (!gradoData) return [];
@@ -1126,10 +1134,24 @@ export default function Generador({ onFichaGenerada, onVolver }) {
 
           {/* ── FINDER: pasos 1–3 ── */}
           {paso >= 1 && paso < 4 && !generando && (
-            <div style={{ display: "flex", height: "calc(100vh - 65px)", overflow: "hidden" }}>
+            <>
+              {/* Breadcrumb mobile */}
+              {isMobile && (
+                <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 16px", background: C.fondoApp, borderBottom: `1px solid ${C.bordeSuave}` }}>
+                  {mobileStep > 0 && (
+                    <button onClick={mobileBack} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 700, color: C.verdeOscuro, background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "'Lexend', sans-serif" }}>
+                      <CaretLeft size={14} weight="bold" /> Atrás
+                    </button>
+                  )}
+                  <span style={{ fontSize: 12, color: C.textoMuted, marginLeft: mobileStep > 0 ? 4 : 0 }}>
+                    {["Elegí un grado", "Elegí un área", "Elegí un contenido", "Confirmá tu selección"][mobileStep]}
+                  </span>
+                </div>
+              )}
+            <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", height: isMobile ? "auto" : "calc(100vh - 65px)", minHeight: isMobile ? "calc(100vh - 120px)" : undefined, overflow: isMobile ? "visible" : "hidden" }}>
 
               {/* Columna 1: Grado */}
-              <div style={{ width: 176, flexShrink: 0, borderRight: `1px solid ${C.bordeSuave}`, overflowY: "auto", background: C.fondoCard }}>
+              <div style={{ width: isMobile ? "100%" : 176, display: isMobile && mobileStep !== 0 ? "none" : undefined, flexShrink: 0, borderRight: isMobile ? "none" : `1px solid ${C.bordeSuave}`, borderBottom: isMobile ? `1px solid ${C.bordeSuave}` : "none", overflowY: "auto", background: C.fondoCard }}>
                 <div style={{ padding: "10px 16px 8px", fontSize: 10, fontWeight: 700, color: C.textoMuted, textTransform: "uppercase", letterSpacing: "0.07em", borderBottom: `1px solid ${C.bordeSuave}`, background: C.fondoApp }}>Grado</div>
                 {GRADOS.map(g => {
                   const activo = gradoData?.num === g.num;
@@ -1151,7 +1173,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
               </div>
 
               {/* Columna 2: Área */}
-              <div style={{ width: 220, flexShrink: 0, borderRight: `1px solid ${C.bordeSuave}`, overflowY: "auto", background: C.fondoCard }}>
+              <div style={{ width: isMobile ? "100%" : 220, display: isMobile && mobileStep !== 1 ? "none" : undefined, flexShrink: 0, borderRight: isMobile ? "none" : `1px solid ${C.bordeSuave}`, borderBottom: isMobile ? `1px solid ${C.bordeSuave}` : "none", overflowY: "auto", background: C.fondoCard }}>
                 <div style={{ padding: "10px 16px 8px", fontSize: 10, fontWeight: 700, color: C.textoMuted, textTransform: "uppercase", letterSpacing: "0.07em", borderBottom: `1px solid ${C.bordeSuave}`, background: C.fondoApp }}>
                   Área{gradoData ? ` · ${gradoData.num} grado` : ""}
                 </div>
@@ -1178,7 +1200,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
               </div>
 
               {/* Columna 3: Contenido */}
-              <div style={{ flex: 1, overflowY: "auto", borderRight: `1px solid ${C.bordeSuave}`, background: "#fff" }}>
+              <div style={{ flex: isMobile ? undefined : 1, width: isMobile ? "100%" : undefined, display: isMobile && mobileStep !== 2 ? "none" : undefined, overflowY: "auto", borderRight: isMobile ? "none" : `1px solid ${C.bordeSuave}`, background: "#fff" }}>
                 <div style={{ padding: "10px 16px 8px", fontSize: 10, fontWeight: 700, color: C.textoMuted, textTransform: "uppercase", letterSpacing: "0.07em", borderBottom: `1px solid ${C.bordeSuave}`, background: C.fondoApp }}>
                   Contenido{area ? ` · ${area}` : ""}
                 </div>
@@ -1203,7 +1225,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
               </div>
 
               {/* Columna 4: Configuración */}
-              <aside style={{ width: 260, flexShrink: 0, background: C.fondoCard, borderLeft: `1px solid ${C.bordeSuave}`, display: "flex", flexDirection: "column", padding: 20, overflowY: "auto" }}>
+              <aside style={{ width: isMobile ? "100%" : 260, display: isMobile && mobileStep !== 3 ? "none" : "flex", flexShrink: 0, background: C.fondoCard, borderLeft: isMobile ? "none" : `1px solid ${C.bordeSuave}`, borderTop: isMobile ? `1px solid ${C.bordeSuave}` : "none", flexDirection: "column", padding: 20, overflowY: "auto" }}>
                 <p style={{ fontSize: 10, fontWeight: 700, color: C.textoMuted, textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 14px" }}>Tu configuración</p>
                 {[
                   { label: "Grado",     val: gradoData ? `${gradoData.num} grado` : null },
@@ -1247,6 +1269,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                 </button>
               </aside>
             </div>
+            </>
           )}
 
           {/* ── GRID: paso 4 + generando ── */}
