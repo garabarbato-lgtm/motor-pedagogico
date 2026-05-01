@@ -631,6 +631,8 @@ function Buscador({ value, onChange, onFocus, onBlur, focused, onClear, placehol
 
 // ── Componente principal ───────────────────────────────────────────────────
 
+import { track } from '@vercel/analytics'
+
 export default function Generador({ onFichaGenerada, onVolver }) {
   const [paso, setPaso] = useState(0);       // 0=home, 1=grado, 2=área, 3=contenido, 4=opciones
   const [gradoData, setGradoData] = useState(null);
@@ -826,6 +828,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
         setMensajeLoading(2);
         setTimeout(() => {
           setGenerando(false); setError(null); setRetryMessage(null);
+          track('ficha_generada', { area: registroParaFicha.area, grado: registroParaFicha.grado, tipo: registroParaFicha.tipo_ficha })
           onFichaGenerada(resultado.ficha, registroParaFicha, null);
         }, 1000);
       }
@@ -1158,7 +1161,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                   const activo = area === a.nombre;
                   return (
                     <button key={a.nombre}
-                      onClick={() => { setArea(a.nombre); setAreaConfig(a); setRegistro(null); setTipoFicha(null); setGenero(null); setMomento(null); }}
+                      onClick={() => { setArea(a.nombre); setAreaConfig(a); setRegistro(null); setTipoFicha(null); setGenero(null); setMomento(null); track('area_seleccionada', { area: a.nombre, grado: gradoData?.grado }); }}
                       style={{ width: "100%", padding: "14px 16px", textAlign: "left", border: "none", borderBottom: `1px solid ${C.bordeHover}`, background: activo ? C.verdeClaroBg : "transparent", cursor: "pointer", display: "flex", alignItems: "center", gap: 12, transition: "background 0.15s", fontFamily: "'Lexend', sans-serif" }}
                       onMouseEnter={e => { if (!activo) e.currentTarget.style.background = "#F0FBF7"; }}
                       onMouseLeave={e => { if (!activo) e.currentTarget.style.background = "transparent"; }}

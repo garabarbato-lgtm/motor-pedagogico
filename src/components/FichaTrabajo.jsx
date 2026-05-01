@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabase.js";
+import { track } from '@vercel/analytics'
 import { House, Printer } from "@phosphor-icons/react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -244,6 +245,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
       pdf.addImage(imgData, "JPEG", 0, 0, 210, altoImg);
     }
     pdf.save(`tiza-${areaSlug}-${registro.grado}.pdf`);
+    track('pdf_descargado', { area: registro.area, grado: registro.grado, tipo: registro.tipo_ficha })
     setIsDownloading(false);
   };
 
