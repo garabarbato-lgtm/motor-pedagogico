@@ -247,6 +247,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
       validacion={validacion}
       onNueva={onNueva}
       onInicio={onInicio}
+      user={user}
     />
   );
 
