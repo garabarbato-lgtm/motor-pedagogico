@@ -18,33 +18,33 @@ const FONT_SIZES = [
 
 const BOTONES_IA = [
   {
-    id: "simplificar",
-    titulo: "Simplificar lenguaje",
-    subtitulo: "Adapta el vocabulario al nivel del grado",
-    icono: "✨",
-    prop: "onSimplificar",
+    id: "andamiaje",
+    titulo: "Agregar Andamiaje",
+    subtitulo: "Añade pistas y apoyos DUA",
+    icono: "🧩",
+    prop: "onAgregarAndamiaje",
     baseColor: "#004733",
     bgColor: "#f0faf6",
     borderColor: "#b6ead9",
     badgeBg: "rgba(182, 234, 217, 0.6)",
   },
   {
-    id: "andamiaje",
-    titulo: "Agregar Andamiaje (DUA)",
-    subtitulo: "Añade pistas y apoyos visuales",
-    icono: "🧠",
-    prop: "onAgregarAndamiaje",
+    id: "ejercicio",
+    titulo: "Agregar ejercicio",
+    subtitulo: "Genera consignas adicionales",
+    icono: "➕",
+    prop: "onExtenderActividades",
     baseColor: "#7a4a1a",
     bgColor: "#fff8f0",
     borderColor: "#f5d9b4",
     badgeBg: "rgba(245, 217, 180, 0.6)",
   },
   {
-    id: "extender",
-    titulo: "Extender Actividades",
-    subtitulo: "Genera consignas adicionales",
-    icono: "➕",
-    prop: "onExtenderActividades",
+    id: "regenerar",
+    titulo: "Regenerar ficha",
+    subtitulo: "Nueva versión con el mismo contenido",
+    icono: "↺",
+    prop: "onRegenerarFicha",
     baseColor: "#1a3561",
     bgColor: "#f0f4ff",
     borderColor: "#ccd4f0",
@@ -57,7 +57,7 @@ export default function InspectorPanel({
   registro,
   hojaId = "ficha-imprimible",
   onDescargar,
-  onSimplificar,
+  onRegenerarFicha,
   onAgregarAndamiaje,
   onExtenderActividades,
   fmt,
@@ -70,7 +70,7 @@ export default function InspectorPanel({
   const [exportOpen, setExportOpen] = useState(true);
   const [pensando, setPensando] = useState(false);
 
-  const handlers = { onSimplificar, onAgregarAndamiaje, onExtenderActividades };
+  const handlers = { onRegenerarFicha, onAgregarAndamiaje, onExtenderActividades };
 
   const llamarIA = async (fn) => {
     if (!fn || pensando) return;
