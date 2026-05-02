@@ -79,7 +79,7 @@ export default function FichaCanvas({
 
       {/* ── Área de trabajo: canvas + inspector ── */}
       <div style={{ display: "flex", flexDirection: "row", flex: 1, minHeight: 0, overflow: "hidden" }}>
-        <div className="ficha-canvas-wrapper" style={{ flex: 1 }}>
+        <div className="ficha-canvas-wrapper" style={{ flex: 1, marginRight: panelAbierto ? 320 : 0, transition: "margin-right 0.2s" }}>
           {paginas.map((contenido, i) => (
             <div className="ficha-hoja" key={i} id={i === 0 && hojaId ? hojaId : undefined}>
               {paginas.length > 1 && (
