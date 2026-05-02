@@ -54,43 +54,18 @@ export default function FichaCanvas({
     setFmt(queryFmt());
   };
 
-  const applyFontSize = (e) => {
+  const applyFontSize = (val) => {
     const map = { small: "1", medium: "3", large: "5" };
-    apply("fontSize", map[e.target.value] || "3");
+    apply("fontSize", map[val] || "3");
   };
 
   return (
     <div className="ficha-canvas-word">
 
-      {/* ── Toolbar fija estilo Word ── */}
+      {/* ── Toolbar fija — solo nav + toggle ── */}
       <div className="ficha-word-toolbar">
-        <div className="ficha-word-toolbar-group">
-          <select className="ficha-word-toolbar-select" onChange={applyFontSize} defaultValue="medium">
-            {FONT_SIZES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
-          </select>
-        </div>
-        <div className="ficha-word-toolbar-group">
-          <button className={`ficha-word-toolbar-btn${fmt.bold ? " active" : ""}`} onMouseDown={(e) => { e.preventDefault(); apply("bold"); }} title="Negrita"><b>N</b></button>
-          <button className={`ficha-word-toolbar-btn${fmt.italic ? " active" : ""}`} onMouseDown={(e) => { e.preventDefault(); apply("italic"); }} title="Cursiva"><em>K</em></button>
-          <button className={`ficha-word-toolbar-btn${fmt.underline ? " active" : ""}`} onMouseDown={(e) => { e.preventDefault(); apply("underline"); }} title="Subrayado"><u>S</u></button>
-        </div>
-        <div className="ficha-word-toolbar-group">
-          <button className="ficha-word-toolbar-btn" onMouseDown={(e) => { e.preventDefault(); apply("justifyLeft"); }} title="Izquierda">≡</button>
-          <button className="ficha-word-toolbar-btn" onMouseDown={(e) => { e.preventDefault(); apply("justifyCenter"); }} title="Centrar">☰</button>
-          <button className="ficha-word-toolbar-btn" onMouseDown={(e) => { e.preventDefault(); apply("justifyRight"); }} title="Derecha">≡</button>
-        </div>
-        <div className="ficha-word-toolbar-group">
-          <button className="ficha-word-toolbar-btn" onMouseDown={(e) => { e.preventDefault(); document.execCommand("undo"); }} title="Deshacer">↩</button>
-          <button className="ficha-word-toolbar-btn" onMouseDown={(e) => { e.preventDefault(); document.execCommand("redo"); }} title="Rehacer">↪</button>
-        </div>
         <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
           {acciones}
-          {ficha && registro && (
-            <button className="ficha-word-toolbar-btn" onClick={async () => { const { exportFichaToDocx } = await import("../utils/docxExport.js"); exportFichaToDocx(ficha, registro, hojaId); track('word_descargado', { area: registro.area, grado: registro.grado, tipo: registro.tipo_ficha }); }} title="Descargar Word">⬇ Word</button>
-          )}
-          {onDescargar && (
-            <button className="ficha-word-toolbar-pdf-btn" onClick={onDescargar}>⬇ Descargar PDF</button>
-          )}
           <button
             className="ficha-word-toolbar-btn"
             onClick={togglePanel}
@@ -124,6 +99,9 @@ export default function FichaCanvas({
             onSimplificar={onSimplificar}
             onAgregarAndamiaje={onAgregarAndamiaje}
             onExtenderActividades={onExtenderActividades}
+            fmt={fmt}
+            apply={apply}
+            applyFontSize={applyFontSize}
           />
         )}
       </div>
