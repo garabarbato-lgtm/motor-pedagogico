@@ -2,8 +2,6 @@ import { useState } from "react";
 import { supabase } from "../lib/supabase.js";
 import { track } from '@vercel/analytics'
 import { House, Printer } from "@phosphor-icons/react";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import FichaPresenta from "./FichaPresenta.jsx";
 import FichaPractica from "./FichaPractica.jsx";
 import FichaCierre from "./FichaCierre.jsx";
@@ -232,6 +230,10 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
     setIsDownloading(true);
     const hojas = document.querySelectorAll(".ficha-hoja");
     if (!hojas.length) { setIsDownloading(false); return; }
+    const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
+      import("jspdf"),
+      import("html2canvas"),
+    ]);
     const areaSlug = registro.area.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
     const pdf = new jsPDF("p", "mm", "a4");
     for (let i = 0; i < hojas.length; i++) {

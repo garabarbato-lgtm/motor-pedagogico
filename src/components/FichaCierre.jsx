@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { House, Printer } from "@phosphor-icons/react";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import {
   C, renderTitulo,
   Andamiaje,
@@ -26,6 +24,10 @@ export default function FichaCierre({ ficha, registro, onNueva, onInicio }) {
     setIsDownloading(true);
     const element = document.getElementById("ficha-imprimible");
     if (!element) { setIsDownloading(false); return; }
+    const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
+      import("jspdf"),
+      import("html2canvas"),
+    ]);
     const areaSlug = registro.area.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
     element.style.boxShadow = "none";
     const canvas = await html2canvas(element, { scale: 2, useCORS: true });

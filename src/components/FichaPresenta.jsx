@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { House, Printer } from "@phosphor-icons/react";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import FeedbackButton from "./FeedbackButton.jsx";
 import FichaCanvas from "./FichaCanvas.jsx";
 import { C, EditableHtml, renderEjercicioItem } from "./utils.jsx";
@@ -121,6 +119,10 @@ export default function FichaPresenta({ ficha, registro, validacion, user, onNue
     setIsDownloading(true);
     const element = document.getElementById("ficha-imprimible");
     if (!element) { setIsDownloading(false); return; }
+    const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
+      import("jspdf"),
+      import("html2canvas"),
+    ]);
     const areaSlug = registro.area.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
     element.style.boxShadow = "none";
     const canvas = await html2canvas(element, { scale: 2, useCORS: true });
