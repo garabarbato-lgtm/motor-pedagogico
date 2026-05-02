@@ -37,6 +37,7 @@ Un docente selecciona grado, área y contenido → el sistema genera explicació
 - Analytics básicos (Vercel Analytics, pageviews automáticos)
 - Autenticación con Google (Supabase Auth)
 - Biblioteca de fichas guardadas por docente (Supabase)
+- InspectorPanel lateral derecho en FichaCanvas (Magia con IA + Archivo y Exportar, toggle con localStorage)
 
 ## Base de datos curricular
 
@@ -100,6 +101,16 @@ Modelo: claude-sonnet-4-20250514 — max_tokens: 1000
 ## Backlog — Próximos pasos
 
 Todo el backlog original está implementado. Próximas iteraciones posibles:
+
+0. **⚠️ Backend Magia con IA (InspectorPanel) — PRÓXIMA SESIÓN**
+   El `InspectorPanel` ya está mergeado (PR #19) con los 3 botones IA visibles pero sin backend.
+   Crear 3 endpoints en `api/`:
+   - `POST /api/simplificar` → reescribe explicación + actividad adaptando vocabulario al grado
+   - `POST /api/andamiaje` → añade pistas DUA y apoyos visuales a los ejercicios
+   - `POST /api/extender` → genera 2-3 consignas adicionales
+   Cada endpoint recibe `{ ficha, registro }` y devuelve la ficha modificada.
+   Después pasar los handlers en `FichaTrabajo`, `FichaPresenta`, `FichaPractica` y `FichaCierre`
+   como props `onSimplificar`, `onAgregarAndamiaje`, `onExtenderActividades` a `FichaCanvas`.
 
 1. **Compartir ficha por link único** — Botón "Compartir" en Paso 4. Fase 1: encodar estado en URL (base64 o params). Fase 2: guardar por ID en Supabase (ya tiene auth).
 
