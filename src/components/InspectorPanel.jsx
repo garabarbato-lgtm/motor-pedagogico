@@ -6,36 +6,15 @@ import {
   FileDoc,
   Printer,
   SpinnerGap,
+  FloppyDisk,
 } from "@phosphor-icons/react";
 import { track } from "@vercel/analytics";
 
-const exportBtnStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: 10,
-  padding: "13px 14px",
-  border: "1.5px solid #e4ede9",
-  borderRadius: 8,
-  background: "#fff",
-  cursor: "pointer",
-  width: "100%",
-  textAlign: "left",
-  fontFamily: "'Lexend Deca', sans-serif",
-};
-
-const exportTitleStyle = {
-  fontSize: 13,
-  fontWeight: 600,
-  color: "#0d1f1a",
-  lineHeight: 1.3,
-};
-
-const exportSubStyle = {
-  fontSize: 11,
-  color: "#6B8C7D",
-  marginTop: 2,
-  lineHeight: 1.3,
-};
+const FONT_SIZES = [
+  { label: "Pequeño", value: "small" },
+  { label: "Normal", value: "medium" },
+  { label: "Grande", value: "large" },
+];
 
 const BOTONES_IA = [
   {
@@ -43,24 +22,33 @@ const BOTONES_IA = [
     titulo: "Simplificar lenguaje",
     subtitulo: "Adapta el vocabulario al nivel del grado",
     icono: "✨",
-    grad: "linear-gradient(135deg, #004733 0%, #006650 100%)",
     prop: "onSimplificar",
+    baseColor: "#004733",
+    bgColor: "#f0faf6",
+    borderColor: "#b6ead9",
+    badgeBg: "rgba(182, 234, 217, 0.6)",
   },
   {
     id: "andamiaje",
     titulo: "Agregar Andamiaje (DUA)",
     subtitulo: "Añade pistas y apoyos visuales",
     icono: "🧠",
-    grad: "linear-gradient(135deg, #7B3A00 0%, #A0522D 100%)",
     prop: "onAgregarAndamiaje",
+    baseColor: "#7a4a1a",
+    bgColor: "#fff8f0",
+    borderColor: "#f5d9b4",
+    badgeBg: "rgba(245, 217, 180, 0.6)",
   },
   {
     id: "extender",
     titulo: "Extender Actividades",
     subtitulo: "Genera consignas adicionales",
     icono: "➕",
-    grad: "linear-gradient(135deg, #1a3561 0%, #2563EB 100%)",
     prop: "onExtenderActividades",
+    baseColor: "#1a3561",
+    bgColor: "#f0f4ff",
+    borderColor: "#ccd4f0",
+    badgeBg: "rgba(204, 212, 240, 0.6)",
   },
 ];
 
@@ -72,7 +60,12 @@ export default function InspectorPanel({
   onSimplificar,
   onAgregarAndamiaje,
   onExtenderActividades,
+  fmt,
+  apply,
+  applyFontSize,
+  onGuardar,
 }) {
+  const [editOpen, setEditOpen] = useState(true);
   const [iaOpen, setIaOpen] = useState(true);
   const [exportOpen, setExportOpen] = useState(true);
   const [pensando, setPensando] = useState(false);
@@ -100,6 +93,62 @@ export default function InspectorPanel({
     });
   };
 
+  const toolbarBtnBase = {
+    width: 32,
+    height: 32,
+    border: "1px solid #e8e8e8",
+    borderRadius: 6,
+    background: "#fafafa",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: 13,
+    fontWeight: 600,
+    color: "#444",
+    fontFamily: "'Lexend Deca', sans-serif",
+    transition: "all 0.15s",
+  };
+
+  const toolbarBtnActive = {
+    ...toolbarBtnBase,
+    background: "#e8f9f3",
+    borderColor: "#00c48c",
+  };
+
+  const sectionHeaderStyle = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "14px 16px 10px",
+    background: "none",
+    border: "none",
+    width: "100%",
+    fontFamily: "'Lexend Deca', sans-serif",
+  };
+
+  const sectionTitleStyle = {
+    fontSize: 10,
+    fontWeight: 700,
+    letterSpacing: "0.08em",
+    color: "#6B8C7D",
+    textTransform: "uppercase",
+    fontFamily: "'Lexend Deca', sans-serif",
+  };
+
+  const exportBtnBase = {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    padding: "13px 14px",
+    borderRadius: 8,
+    cursor: "pointer",
+    width: "100%",
+    textAlign: "left",
+    fontFamily: "'Lexend Deca', sans-serif",
+    transition: "all 0.15s",
+  };
+
   return (
     <>
       <style>{`
@@ -107,10 +156,9 @@ export default function InspectorPanel({
           from { transform: rotate(0deg); }
           to   { transform: rotate(360deg); }
         }
-        .inspector-ia-btn { transition: transform 0.18s, opacity 0.18s; }
-        .inspector-ia-btn:hover:not(:disabled) { transform: translateY(-1px); }
-        .inspector-export-btn { transition: border-color 0.15s, background 0.15s; }
-        .inspector-export-btn:hover { border-color: #00c48c !important; background: #E6FAF3 !important; }
+        .ins-btn { transition: all 0.15s; }
+        .ins-btn:hover:not(:disabled) { opacity: 0.8; transform: translateY(-1px); }
+        .ins-btn:active:not(:disabled) { transform: translateY(0); }
       `}</style>
 
       <div style={{
@@ -124,29 +172,106 @@ export default function InspectorPanel({
         overflow: "hidden",
       }}>
 
-        {/* ── Magia con IA ── */}
+        {/* ── Edición manual ── */}
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={sectionHeaderStyle}>
+            <button 
+              onClick={() => setEditOpen(v => !v)} 
+              style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flex: 1, background: "none", border: "none", cursor: "pointer", padding: 0 }}
+            >
+              <span style={sectionTitleStyle}>Edición manual</span>
+              {editOpen ? <CaretUp size={14} color="#6B8C7D" /> : <CaretDown size={14} color="#6B8C7D" />}
+            </button>
+          </div>
+          
+          {editOpen && (
+            <div style={{ padding: "0 12px 12px" }}>
+              <select 
+                onChange={(e) => applyFontSize(e.target.value)} 
+                defaultValue="medium"
+                style={{
+                  width: "100%",
+                  height: 32,
+                  border: "1px solid #e8e8e8",
+                  borderRadius: 6,
+                  background: "#fafafa",
+                  fontSize: 12,
+                  marginBottom: 8,
+                  padding: "0 8px",
+                  fontFamily: "'Lexend Deca', sans-serif",
+                  color: "#444"
+                }}
+              >
+                {FONT_SIZES.map(fs => (
+                  <option key={fs.value} value={fs.value}>{fs.label}</option>
+                ))}
+              </select>
+
+              <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                <button 
+                  onMouseDown={(e) => { e.preventDefault(); apply("bold"); }}
+                  style={fmt?.bold ? toolbarBtnActive : toolbarBtnBase}
+                >
+                  N
+                </button>
+                <button 
+                  onMouseDown={(e) => { e.preventDefault(); apply("italic"); }}
+                  style={fmt?.italic ? toolbarBtnActive : toolbarBtnBase}
+                >
+                  K
+                </button>
+                <button 
+                  onMouseDown={(e) => { e.preventDefault(); apply("underline"); }}
+                  style={fmt?.underline ? toolbarBtnActive : toolbarBtnBase}
+                >
+                  S
+                </button>
+                
+                <div style={{ width: 1, height: 32, background: "#eee", margin: "0 2px" }} />
+                
+                <button onMouseDown={(e) => { e.preventDefault(); apply("justifyLeft"); }} style={toolbarBtnBase}>≡</button>
+                <button onMouseDown={(e) => { e.preventDefault(); apply("justifyCenter"); }} style={toolbarBtnBase}>☰</button>
+                <button onMouseDown={(e) => { e.preventDefault(); apply("justifyRight"); }} style={toolbarBtnBase}>≡</button>
+                
+                <div style={{ width: 1, height: 32, background: "#eee", margin: "0 2px" }} />
+                
+                <button onMouseDown={(e) => { e.preventDefault(); document.execCommand("undo"); }} style={toolbarBtnBase}>↩</button>
+                <button onMouseDown={(e) => { e.preventDefault(); document.execCommand("redo"); }} style={toolbarBtnBase}>↪</button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div style={{ height: 1, background: "#e0e8e4" }} />
+
+        {/* ── Edición con IA ── */}
         <div style={{ flex: iaOpen ? 1 : "none", display: "flex", flexDirection: "column", minHeight: 0 }}>
-          <button
-            onClick={() => setIaOpen(v => !v)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "14px 16px 10px",
-              cursor: "pointer",
-              background: "none",
-              border: "none",
-              width: "100%",
-            }}
-          >
-            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", color: "#6B8C7D", textTransform: "uppercase" }}>
-              ✦ Magia con IA
-            </span>
-            {iaOpen
-              ? <CaretUp size={14} color="#6B8C7D" />
-              : <CaretDown size={14} color="#6B8C7D" />
-            }
-          </button>
+          <div style={sectionHeaderStyle}>
+            <div style={{ display: "flex", alignItems: "center", flex: 1, cursor: 'pointer' }} onClick={() => setIaOpen(v => !v)}>
+              <span style={{ ...sectionTitleStyle, flex: 1 }}>Edición con IA</span>
+              {iaOpen ? <CaretUp size={14} color="#6B8C7D" /> : <CaretDown size={14} color="#6B8C7D" />}
+            </div>
+            <button 
+              title="Esta función consume créditos extra"
+              style={{
+                background: "#f0f0f0",
+                border: "none",
+                borderRadius: "50%",
+                width: 18,
+                height: 18,
+                fontSize: 10,
+                cursor: "pointer",
+                color: "#666",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginLeft: 4,
+                fontFamily: "'Lexend Deca', sans-serif",
+              }}
+            >
+              ?
+            </button>
+          </div>
 
           {iaOpen && (
             <div style={{
@@ -185,12 +310,12 @@ export default function InspectorPanel({
               {BOTONES_IA.map(btn => (
                 <button
                   key={btn.id}
-                  className="inspector-ia-btn"
+                  className="ins-btn"
                   disabled={pensando}
                   onClick={() => llamarIA(handlers[btn.prop])}
                   style={{
-                    background: btn.grad,
-                    border: "none",
+                    background: btn.bgColor,
+                    border: `1.5px solid ${btn.borderColor}`,
                     borderRadius: 10,
                     padding: "13px 14px",
                     cursor: pensando ? "not-allowed" : "pointer",
@@ -205,23 +330,22 @@ export default function InspectorPanel({
                 >
                   <span style={{ fontSize: 18, lineHeight: 1 }}>{btn.icono}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", lineHeight: 1.3 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: btn.baseColor, lineHeight: 1.3, opacity: 0.7 }}>
                       {btn.titulo}
                     </div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.75)", marginTop: 2, lineHeight: 1.3 }}>
+                    <div style={{ fontSize: 11, color: btn.baseColor, opacity: 0.7, marginTop: 2, lineHeight: 1.3 }}>
                       {btn.subtitulo}
                     </div>
                   </div>
                   <span style={{
-                    background: "rgba(255,255,255,0.22)",
-                    color: "#fff",
+                    background: btn.badgeBg,
+                    color: btn.baseColor,
                     fontSize: 10,
                     fontWeight: 700,
                     padding: "2px 7px",
                     borderRadius: 4,
                     letterSpacing: "0.05em",
                     flexShrink: 0,
-                    fontFamily: "'Lexend Deca', sans-serif",
                   }}>
                     IA
                   </span>
@@ -231,60 +355,73 @@ export default function InspectorPanel({
           )}
         </div>
 
-        {/* ── Separador ── */}
         <div style={{ height: 1, background: "#e0e8e4" }} />
 
-        {/* ── Archivo y Exportar ── */}
+        {/* ── Descarga y guardado ── */}
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <button
-            onClick={() => setExportOpen(v => !v)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "14px 16px 10px",
-              cursor: "pointer",
-              background: "none",
-              border: "none",
-              width: "100%",
-            }}
-          >
-            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", color: "#6B8C7D", textTransform: "uppercase" }}>
-              Archivo y Exportar
-            </span>
-            {exportOpen
-              ? <CaretUp size={14} color="#6B8C7D" />
-              : <CaretDown size={14} color="#6B8C7D" />
-            }
-          </button>
+          <div style={sectionHeaderStyle}>
+            <button 
+              onClick={() => setExportOpen(v => !v)} 
+              style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flex: 1, background: "none", border: "none", cursor: "pointer", padding: 0 }}
+            >
+              <span style={sectionTitleStyle}>Descarga y guardado</span>
+              {exportOpen ? <CaretUp size={14} color="#6B8C7D" /> : <CaretDown size={14} color="#6B8C7D" />}
+            </button>
+          </div>
 
           {exportOpen && (
             <div style={{ padding: "0 12px 16px", display: "flex", flexDirection: "column", gap: 8 }}>
+              {onGuardar && (
+                <button 
+                  className="ins-btn" 
+                  onClick={onGuardar} 
+                  style={{ ...exportBtnBase, background: "#e8f9f3", border: "1.5px solid #b6ead9" }}
+                >
+                  <FloppyDisk size={20} color="#004733" weight="duotone" />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#004733", lineHeight: 1.3 }}>Guardar ficha</div>
+                    <div style={{ fontSize: 11, color: "#004733", opacity: 0.7, marginTop: 2, lineHeight: 1.3 }}>Sincronizar cambios</div>
+                  </div>
+                </button>
+              )}
+
               {onDescargar && (
-                <button className="inspector-export-btn" onClick={onDescargar} style={exportBtnStyle}>
+                <button 
+                  className="ins-btn" 
+                  onClick={onDescargar} 
+                  style={{ ...exportBtnBase, background: "#fff5f5", border: "1.5px solid #fcc8c8" }}
+                >
                   <FilePdf size={20} color="#e53935" weight="duotone" />
                   <div style={{ flex: 1 }}>
-                    <div style={exportTitleStyle}>Descargar PDF</div>
-                    <div style={exportSubStyle}>A4 · lista para imprimir</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#e53935", lineHeight: 1.3 }}>Descargar PDF</div>
+                    <div style={{ fontSize: 11, color: "#6B8C7D", marginTop: 2, lineHeight: 1.3 }}>A4 · lista para imprimir</div>
                   </div>
                 </button>
               )}
 
               {ficha && registro && (
-                <button className="inspector-export-btn" onClick={descargarWord} style={exportBtnStyle}>
+                <button 
+                  className="ins-btn" 
+                  onClick={descargarWord} 
+                  style={{ ...exportBtnBase, background: "#f0f4ff", border: "1.5px solid #c5d3f5" }}
+                >
                   <FileDoc size={20} color="#1565c0" weight="duotone" />
                   <div style={{ flex: 1 }}>
-                    <div style={exportTitleStyle}>Descargar Word (.docx)</div>
-                    <div style={exportSubStyle}>Editable en cualquier equipo</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#1565c0", lineHeight: 1.3 }}>Descargar Word (.docx)</div>
+                    <div style={{ fontSize: 11, color: "#6B8C7D", marginTop: 2, lineHeight: 1.3 }}>Editable en cualquier equipo</div>
                   </div>
                 </button>
               )}
 
-              <button className="inspector-export-btn" onClick={() => window.print()} style={exportBtnStyle}>
+              <button 
+                className="ins-btn" 
+                onClick={() => window.print()} 
+                style={{ ...exportBtnBase, background: "#fff", border: "1.5px solid #e4ede9" }}
+              >
                 <Printer size={20} color="#00a86b" weight="duotone" />
                 <div style={{ flex: 1 }}>
-                  <div style={exportTitleStyle}>Imprimir</div>
-                  <div style={exportSubStyle}>Abre el diálogo del sistema</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#0d1f1a", lineHeight: 1.3 }}>Imprimir</div>
+                  <div style={{ fontSize: 11, color: "#6B8C7D", marginTop: 2, lineHeight: 1.3 }}>Diálogo del sistema</div>
                 </div>
               </button>
             </div>

@@ -1282,7 +1282,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
           {(paso === 4 || generando) && (
           <div style={{
             display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 340px",
             minHeight: "calc(100vh - 60px)",
           }}>
             {/* Main */}
@@ -1467,7 +1467,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
 
               {/* ── Loading: skeleton + status pill ── */}
               {generando && (
-                <div style={{ padding: "32px 0", animation: "fadeUp 0.4s both" }}>
+                <div style={{ padding: "48px 0", animation: "fadeUp 0.4s both" }}>
                   {/* Status pill */}
                   <div style={{ textAlign: "center", marginBottom: 20 }}>
                     <div style={{
@@ -1484,7 +1484,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
                   </div>
 
                   {/* Shimmer skeleton de la ficha */}
-                  <div style={{ maxWidth: 480, margin: "0 auto", borderRadius: 10, overflow: "hidden", border: `2px solid ${C.verdeOscuro}`, boxShadow: "0 4px 24px rgba(0,30,20,0.1)" }}>
+                  <div style={{ maxWidth: 580, margin: "0 auto", borderRadius: 10, overflow: "hidden", border: `2px solid ${C.verdeOscuro}`, boxShadow: "0 4px 24px rgba(0,30,20,0.1)" }}>
                     {/* Header skeleton */}
                     <div style={{ background: C.verdeOscuro, padding: "14px 18px" }}>
                       <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
