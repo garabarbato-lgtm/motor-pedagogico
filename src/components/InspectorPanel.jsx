@@ -167,10 +167,11 @@ export default function InspectorPanel({
         fontFamily: "'Lexend Deca', sans-serif",
         overflowY: "auto",
         paddingTop: 44,
-        position: "sticky",
+        position: "fixed",
         top: 44,
+        right: 0,
         height: "calc(100vh - 44px)",
-        alignSelf: "flex-start",
+        zIndex: 100,
         paddingBottom: 24,
       }}>
         <div style={{
