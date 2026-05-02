@@ -10,7 +10,7 @@ export default function FeedbackButton({ isDownloading }) {
       style={{
         position: "fixed",
         bottom: 24,
-        right: 24,
+        left: 24,
         zIndex: 1000,
         display: "flex",
         alignItems: "center",

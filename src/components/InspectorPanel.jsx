@@ -142,6 +142,7 @@ export default function InspectorPanel({
     textAlign: "left",
     fontFamily: "'Lexend Deca', sans-serif",
     transition: "all 0.15s",
+    minHeight: 62,
   };
 
   return (
@@ -166,15 +167,17 @@ export default function InspectorPanel({
         fontFamily: "'Lexend Deca', sans-serif",
         overflowY: "auto",
         paddingTop: 44,
+        paddingBottom: 24,
       }}>
         <div style={{
           fontSize: 10,
-          fontWeight: 700,
+          fontWeight: 900,
           letterSpacing: "0.08em",
-          color: "#0d1f1a",
+          color: "#00c48c",
           textTransform: "uppercase",
           padding: "14px 16px 10px",
-          borderBottom: "1px solid #e0e8e4"
+          borderBottom: "1px solid #e0e8e4",
+          fontFamily: "'Nunito', 'Lexend Deca', sans-serif",
         }}>
           Personalizá tu ficha
         </div>
@@ -244,7 +247,7 @@ export default function InspectorPanel({
         <div style={{ height: 1, background: "#e0e8e4" }} />
 
         {/* ── Edición con IA ── */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+        <div style={{ display: "flex", flexDirection: "column", minHeight: 0 }}>
           <div style={sectionHeaderStyle}>
             <span style={{ ...sectionTitleStyle, flex: 1 }}>Edición con IA</span>
             <button 
@@ -270,13 +273,11 @@ export default function InspectorPanel({
           </div>
 
           <div style={{
-            flex: 1,
             padding: "0 12px 12px",
             display: "flex",
             flexDirection: "column",
             gap: 8,
             position: "relative",
-            overflowY: "auto",
           }}>
             {pensando && (
               <div style={{
@@ -321,6 +322,7 @@ export default function InspectorPanel({
                   width: "100%",
                   textAlign: "left",
                   fontFamily: "'Lexend Deca', sans-serif",
+                  minHeight: 62,
                 }}
               >
                 <span style={{ fontSize: 18, lineHeight: 1 }}>{btn.icono}</span>
@@ -358,19 +360,24 @@ export default function InspectorPanel({
           </div>
 
           <div style={{ padding: "0 12px 16px", display: "flex", flexDirection: "column", gap: 8 }}>
-            {onGuardar && (
-              <button 
-                className="ins-btn" 
-                onClick={onGuardar} 
-                style={{ ...exportBtnBase, background: "#e8f9f3", border: "1.5px solid #b6ead9" }}
-              >
-                <FloppyDisk size={20} color="#004733" weight="duotone" />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#004733", lineHeight: 1.3 }}>Guardar ficha</div>
-                  <div style={{ fontSize: 11, color: "#004733", opacity: 0.7, marginTop: 2, lineHeight: 1.3 }}>Sincronizar cambios</div>
-                </div>
-              </button>
-            )}
+            <button 
+              className="ins-btn" 
+              onClick={onGuardar} 
+              disabled={!onGuardar}
+              style={{ 
+                ...exportBtnBase, 
+                background: "#e8f9f3", 
+                border: "1.5px solid #b6ead9",
+                opacity: onGuardar ? 1 : 0.45,
+                cursor: onGuardar ? "pointer" : "not-allowed"
+              }}
+            >
+              <FloppyDisk size={20} color="#004733" weight="duotone" />
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#004733", lineHeight: 1.3 }}>Guardar ficha</div>
+                <div style={{ fontSize: 11, color: "#004733", opacity: 0.7, marginTop: 2, lineHeight: 1.3 }}>Sincronizar cambios</div>
+              </div>
+            </button>
 
             {onDescargar && (
               <button 
