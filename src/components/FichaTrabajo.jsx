@@ -183,6 +183,19 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
   const [fichaOverrides, setFichaOverrides] = useState({});
   const [seleccionActual, setSeleccionActual] = useState(null);
 
+  // Normalizar ficha (explicacion puede ser objeto con parrafos) — debe ir antes de los handlers
+  const fichaLocal = (() => {
+    const f = { ...ficha, ...fichaOverrides };
+    if (f.explicacion && typeof f.explicacion === "object") {
+      f.explicacion = Array.isArray(f.explicacion.parrafos)
+        ? f.explicacion.parrafos.join("\n\n")
+        : "";
+    }
+    return f;
+  })();
+
+  const itemsLocal = parsearActividad(fichaLocal.actividad).items;
+
   useEffect(() => {
     const capturar = () => {
       const sel = window.getSelection();
@@ -236,19 +249,6 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
       setSeleccionActual(null);
     }
   };
-
-  // Normalizar ficha (explicacion puede ser objeto con parrafos)
-  const fichaLocal = (() => {
-    const f = { ...ficha, ...fichaOverrides };
-    if (f.explicacion && typeof f.explicacion === "object") {
-      f.explicacion = Array.isArray(f.explicacion.parrafos)
-        ? f.explicacion.parrafos.join("\n\n")
-        : "";
-    }
-    return f;
-  })();
-
-  const itemsLocal = parsearActividad(ficha.actividad).items;
 
   const esDosHojasObligatorio = false;
 

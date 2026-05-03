@@ -171,7 +171,6 @@ function getAndamiajeStyle() {
         background: "#fffde7",
         borderTop: "20px solid #00c48c",
         borderRadius: 4,
-        transform: "rotate(1.5deg)",
         position: "relative",
         padding: "6px 8px",
       },
