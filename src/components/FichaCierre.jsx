@@ -199,10 +199,9 @@ export default function FichaCierre({ ficha, registro, onNueva, onInicio }) {
                         fontWeight: 700,
                         borderRadius: 3,
                         padding: "3px 8px",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        lineHeight: 1,
+                        display: "inline-block",
+                        textAlign: "center",
+                        lineHeight: 1.4,
                       }}
                     >
                       {peldano.rotulo}

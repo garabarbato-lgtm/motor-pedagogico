@@ -158,7 +158,7 @@ export default function InspectorPanel({
         .ins-btn:active:not(:disabled) { transform: translateY(0); }
       `}</style>
 
-      <div style={{
+      <div className="ficha-inspector-panel" style={{
         width: 320,
         minWidth: 320,
         background: "#fff",
