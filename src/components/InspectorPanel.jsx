@@ -39,8 +39,8 @@ const BOTONES_IA = [
   },
   {
     id: "regenerar",
-    titulo: "Regenerar ficha",
-    subtitulo: "Nueva versión con el mismo contenido",
+    titulo: "Reformular selección",
+    subtitulo: "Reescribe el texto seleccionado",
     icono: "↺",
     prop: "onRegenerarFicha",
     baseColor: "#1a3561",
@@ -58,6 +58,7 @@ export default function InspectorPanel({
   onRegenerarFicha,
   onAgregarAndamiaje,
   onExtenderActividades,
+  haySeleccion = false,
   fmt,
   apply,
   applyFontSize,
@@ -312,14 +313,14 @@ export default function InspectorPanel({
               <button
                 key={btn.id}
                 className="ins-btn"
-                disabled={pensando}
+                disabled={pensando || (btn.id === "regenerar" && !haySeleccion)}
                 onClick={() => llamarIA(handlers[btn.prop])}
                 style={{
                   background: btn.bgColor,
                   border: `1.5px solid ${btn.borderColor}`,
                   borderRadius: 10,
                   padding: "13px 14px",
-                  cursor: pensando ? "not-allowed" : "pointer",
+                  cursor: (pensando || (btn.id === "regenerar" && !haySeleccion)) ? "not-allowed" : "pointer",
                   display: "flex",
                   alignItems: "center",
                   gap: 10,
