@@ -250,3 +250,9 @@
     background: transparent !important;
   }
 }
+
+/* ── Responsive: ocultar panel en pantallas chicas ── */
+@media (max-width: 960px) {
+  .ficha-inspector-panel { display: none !important; }
+  .ficha-canvas-wrapper { margin-right: 0 !important; }
+}

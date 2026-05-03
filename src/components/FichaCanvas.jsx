@@ -74,14 +74,16 @@ export default function FichaCanvas({
           >
             <Printer size={16} />
           </button>
-          <button
-            className="ficha-word-toolbar-btn"
-            onClick={togglePanel}
-            title={panelAbierto ? "Ocultar panel lateral" : "Mostrar panel lateral"}
-            style={{ color: panelAbierto ? "#00c48c" : undefined }}
-          >
-            <SidebarSimple size={16} weight={panelAbierto ? "fill" : "regular"} />
-          </button>
+          {window.innerWidth > 960 && (
+            <button
+              className="ficha-word-toolbar-btn"
+              onClick={togglePanel}
+              title={panelAbierto ? "Ocultar panel lateral" : "Mostrar panel lateral"}
+              style={{ color: panelAbierto ? "#00c48c" : undefined }}
+            >
+              <SidebarSimple size={16} weight={panelAbierto ? "fill" : "regular"} />
+            </button>
+          )}
         </div>
       </div>
 
