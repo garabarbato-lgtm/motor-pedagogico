@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { track } from '@vercel/analytics';
-import { SidebarSimple } from "@phosphor-icons/react";
+import { SidebarSimple, Printer } from "@phosphor-icons/react";
 import InspectorPanel from "./InspectorPanel.jsx";
 import "../ficha-canvas.css";
 
@@ -69,6 +69,13 @@ export default function FichaCanvas({
           {acciones}
           <button
             className="ficha-word-toolbar-btn"
+            onClick={() => window.print()}
+            title="Imprimir"
+          >
+            <Printer size={16} />
+          </button>
+          <button
+            className="ficha-word-toolbar-btn"
             onClick={togglePanel}
             title={panelAbierto ? "Ocultar panel lateral" : "Mostrar panel lateral"}
             style={{ color: panelAbierto ? "#00c48c" : undefined }}
@@ -92,6 +99,7 @@ export default function FichaCanvas({
         </div>
 
         {panelAbierto && (
+          <div className="ficha-inspector-panel">
           <InspectorPanel
             ficha={ficha}
             registro={registro}
@@ -105,6 +113,7 @@ export default function FichaCanvas({
             apply={apply}
             applyFontSize={applyFontSize}
           />
+          </div>
         )}
       </div>
 

@@ -222,7 +222,8 @@
 
   .ficha-word-toolbar,
   .ficha-hoja-numero,
-  .feedback-button { display: none !important; }
+  .feedback-button,
+  .ficha-inspector-panel { display: none !important; }
 
   .ficha-canvas-word { min-height: auto; }
 

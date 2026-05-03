@@ -172,6 +172,7 @@ function getAndamiajeStyle() {
         borderTop: "20px solid #00c48c",
         borderRadius: 4,
         position: "relative",
+        marginTop: 20,
         padding: "6px 8px",
       },
       labelStyle: {
