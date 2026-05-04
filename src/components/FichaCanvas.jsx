@@ -17,10 +17,6 @@ export default function FichaCanvas({
   acciones,
   ficha,
   registro,
-  onRegenerarFicha,
-  onAgregarAndamiaje,
-  onExtenderActividades,
-  haySeleccion = false,
 }) {
   const [fmt, setFmt] = useState({ bold: false, italic: false, underline: false });
   const [panelAbierto, setPanelAbierto] = useState(
@@ -107,10 +103,6 @@ export default function FichaCanvas({
             registro={registro}
             hojaId={hojaId}
             onDescargar={onDescargar}
-            onRegenerarFicha={onRegenerarFicha}
-            onAgregarAndamiaje={onAgregarAndamiaje}
-            onExtenderActividades={onExtenderActividades}
-            haySeleccion={haySeleccion}
             fmt={fmt}
             apply={apply}
             applyFontSize={applyFontSize}

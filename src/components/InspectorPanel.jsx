@@ -3,7 +3,6 @@ import {
   FilePdf,
   FileDoc,
   Printer,
-  SpinnerGap,
   FloppyDisk,
 } from "@phosphor-icons/react";
 import { track } from "@vercel/analytics";
@@ -14,69 +13,19 @@ const FONT_SIZES = [
   { label: "Grande", value: "large" },
 ];
 
-const BOTONES_IA = [
-  {
-    id: "andamiaje",
-    titulo: "Agregar Andamiaje",
-    subtitulo: "Añade pistas y apoyos DUA",
-    icono: "🧩",
-    prop: "onAgregarAndamiaje",
-    baseColor: "#004733",
-    bgColor: "#f0faf6",
-    borderColor: "#b6ead9",
-    badgeBg: "rgba(182, 234, 217, 0.6)",
-  },
-  {
-    id: "ejercicio",
-    titulo: "Agregar ejercicio",
-    subtitulo: "Genera consignas adicionales",
-    icono: "➕",
-    prop: "onExtenderActividades",
-    baseColor: "#7a4a1a",
-    bgColor: "#fff8f0",
-    borderColor: "#f5d9b4",
-    badgeBg: "rgba(245, 217, 180, 0.6)",
-  },
-  {
-    id: "regenerar",
-    titulo: "Reformular selección",
-    subtitulo: "Reescribe el texto seleccionado",
-    icono: "↺",
-    prop: "onRegenerarFicha",
-    baseColor: "#1a3561",
-    bgColor: "#f0f4ff",
-    borderColor: "#ccd4f0",
-    badgeBg: "rgba(204, 212, 240, 0.6)",
-  },
-];
 
 export default function InspectorPanel({
   ficha,
   registro,
   hojaId = "ficha-imprimible",
   onDescargar,
-  onRegenerarFicha,
-  onAgregarAndamiaje,
-  onExtenderActividades,
-  haySeleccion = false,
   fmt,
   apply,
   applyFontSize,
   onGuardar,
 }) {
-  const [pensando, setPensando] = useState(false);
 
-  const handlers = { onRegenerarFicha, onAgregarAndamiaje, onExtenderActividades };
 
-  const llamarIA = async (fn) => {
-    if (!fn || pensando) return;
-    setPensando(true);
-    try {
-      await fn(ficha, registro);
-    } finally {
-      setPensando(false);
-    }
-  };
 
   const descargarWord = async () => {
     if (!ficha || !registro) return;
@@ -250,116 +199,7 @@ export default function InspectorPanel({
           </div>
         </div>
 
-        <div style={{ height: 1, background: "#e0e8e4" }} />
-
-        {/* ── Edición con IA ── */}
-        <div style={{ display: "flex", flexDirection: "column", minHeight: 0 }}>
-          <div style={sectionHeaderStyle}>
-            <span style={{ ...sectionTitleStyle, flex: 1 }}>Edición con IA</span>
-            <button 
-              title="Esta función consume créditos extra"
-              style={{
-                background: "#f0f0f0",
-                border: "none",
-                borderRadius: "50%",
-                width: 18,
-                height: 18,
-                fontSize: 10,
-                cursor: "pointer",
-                color: "#666",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginLeft: 4,
-                fontFamily: "'Lexend Deca', sans-serif",
-              }}
-            >
-              ?
-            </button>
-          </div>
-
-          <div style={{
-            padding: "0 12px 12px",
-            display: "flex",
-            flexDirection: "column",
-            gap: 8,
-            position: "relative",
-          }}>
-            {pensando && (
-              <div style={{
-                position: "absolute",
-                inset: 0,
-                background: "rgba(255,255,255,0.88)",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 10,
-                zIndex: 10,
-                borderRadius: 8,
-              }}>
-                <SpinnerGap
-                  size={28}
-                  color="#00c48c"
-                  style={{ animation: "_inspector-spin 0.8s linear infinite" }}
-                />
-                <span style={{ fontSize: 12, color: "#004733", fontWeight: 600, fontFamily: "'Lexend Deca', sans-serif" }}>
-                  Pensando…
-                </span>
-              </div>
-            )}
-
-            {BOTONES_IA.map(btn => (
-              <button
-                key={btn.id}
-                className="ins-btn"
-                disabled={pensando || (btn.id === "regenerar" && !haySeleccion)}
-                onClick={() => llamarIA(handlers[btn.prop])}
-                style={{
-                  background: btn.bgColor,
-                  border: `1.5px solid ${btn.borderColor}`,
-                  borderRadius: 10,
-                  padding: "13px 14px",
-                  cursor: (pensando || (btn.id === "regenerar" && !haySeleccion)) ? "not-allowed" : "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  opacity: pensando ? 0.5 : 1,
-                  width: "100%",
-                  textAlign: "left",
-                  fontFamily: "'Lexend Deca', sans-serif",
-                  minHeight: 62,
-                }}
-              >
-                <span style={{ fontSize: 18, lineHeight: 1 }}>{btn.icono}</span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: btn.baseColor, lineHeight: 1.3, opacity: 0.7 }}>
-                    {btn.titulo}
-                  </div>
-                  <div style={{ fontSize: 11, color: btn.baseColor, opacity: 0.7, marginTop: 2, lineHeight: 1.3 }}>
-                    {btn.subtitulo}
-                  </div>
-                </div>
-                <span style={{
-                  background: btn.badgeBg,
-                  color: btn.baseColor,
-                  fontSize: 10,
-                  fontWeight: 700,
-                  padding: "2px 7px",
-                  borderRadius: 4,
-                  letterSpacing: "0.05em",
-                  flexShrink: 0,
-                }}>
-                  IA
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div style={{ height: 1, background: "#e0e8e4" }} />
-
-        {/* ── Descarga y guardado ── */}
+                {/* ── Descarga y guardado ── */}
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div style={sectionHeaderStyle}>
             <span style={sectionTitleStyle}>Descarga y guardado</span>

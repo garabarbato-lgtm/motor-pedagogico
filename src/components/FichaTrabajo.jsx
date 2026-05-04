@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { supabase } from "../lib/supabase.js";
 import { track } from '@vercel/analytics'
 import { House, Printer } from "@phosphor-icons/react";
@@ -180,12 +180,10 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
   if (!ficha || !registro) return null;
 
   const [isDownloading, setIsDownloading] = useState(false);
-  const [fichaOverrides, setFichaOverrides] = useState({});
-  const [seleccionActual, setSeleccionActual] = useState(null);
 
-  // Normalizar ficha (explicacion puede ser objeto con parrafos) — debe ir antes de los handlers
+  // Normalizar ficha (explicacion puede ser objeto con parrafos)
   const fichaLocal = (() => {
-    const f = { ...ficha, ...fichaOverrides };
+    const f = { ...ficha };
     if (f.explicacion && typeof f.explicacion === "object") {
       f.explicacion = Array.isArray(f.explicacion.parrafos)
         ? f.explicacion.parrafos.join("\n\n")
@@ -195,60 +193,6 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
   })();
 
   const itemsLocal = parsearActividad(fichaLocal.actividad).items;
-
-  useEffect(() => {
-    const capturar = () => {
-      const sel = window.getSelection();
-      if (sel && sel.toString().trim().length > 2) {
-        setSeleccionActual({ texto: sel.toString().trim(), range: sel.getRangeAt(0).cloneRange() });
-      } else if (sel && sel.toString().trim().length === 0) {
-        setSeleccionActual(null);
-      }
-    };
-    document.addEventListener("mouseup", capturar);
-    return () => document.removeEventListener("mouseup", capturar);
-  }, []);
-
-  const handleAgregarAndamiaje = async () => {
-    const res = await fetch("/api/andamiaje", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ficha: fichaLocal, registro }),
-    });
-    const data = await res.json();
-    if (data.explicacion || data.actividad) {
-      setFichaOverrides(prev => ({ ...prev, explicacion: data.explicacion, actividad: data.actividad }));
-    }
-  };
-
-  const handleExtenderActividades = async () => {
-    const res = await fetch("/api/ejercicio", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ficha: fichaLocal, registro }),
-    });
-    const data = await res.json();
-    if (data.ejercicio) {
-      setFichaOverrides(prev => ({ ...prev, actividad: (prev.actividad || fichaLocal.actividad || "") + "\n\n" + data.ejercicio }));
-    }
-  };
-
-  const handleReformularSeleccion = async () => {
-    if (!seleccionActual) return;
-    const res = await fetch("/api/reformular", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ficha: fichaLocal, registro, seleccion: seleccionActual.texto }),
-    });
-    const data = await res.json();
-    if (data.texto && seleccionActual.range) {
-      const sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(seleccionActual.range);
-      document.execCommand("insertText", false, data.texto);
-      setSeleccionActual(null);
-    }
-  };
 
   const esDosHojasObligatorio = false;
 
@@ -525,10 +469,6 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
           acciones={acciones}
           ficha={fichaLocal}
           registro={registro}
-          onAgregarAndamiaje={handleAgregarAndamiaje}
-          onExtenderActividades={handleExtenderActividades}
-          onRegenerarFicha={handleReformularSeleccion}
-          haySeleccion={!!seleccionActual}
         />
         <FeedbackButton isDownloading={isDownloading} />
       </>
