@@ -56,11 +56,13 @@ export default function App() {
             .select('ficha_data, registro_data')
             .eq('id', id)
             .single()
-          if (data) {
+          if (data?.ficha_data && data?.registro_data) {
             setFichaData(data.ficha_data)
             setRegistroData(data.registro_data)
             setValidacionData(null)
             setVista('ficha')
+          } else {
+            alert('Esta ficha no se puede cargar (datos incompletos). Podés eliminarla y generarla de nuevo.')
           }
         }}
         onNueva={() => setVista('generador')}
