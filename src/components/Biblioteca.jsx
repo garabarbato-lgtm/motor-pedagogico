@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import Logo from './Logo.jsx'
 
 const C = {
   acento: '#00c48c',
@@ -50,7 +51,7 @@ export default function Biblioteca({ user, onVerFicha, onNueva, onInicio }) {
     <div style={{ minHeight: '100vh', background: C.fondo, fontFamily: 'Lexend, sans-serif' }}>
       {/* Nav */}
       <div style={{ background: C.btn, padding: '16px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 100 }}>
-        <span onClick={onInicio} style={{ color: '#fff', fontWeight: 800, fontSize: 18, cursor: 'pointer', letterSpacing: '-0.5px' }}>tiza.</span>
+        <span onClick={onInicio} style={{ cursor: 'pointer' }}><Logo size={22} color="#fff" /></span>
         <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
           {user.user_metadata?.avatar_url && (
             <img src={user.user_metadata.avatar_url} alt="" style={{ width: 28, height: 28, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.3)' }} />

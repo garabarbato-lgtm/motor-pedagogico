@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { supabase } from "../lib/supabase.js";
 import { track } from '@vercel/analytics'
-import { House, Printer } from "@phosphor-icons/react";
+import { House } from "@phosphor-icons/react";
 import FichaPresenta from "./FichaPresenta.jsx";
 import FichaPractica from "./FichaPractica.jsx";
 import FichaCierre from "./FichaCierre.jsx";
@@ -133,49 +132,6 @@ function LineaDoble() {
 
 // ── Componente principal ──
 
-function GuardarFichaBtn({ ficha, registro, userId }) {
-  const [estado, setEstado] = useState('idle') // idle | verificando | guardando | guardado | duplicado | error
-
-  async function guardar() {
-    if (estado === 'guardado' || estado === 'duplicado') return
-    setEstado('verificando')
-    const { count } = await supabase
-      .from('fichas')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', userId)
-      .eq('titulo', ficha.titulo)
-      .eq('area', registro?.area || '')
-      .eq('grado', registro?.grado || '')
-    if (count > 0) { setEstado('duplicado'); return }
-    setEstado('guardando')
-    const { error } = await supabase.from('fichas').insert({
-      user_id: userId,
-      titulo: ficha.titulo,
-      area: registro?.area || '',
-      grado: registro?.grado || '',
-      bloque: registro?.bloque || null,
-      tipo_ficha: registro?.tipo_ficha || 'trabajo',
-      ficha_data: ficha,
-      registro_data: registro,
-    })
-    setEstado(error ? 'error' : 'guardado')
-    if (error) setTimeout(() => setEstado('idle'), 3000)
-  }
-
-  const label = { idle: '☁ Guardar', verificando: 'Verificando...', guardando: 'Guardando...', guardado: '✓ Guardada', duplicado: '✓ Ya guardada', error: 'Error' }
-  return (
-    <button
-      className="ficha-word-toolbar-btn"
-      onClick={guardar}
-      disabled={estado === 'verificando' || estado === 'guardando' || estado === 'guardado' || estado === 'duplicado'}
-      title="Guardar en mi biblioteca"
-      style={estado === 'guardado' || estado === 'duplicado' ? { color: '#00c48c' } : estado === 'error' ? { color: '#e53e3e' } : {}}
-    >
-      {label[estado]}
-    </button>
-  )
-}
-
 export default function FichaTrabajo({ ficha, registro, validacion, user, onNueva, onInicio }) {
   if (!ficha || !registro) return null;
 
@@ -258,6 +214,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
       ficha={ficha}
       registro={registro}
       validacion={validacion}
+      user={user}
       onNueva={onNueva}
       onInicio={onInicio}
     />
@@ -270,9 +227,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
   const acciones = (
     <>
       {onInicio && <button className="ficha-word-toolbar-btn" onClick={onInicio} title="Inicio"><House size={18} /></button>}
-      <button className="ficha-word-toolbar-btn" onClick={() => window.print()} title="Imprimir"><Printer size={18} /></button>
       {onNueva && <button className="ficha-word-toolbar-btn" onClick={onNueva} title="Nueva ficha">✦ Nueva</button>}
-      {user && <GuardarFichaBtn ficha={ficha} registro={registro} userId={user.id} />}
     </>
   );
 
@@ -469,6 +424,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
           acciones={acciones}
           ficha={fichaLocal}
           registro={registro}
+          user={user}
         />
         <FeedbackButton isDownloading={isDownloading} />
       </>
@@ -768,6 +724,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
         acciones={acciones}
         ficha={fichaLocal}
         registro={registro}
+        user={user}
         onAgregarAndamiaje={handleAgregarAndamiaje}
         onExtenderActividades={handleExtenderActividades}
         onRegenerarFicha={handleReformularSeleccion}

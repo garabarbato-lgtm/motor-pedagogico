@@ -6,6 +6,63 @@ import {
   FloppyDisk,
 } from "@phosphor-icons/react";
 import { track } from "@vercel/analytics";
+import { supabase } from "../lib/supabase.js";
+
+function GuardarFichaBtn({ ficha, registro, userId }) {
+  const [estado, setEstado] = useState('idle')
+
+  async function guardar() {
+    if (estado === 'guardado' || estado === 'duplicado') return
+    setEstado('verificando')
+    const { count } = await supabase
+      .from('fichas')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('titulo', ficha.titulo)
+      .eq('area', registro?.area || '')
+      .eq('grado', registro?.grado || '')
+    if (count > 0) { setEstado('duplicado'); return }
+    setEstado('guardando')
+    const { error } = await supabase.from('fichas').insert({
+      user_id: userId,
+      titulo: ficha.titulo,
+      area: registro?.area || '',
+      grado: registro?.grado || '',
+      bloque: registro?.bloque || null,
+      tipo_ficha: registro?.tipo_ficha || 'trabajo',
+      ficha_data: ficha,
+      registro_data: registro,
+    })
+    setEstado(error ? 'error' : 'guardado')
+    if (error) setTimeout(() => setEstado('idle'), 3000)
+  }
+
+  const labels = { idle: 'Guardar ficha', verificando: 'Verificando...', guardando: 'Guardando...', guardado: '✓ Guardada', duplicado: '✓ Ya guardada', error: 'Error al guardar' }
+  const subtitles = { idle: 'Sincronizar cambios', verificando: '...', guardando: '...', guardado: 'En tu biblioteca', duplicado: 'En tu biblioteca', error: 'Intentá de nuevo' }
+  const busy = estado === 'verificando' || estado === 'guardando'
+  const done = estado === 'guardado' || estado === 'duplicado'
+
+  return (
+    <button
+      className="ins-btn"
+      onClick={guardar}
+      disabled={busy || done}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+        background: done ? '#e8f9f3' : '#e8f9f3',
+        border: `1.5px solid ${done ? '#00c48c' : '#b6ead9'}`,
+        borderRadius: 10, padding: '10px 14px', cursor: busy || done ? 'not-allowed' : 'pointer',
+        opacity: busy ? 0.7 : 1, textAlign: 'left',
+      }}
+    >
+      <FloppyDisk size={20} color={done ? '#00c48c' : '#004733'} weight="duotone" />
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: done ? '#00c48c' : '#004733', lineHeight: 1.3 }}>{labels[estado]}</div>
+        <div style={{ fontSize: 11, color: '#004733', opacity: 0.7, marginTop: 2, lineHeight: 1.3 }}>{subtitles[estado]}</div>
+      </div>
+    </button>
+  )
+}
 
 const FONT_SIZES = [
   { label: "Pequeño", value: "small" },
@@ -22,7 +79,7 @@ export default function InspectorPanel({
   fmt,
   apply,
   applyFontSize,
-  onGuardar,
+  user,
 }) {
 
 
@@ -206,24 +263,21 @@ export default function InspectorPanel({
           </div>
 
           <div style={{ padding: "0 12px 16px", display: "flex", flexDirection: "column", gap: 8 }}>
-            <button 
-              className="ins-btn" 
-              onClick={onGuardar} 
-              disabled={!onGuardar}
-              style={{ 
-                ...exportBtnBase, 
-                background: "#e8f9f3", 
-                border: "1.5px solid #b6ead9",
-                opacity: onGuardar ? 1 : 0.45,
-                cursor: onGuardar ? "pointer" : "not-allowed"
-              }}
-            >
-              <FloppyDisk size={20} color="#004733" weight="duotone" />
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "#004733", lineHeight: 1.3 }}>Guardar ficha</div>
-                <div style={{ fontSize: 11, color: "#004733", opacity: 0.7, marginTop: 2, lineHeight: 1.3 }}>Sincronizar cambios</div>
-              </div>
-            </button>
+            {user ? (
+              <GuardarFichaBtn ficha={ficha} registro={registro} userId={user.id} />
+            ) : (
+              <button
+                className="ins-btn"
+                disabled
+                style={{ ...exportBtnBase, background: "#e8f9f3", border: "1.5px solid #b6ead9", opacity: 0.45, cursor: "not-allowed" }}
+              >
+                <FloppyDisk size={20} color="#004733" weight="duotone" />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#004733", lineHeight: 1.3 }}>Guardar ficha</div>
+                  <div style={{ fontSize: 11, color: "#004733", opacity: 0.7, marginTop: 2, lineHeight: 1.3 }}>Iniciá sesión para guardar</div>
+                </div>
+              </button>
+            )}
 
             {onDescargar && (
               <button 

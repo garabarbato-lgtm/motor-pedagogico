@@ -1,40 +1,8 @@
 import { useState } from "react";
-import { House, Printer } from "@phosphor-icons/react";
+import { House } from "@phosphor-icons/react";
 import FeedbackButton from "./FeedbackButton.jsx";
 import FichaCanvas from "./FichaCanvas.jsx";
 import { C, EditableHtml, renderEjercicioItem } from "./utils.jsx";
-import { supabase } from "../lib/supabase.js";
-
-function GuardarBtn({ ficha, registro, userId }) {
-  const [estado, setEstado] = useState("idle");
-  async function guardar() {
-    if (estado === "guardado") return;
-    setEstado("guardando");
-    const { error } = await supabase.from("fichas").insert({
-      user_id: userId,
-      titulo: ficha.titulo,
-      area: registro?.area || "",
-      grado: registro?.grado || "",
-      bloque: registro?.bloque || null,
-      tipo_ficha: registro?.tipo_ficha || "presentacion",
-      ficha_data: ficha,
-      registro_data: registro,
-    });
-    setEstado(error ? "error" : "guardado");
-    if (error) setTimeout(() => setEstado("idle"), 3000);
-  }
-  const label = { idle: "☁ Guardar", guardando: "Guardando...", guardado: "✓ Guardada", error: "Error" };
-  return (
-    <button
-      className="ficha-word-toolbar-btn"
-      onClick={guardar}
-      disabled={estado === "guardando" || estado === "guardado"}
-      style={estado === "guardado" ? { color: "#00c48c" } : estado === "error" ? { color: "#e53e3e" } : {}}
-    >
-      {label[estado]}
-    </button>
-  );
-}
 
 // ── Helpers locales ──
 
@@ -135,15 +103,11 @@ export default function FichaPresenta({ ficha, registro, validacion, user, onNue
     setIsDownloading(false);
   };
 
-  const handleImprimir = () => { window.print(); };
-
   const acciones = (
     <>
       {onInicio && (
         <button className="ficha-word-toolbar-btn" onClick={onInicio} title="Inicio"><House size={18} /></button>
       )}
-      <button className="ficha-word-toolbar-btn" onClick={handleImprimir} title="Imprimir"><Printer size={18} /></button>
-      {user && <GuardarBtn ficha={ficha} registro={registro} userId={user.id} />}
       {onNueva && (
         <button className="ficha-word-toolbar-btn" onClick={onNueva} title="Nueva ficha">✦ Nueva</button>
       )}
@@ -255,6 +219,7 @@ export default function FichaPresenta({ ficha, registro, validacion, user, onNue
         acciones={acciones}
         ficha={ficha}
         registro={registro}
+        user={user}
       />
       <FeedbackButton isDownloading={isDownloading} />
     </>

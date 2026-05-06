@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { track } from '@vercel/analytics';
-import { SidebarSimple, Printer } from "@phosphor-icons/react";
+import { SidebarSimple } from "@phosphor-icons/react";
 import InspectorPanel from "./InspectorPanel.jsx";
 import "../ficha-canvas.css";
 
@@ -17,6 +17,7 @@ export default function FichaCanvas({
   acciones,
   ficha,
   registro,
+  user,
 }) {
   const [fmt, setFmt] = useState({ bold: false, italic: false, underline: false });
   const [panelAbierto, setPanelAbierto] = useState(
@@ -63,13 +64,6 @@ export default function FichaCanvas({
       <div className="ficha-word-toolbar">
         <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
           {acciones}
-          <button
-            className="ficha-word-toolbar-btn"
-            onClick={() => window.print()}
-            title="Imprimir"
-          >
-            <Printer size={16} />
-          </button>
           {window.innerWidth > 960 && (
             <button
               className="ficha-word-toolbar-btn"
@@ -106,6 +100,7 @@ export default function FichaCanvas({
             fmt={fmt}
             apply={apply}
             applyFontSize={applyFontSize}
+            user={user}
           />
           </div>
         )}

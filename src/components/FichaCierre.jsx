@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { House, Printer } from "@phosphor-icons/react";
+import { House } from "@phosphor-icons/react";
 import {
   C, renderTitulo,
   Andamiaje,
@@ -15,7 +15,7 @@ const BADGE_COLORS = {
   "Punto de descanso": "#0d1f1a",
 };
 
-export default function FichaCierre({ ficha, registro, onNueva, onInicio }) {
+export default function FichaCierre({ ficha, registro, user, onNueva, onInicio }) {
   if (!ficha || !registro) return null;
 
   const [isDownloading, setIsDownloading] = useState(false);
@@ -43,7 +43,6 @@ export default function FichaCierre({ ficha, registro, onNueva, onInicio }) {
   const acciones = (
     <>
       {onInicio && <button className="ficha-word-toolbar-btn" onClick={onInicio} title="Inicio"><House size={18} /></button>}
-      <button className="ficha-word-toolbar-btn" onClick={() => window.print()} title="Imprimir"><Printer size={18} /></button>
       {onNueva && <button className="ficha-word-toolbar-btn" onClick={onNueva} title="Nueva ficha">✦ Nueva</button>}
     </>
   );
@@ -214,6 +213,7 @@ export default function FichaCierre({ ficha, registro, onNueva, onInicio }) {
         acciones={acciones}
         ficha={ficha}
         registro={registro}
+        user={user}
       />
       <FeedbackButton isDownloading={isDownloading} />
     </>
