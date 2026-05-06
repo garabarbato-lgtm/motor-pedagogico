@@ -18,6 +18,7 @@ export default function FichaCanvas({
   ficha,
   registro,
   user,
+  plan,
 }) {
   const [fmt, setFmt] = useState({ bold: false, italic: false, underline: false });
   const [panelAbierto, setPanelAbierto] = useState(
@@ -101,6 +102,7 @@ export default function FichaCanvas({
             apply={apply}
             applyFontSize={applyFontSize}
             user={user}
+            plan={plan}
           />
           </div>
         )}

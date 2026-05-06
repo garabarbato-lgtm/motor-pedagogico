@@ -63,7 +63,7 @@ function SeccionHeader({ numero, titulo, icono }) {
 
 // ── Componente principal ──
 
-export default function FichaPresenta({ ficha, registro, validacion, user, onNueva, onInicio }) {
+export default function FichaPresenta({ ficha, registro, validacion, user, plan = 'free', onNueva, onInicio }) {
   if (!ficha || !registro) return null;
 
   const [isDownloading, setIsDownloading] = useState(false);
@@ -220,6 +220,7 @@ export default function FichaPresenta({ ficha, registro, validacion, user, onNue
         ficha={ficha}
         registro={registro}
         user={user}
+        plan={plan}
       />
       <FeedbackButton isDownloading={isDownloading} />
     </>

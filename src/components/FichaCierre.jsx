@@ -15,7 +15,7 @@ const BADGE_COLORS = {
   "Punto de descanso": "#0d1f1a",
 };
 
-export default function FichaCierre({ ficha, registro, user, onNueva, onInicio }) {
+export default function FichaCierre({ ficha, registro, user, plan = 'free', onNueva, onInicio }) {
   if (!ficha || !registro) return null;
 
   const [isDownloading, setIsDownloading] = useState(false);
@@ -214,6 +214,7 @@ export default function FichaCierre({ ficha, registro, user, onNueva, onInicio }
         ficha={ficha}
         registro={registro}
         user={user}
+        plan={plan}
       />
       <FeedbackButton isDownloading={isDownloading} />
     </>

@@ -1,6 +1,22 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { createClient } from "@supabase/supabase-js";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+async function checkLimit(token) {
+  if (!token) return { permitido: true, plan: "anonimo" };
+  const supabase = createClient(
+    process.env.VITE_SUPABASE_URL,
+    process.env.VITE_SUPABASE_ANON_KEY,
+    { global: { headers: { Authorization: `Bearer ${token}` } } }
+  );
+  const { data, error } = await supabase.rpc("check_and_increment_fichas");
+  if (error) {
+    console.error("[checkLimit] error:", error.message);
+    return { permitido: true, plan: "anonimo" };
+  }
+  return data;
+}
 
 // ─────────────────────────────────────────────
 // LÍMITE DE PALABRAS POR GRADO (Lectura PDL)
@@ -1068,6 +1084,17 @@ export default async function handler(req, res) {
 
   if (!contenido || !tipoFicha) {
     return res.status(400).json({ error: "Faltan datos del contenido curricular" });
+  }
+
+  const token = req.headers.authorization?.replace("Bearer ", "") || null;
+  const limite = await checkLimit(token);
+  if (!limite.permitido) {
+    return res.status(429).json({
+      error: "limite_alcanzado",
+      fichas_mes: limite.fichas_mes,
+      limite: limite.limite,
+      plan: limite.plan,
+    });
   }
 
   try {

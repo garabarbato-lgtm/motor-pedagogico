@@ -132,7 +132,7 @@ function LineaDoble() {
 
 // ── Componente principal ──
 
-export default function FichaTrabajo({ ficha, registro, validacion, user, onNueva, onInicio }) {
+export default function FichaTrabajo({ ficha, registro, validacion, user, plan = 'free', onNueva, onInicio }) {
   if (!ficha || !registro) return null;
 
   const [isDownloading, setIsDownloading] = useState(false);
@@ -215,6 +215,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
       registro={registro}
       validacion={validacion}
       user={user}
+      plan={plan}
       onNueva={onNueva}
       onInicio={onInicio}
     />
@@ -425,6 +426,7 @@ export default function FichaTrabajo({ ficha, registro, validacion, user, onNuev
           ficha={fichaLocal}
           registro={registro}
           user={user}
+          plan={plan}
         />
         <FeedbackButton isDownloading={isDownloading} />
       </>

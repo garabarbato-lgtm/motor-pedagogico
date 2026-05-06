@@ -7,7 +7,7 @@ import {
   EditableHtml, SeccionHeader, renderEjercicioItem,
 } from "./utils.jsx";
 
-export default function FichaPractica({ ficha, registro, user, onNueva, onInicio }) {
+export default function FichaPractica({ ficha, registro, user, plan = 'free', onNueva, onInicio }) {
   if (!ficha || !registro) return null;
 
   const [isDownloading, setIsDownloading] = useState(false);
@@ -117,6 +117,7 @@ export default function FichaPractica({ ficha, registro, user, onNueva, onInicio
         ficha={ficha}
         registro={registro}
         user={user}
+        plan={plan}
       />
       <FeedbackButton isDownloading={isDownloading} />
     </>

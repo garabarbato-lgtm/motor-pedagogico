@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Landing from './components/Landing.jsx'
 import Generador from './components/Generador.jsx'
 import FichaTrabajo from './components/FichaTrabajo.jsx'
@@ -14,6 +14,13 @@ export default function App() {
   const [registroData, setRegistroData] = useState(null)
   const [validacionData, setValidacionData] = useState(null)
   const { user, loading, loginConGoogle, logout } = useAuth()
+  const [profile, setProfile] = useState(null)
+
+  useEffect(() => {
+    if (!user) { setProfile(null); return }
+    supabase.from('profiles').select('plan, fichas_mes, mes_reset').eq('id', user.id).single()
+      .then(({ data }) => setProfile(data))
+  }, [user])
 
   if (new URLSearchParams(window.location.search).get("dev") === "fichas") {
     return <DevTestFichas />;
@@ -22,6 +29,9 @@ export default function App() {
   if (vista === 'generador') {
     return (
       <Generador
+        user={user}
+        profile={profile}
+        onProfileUpdate={setProfile}
         onFichaGenerada={(ficha, registro, validacion) => {
           setFichaData(ficha)
           setRegistroData(registro)
@@ -40,6 +50,7 @@ export default function App() {
         registro={registroData}
         validacion={validacionData}
         user={user}
+        plan={profile?.plan ?? 'free'}
         onNueva={() => setVista('generador')}
         onInicio={() => setVista('landing')}
       />

@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react";
+import { supabase } from "../lib/supabase.js";
 import { gsap } from "gsap";
 import { 
   Calculator, 
@@ -21,6 +22,7 @@ import {
 } from "@phosphor-icons/react";
 import curricularData from "../../dc_pba_base_curricular_corregida.json";
 import Logo from "./Logo.jsx";
+import PaywallModal from "./PaywallModal.jsx";
 
 // ── Paleta ─────────────────────────────────────────────────────────────────
 const C = {
@@ -633,7 +635,7 @@ function Buscador({ value, onChange, onFocus, onBlur, focused, onClear, placehol
 
 import { track } from '@vercel/analytics'
 
-export default function Generador({ onFichaGenerada, onVolver }) {
+export default function Generador({ onFichaGenerada, onVolver, user, profile, onProfileUpdate }) {
   const [paso, setPaso] = useState(0);       // 0=home, 1=grado, 2=área, 3=contenido, 4=opciones
   const [gradoData, setGradoData] = useState(null);
   const [area, setArea] = useState(null);
@@ -654,6 +656,7 @@ export default function Generador({ onFichaGenerada, onVolver }) {
   const [msgIdx, setMsgIdx] = useState(0);
   const [msgVisible, setMsgVisible] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
 
   // Ref al elemento DOM del PasoWrap actual (para salirPaso)
   const pasoWrapEl = useRef(null);
@@ -817,12 +820,22 @@ export default function Generador({ onFichaGenerada, onVolver }) {
   const generarConPayload = async (payload, registroParaFicha, isRetry, isNetworkRetry = false) => {
     const timer4s = setTimeout(() => setMensajeLoading(1), 4000);
     try {
+      const token = (await supabase.auth.getSession())?.data?.session?.access_token;
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
       const res = await fetch("/api/generate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(payload),
       });
       clearTimeout(timer4s);
+      if (res.status === 429) {
+        const data = await res.json().catch(() => ({}));
+        if (onProfileUpdate) onProfileUpdate(p => ({ ...p, fichas_mes: data.fichas_mes }));
+        setGenerando(false);
+        setShowPaywall(true);
+        return;
+      }
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(res.status === 504 ? "TIMEOUT" : (data.error || "SERVER_ERROR"));
@@ -947,6 +960,15 @@ export default function Generador({ onFichaGenerada, onVolver }) {
   // ── RENDER ─────────────────────────────────────────────────────────────
   return (
     <div style={{ fontFamily: "'Lexend', sans-serif", background: C.fondoApp, minHeight: "100vh" }}>
+      {showPaywall && (
+        <PaywallModal
+          fichasMes={profile?.fichas_mes ?? 5}
+          limite={profile?.plan === 'premium' ? 50 : 5}
+          plan={profile?.plan ?? 'free'}
+          linkPago="https://mpago.la/1PX3Bz5"
+          onCerrar={() => setShowPaywall(false)}
+        />
+      )}
       <style>{`
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(8px); }
