@@ -283,6 +283,10 @@ export default function Landing({ onEmpezar, user, onLogin, onLogout, onBibliote
             onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })}
             style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", cursor: "pointer" }}
           >¿Cómo funciona?</span>
+          <span
+            onClick={() => document.getElementById("precios")?.scrollIntoView({ behavior: "smooth" })}
+            style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", cursor: "pointer" }}
+          >Suscripciones</span>
           {user ? (
             <>
               <span
@@ -418,7 +422,9 @@ export default function Landing({ onEmpezar, user, onLogin, onLogout, onBibliote
       </section>
 
       {/* ── PRECIOS ── */}
-      <Precios onEmpezar={onEmpezar} />
+      <div id="precios">
+        <Precios onEmpezar={onEmpezar} />
+      </div>
 
       {/* ── FOOTER ── */}
       <footer style={{ background: C.btn, padding: "20px 20px", textAlign: "center" }}>
