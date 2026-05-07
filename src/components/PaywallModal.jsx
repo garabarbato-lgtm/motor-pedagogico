@@ -38,7 +38,7 @@
             cursor: "pointer", marginBottom: 10,
           }}
         >
-          Suscribirme — $3.000/mes
+          Suscribirme — $3.500/mes
         </button>
         <button
           onClick={onCerrar}
@@ -57,3 +57,4 @@
     </div>
   );
 }
+

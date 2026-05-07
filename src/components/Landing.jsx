@@ -218,7 +218,7 @@ function Precios({ onEmpezar }) {
               MÁS POPULAR
             </span>
             <p style={{ fontSize: 13, fontWeight: 700, color: "#004733", textTransform: "uppercase", letterSpacing: "0.08em", margin: 0 }}>Premium</p>
-            <p style={{ fontSize: 40, fontWeight: 800, color: "#0d1f1a", margin: "8px 0 4px", lineHeight: 1 }}>$3.000</p>
+            <p style={{ fontSize: 40, fontWeight: 800, color: "#0d1f1a", margin: "8px 0 4px", lineHeight: 1 }}>$3.500</p>
             <p style={{ fontSize: 13, color: "#4a6b60", margin: "0 0 24px" }}>por mes · ARS</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
               {premiumFeatures.map((f, i) => (

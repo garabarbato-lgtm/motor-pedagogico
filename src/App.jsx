@@ -18,9 +18,24 @@ export default function App() {
 
   useEffect(() => {
     if (!user) { setProfile(null); return }
+    // Retomar destino pendiente post-login OAuth
+    const pendingVista = localStorage.getItem('pendingVista')
+    if (pendingVista) {
+      localStorage.removeItem('pendingVista')
+      setVista(pendingVista)
+    }
     supabase.from('profiles').select('plan, fichas_mes, mes_reset').eq('id', user.id).single()
       .then(({ data }) => setProfile(data))
   }, [user])
+
+  const irAGenerador = () => {
+    if (user) {
+      setVista('generador')
+    } else {
+      localStorage.setItem('pendingVista', 'generador')
+      loginConGoogle()
+    }
+  }
 
   if (new URLSearchParams(window.location.search).get("dev") === "fichas") {
     return <DevTestFichas />;
@@ -52,7 +67,7 @@ export default function App() {
         validacion={validacionData}
         user={user}
         plan={profile?.plan ?? 'free'}
-        onNueva={() => setVista('generador')}
+        onNueva={irAGenerador}
         onInicio={() => setVista('landing')}
       />
     )
@@ -77,7 +92,7 @@ export default function App() {
             alert('Esta ficha no se puede cargar (datos incompletos). Podés eliminarla y generarla de nuevo.')
           }
         }}
-        onNueva={() => setVista('generador')}
+        onNueva={irAGenerador}
         onInicio={() => setVista('landing')}
       />
     )
@@ -85,9 +100,9 @@ export default function App() {
 
   return (
     <>
-      <OnboardingModal onEmpezar={() => setVista('generador')} />
+      <OnboardingModal onEmpezar={irAGenerador} />
       <Landing
-        onEmpezar={() => setVista('generador')}
+        onEmpezar={irAGenerador}
         user={user}
         onLogin={loginConGoogle}
         onLogout={logout}
