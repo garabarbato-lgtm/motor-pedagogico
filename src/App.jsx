@@ -32,6 +32,7 @@ export default function App() {
         user={user}
         profile={profile}
         onProfileUpdate={setProfile}
+        onLogin={loginConGoogle}
         onFichaGenerada={(ficha, registro, validacion) => {
           setFichaData(ficha)
           setRegistroData(registro)
