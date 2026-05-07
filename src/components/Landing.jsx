@@ -167,6 +167,83 @@ function AboutTiza() {
 
 /* ── LANDING ── */
 
+const MP_LINK = "https://mpago.la/1PX3Bz5";
+
+function Precios({ onEmpezar }) {
+  const freeFeatures = ["5 fichas por mes", "Descarga en PDF", "4 tipos de ficha", "Todos los grados y áreas"];
+  const premiumFeatures = ["50 fichas por mes", "Descarga en PDF y Word (.docx)", "4 tipos de ficha", "Todos los grados y áreas", "Funciones de IA (andamiaje, extensión)", "Acceso a nuevas funciones"];
+
+  const cardBase = {
+    borderRadius: 16, padding: "32px 28px", flex: 1, maxWidth: 340,
+    display: "flex", flexDirection: "column", gap: 6,
+  };
+
+  return (
+    <div style={{ padding: "100px 24px", background: "#fff", borderTop: "1px solid #eaf2ee" }}>
+      <div style={{ maxWidth: 760, margin: "0 auto", textAlign: "center" }}>
+        <p style={{ fontSize: 13, fontWeight: 700, color: "#00c48c", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 12px" }}>Planes</p>
+        <h2 style={{ fontSize: 32, fontWeight: 800, color: "#0d1f1a", margin: "0 0 12px", lineHeight: 1.2 }}>
+          Empezá gratis, crecé cuando lo necesitás
+        </h2>
+        <p style={{ fontSize: 16, color: "#555", margin: "0 0 52px", lineHeight: 1.6 }}>
+          Sin tarjeta. Sin compromisos. Solo generás, descargás y enseñás.
+        </p>
+
+        <div style={{ display: "flex", gap: 24, justifyContent: "center", flexWrap: "wrap" }}>
+
+          {/* FREE */}
+          <div style={{ ...cardBase, border: "1.5px solid #e0ede8", background: "#fafcfb" }}>
+            <p style={{ fontSize: 13, fontWeight: 700, color: "#555", textTransform: "uppercase", letterSpacing: "0.08em", margin: 0 }}>Gratis</p>
+            <p style={{ fontSize: 40, fontWeight: 800, color: "#0d1f1a", margin: "8px 0 4px", lineHeight: 1 }}>$0</p>
+            <p style={{ fontSize: 13, color: "#aaa", margin: "0 0 24px" }}>Para siempre</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
+              {freeFeatures.map((f, i) => (
+                <div key={i} style={{ display: "flex", gap: 10, alignItems: "center", textAlign: "left" }}>
+                  <span style={{ color: "#00c48c", fontWeight: 700, fontSize: 15, flexShrink: 0 }}>✓</span>
+                  <span style={{ fontSize: 14, color: "#444" }}>{f}</span>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={onEmpezar}
+              style={{ marginTop: "auto", padding: "13px", borderRadius: 10, border: "1.5px solid #004733", background: "#fff", color: "#004733", fontSize: 14, fontWeight: 700, cursor: "pointer" }}
+            >
+              Empezar gratis
+            </button>
+          </div>
+
+          {/* PREMIUM */}
+          <div style={{ ...cardBase, border: "2px solid #00c48c", background: "#f0fdf8", position: "relative" }}>
+            <span style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", background: "#00c48c", color: "#004733", fontSize: 12, fontWeight: 800, padding: "4px 16px", borderRadius: 99, whiteSpace: "nowrap" }}>
+              MÁS POPULAR
+            </span>
+            <p style={{ fontSize: 13, fontWeight: 700, color: "#004733", textTransform: "uppercase", letterSpacing: "0.08em", margin: 0 }}>Premium</p>
+            <p style={{ fontSize: 40, fontWeight: 800, color: "#0d1f1a", margin: "8px 0 4px", lineHeight: 1 }}>$3.000</p>
+            <p style={{ fontSize: 13, color: "#4a6b60", margin: "0 0 24px" }}>por mes · ARS</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
+              {premiumFeatures.map((f, i) => (
+                <div key={i} style={{ display: "flex", gap: 10, alignItems: "center", textAlign: "left" }}>
+                  <span style={{ color: "#00c48c", fontWeight: 700, fontSize: 15, flexShrink: 0 }}>✓</span>
+                  <span style={{ fontSize: 14, color: "#0d1f1a", fontWeight: i < 2 ? 600 : 400 }}>{f}</span>
+                </div>
+              ))}
+            </div>
+            <a
+              href={MP_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ marginTop: "auto", padding: "13px", borderRadius: 10, border: "none", background: "#00c48c", color: "#004733", fontSize: 14, fontWeight: 800, cursor: "pointer", textDecoration: "none", display: "block", textAlign: "center" }}
+            >
+              Suscribirme con MercadoPago
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Landing({ onEmpezar, user, onLogin, onLogout, onBiblioteca }) {
   const scrollIndicatorRef = useRef(null);
   const heroBadgeRef = useRef(null);
@@ -339,6 +416,9 @@ export default function Landing({ onEmpezar, user, onLogin, onLogout, onBibliote
       <section style={{ padding: "100px 0", background: C.fondo }}>
         <SloganSlider />
       </section>
+
+      {/* ── PRECIOS ── */}
+      <Precios onEmpezar={onEmpezar} />
 
       {/* ── FOOTER ── */}
       <footer style={{ background: C.btn, padding: "20px 20px", textAlign: "center" }}>
