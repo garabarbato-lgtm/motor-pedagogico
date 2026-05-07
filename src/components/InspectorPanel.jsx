@@ -295,32 +295,17 @@ export default function InspectorPanel({
             )}
 
             {ficha && registro && (
-              plan === 'premium' ? (
-                <button
-                  className="ins-btn"
-                  onClick={descargarWord}
-                  style={{ ...exportBtnBase, background: "#f0f4ff", border: "1.5px solid #c5d3f5" }}
-                >
-                  <FileDoc size={20} color="#1565c0" weight="duotone" />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "#1565c0", lineHeight: 1.3 }}>Descargar Word (.docx)</div>
-                    <div style={{ fontSize: 11, color: "#6B8C7D", marginTop: 2, lineHeight: 1.3 }}>Editable en cualquier equipo</div>
-                  </div>
-                </button>
-              ) : (
-                <button
-                  className="ins-btn"
-                  disabled
-                  title="Disponible en Premium"
-                  style={{ ...exportBtnBase, background: "#f5f5f5", border: "1.5px solid #e0e0e0", opacity: 0.7, cursor: 'not-allowed' }}
-                >
-                  <FileDoc size={20} color="#aaa" weight="duotone" />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "#aaa", lineHeight: 1.3 }}>Descargar Word (.docx)</div>
-                    <div style={{ fontSize: 11, color: "#aaa", marginTop: 2, lineHeight: 1.3 }}>Solo Premium 🔒</div>
-                  </div>
-                </button>
-              )
+              <button
+                className="ins-btn"
+                onClick={descargarWord}
+                style={{ ...exportBtnBase, background: "#f0f4ff", border: "1.5px solid #c5d3f5" }}
+              >
+                <FileDoc size={20} color="#1565c0" weight="duotone" />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#1565c0", lineHeight: 1.3 }}>Descargar Word (.docx)</div>
+                  <div style={{ fontSize: 11, color: "#6B8C7D", marginTop: 2, lineHeight: 1.3 }}>Editable en cualquier equipo</div>
+                </div>
+              </button>
             )}
 
             <button 
