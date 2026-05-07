@@ -241,7 +241,7 @@ function Precios({ onEmpezar }) {
         </div>
 
         <p style={{ fontSize: 12, color: "#aaa", marginTop: 32, lineHeight: 1.7 }}>
-          ⏳ La activación del plan Premium es manual. Una vez realizado el pago, puede demorar hasta <strong>24 horas hábiles</strong> en habilitarse. Si pasado ese tiempo no fue activado, escribinos a <a href="mailto:garabarbato@gmail.com" style={{ color: "#00c48c" }}>garabarbato@gmail.com</a>.
+          ⏳ La activación del plan Premium es manual. Una vez realizado el pago, puede demorar hasta <strong>24 horas hábiles</strong> en habilitarse. Si pasado ese tiempo no fue activado, escribinos a <a href="mailto:fichastiza@gmail.com" style={{ color: "#00c48c" }}>fichastiza@gmail.com</a>.
         </p>
 
       </div>
