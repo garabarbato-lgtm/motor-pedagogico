@@ -70,37 +70,25 @@ export default function FichaCierre({ ficha, registro, user, plan = 'free', onNu
     >
       {/* â”€â”€ Encabezado â”€â”€ */}
       <div
-        style={{
-          flexShrink: 0,
-          background: C.fondoHeader,
-          borderBottom: `2px solid ${C.borderFuerte}`,
-          borderRadius: "8px 8px 0 0",
-          padding: "12px 18px",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          gap: 8,
-        }}
+        style={{ background: C.fondoHeader, borderBottom: `2.5px solid ${C.borderFuerte}`, borderRadius: "8px 8px 0 0", padding: "10px 16px", flexShrink: 0 }}
       >
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-          <span style={{ fontSize: 28, lineHeight: 1, flexShrink: 0 }}>{emojiLeft}</span>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 10 }}>
+          <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojiLeft}</span>
           <h2
             contentEditable
             suppressContentEditableWarning
             className="ficha-campo-editable"
-            style={{ fontSize: 20, fontWeight: 800, margin: 0, lineHeight: 1.25, letterSpacing: "-0.01em", textAlign: "center", flex: 1 }}
+            style={{ fontSize: 26, fontWeight: 800, margin: 0, lineHeight: 1.25, letterSpacing: "-0.01em", textAlign: "center", flex: 1 }}
           >
             {tituloTexto}
           </h2>
-          <span style={{ fontSize: 28, lineHeight: 1, flexShrink: 0 }}>{emojiRight}</span>
+          <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{emojiRight}</span>
         </div>
         <div className="ficha-header-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
-          {["Nombre y apellido", "Fecha", "Grado / SecciÃ³n"].map(label => (
+          {["Nombre y apellido", "Fecha", "Grado / Sección"].map(label => (
             <div key={label}>
-              <p style={{ fontSize: 9, color: C.muted, fontWeight: 700, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                {label}
-              </p>
-              <div style={{ borderBottom: `2px solid ${C.borderFuerte}`, height: 28 }} />
+              <p style={{ fontSize: 9, color: C.muted, fontWeight: 700, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</p>
+              <div style={{ borderBottom: `2px solid ${C.borderFuerte}`, height: 20 }} />
             </div>
           ))}
         </div>
