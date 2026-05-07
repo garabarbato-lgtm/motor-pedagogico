@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { House } from "@phosphor-icons/react";
 import {
   C, renderTitulo,
@@ -43,18 +43,18 @@ export default function FichaCierre({ ficha, registro, user, plan = 'free', onNu
   const acciones = (
     <>
       {onInicio && <button className="ficha-word-toolbar-btn" onClick={onInicio} title="Inicio"><House size={18} /></button>}
-      {onNueva && <button className="ficha-word-toolbar-btn" onClick={onNueva} title="Nueva ficha">✦ Nueva</button>}
+      {onNueva && <button className="ficha-word-toolbar-btn" onClick={onNueva} title="Nueva ficha">âœ¦ Nueva</button>}
     </>
   );
 
-  const emojis = Array.isArray(ficha.emojis) && ficha.emojis.length ? ficha.emojis : ["📝"];
+  const emojis = Array.isArray(ficha.emojis) && ficha.emojis.length ? ficha.emojis : ["ðŸ“"];
   const emojiLeft = emojis[0];
   const emojiRight = emojis[1] || emojis[0];
   const tituloTexto = (ficha.titulo || "")
     .replace(/\*\*(.*?)\*\*/g, "$1")
     .replace(/\*(.*?)\*/g, "$1")
     .trim();
-  const gradoDisplay = `${registro.grado}° grado`;
+  const gradoDisplay = `${registro.grado}Â° grado`;
   const escalera = Array.isArray(ficha.escalera) ? ficha.escalera : [];
 
   const contenido = (
@@ -68,10 +68,10 @@ export default function FichaCierre({ ficha, registro, user, plan = 'free', onNu
         color: C.texto,
       }}
     >
-      {/* ── Encabezado ── */}
+      {/* â”€â”€ Encabezado â”€â”€ */}
       <div
         style={{
-          flex: 19,
+          flexShrink: 0,
           background: C.fondoHeader,
           borderBottom: `2px solid ${C.borderFuerte}`,
           borderRadius: "8px 8px 0 0",
@@ -95,7 +95,7 @@ export default function FichaCierre({ ficha, registro, user, plan = 'free', onNu
           <span style={{ fontSize: 28, lineHeight: 1, flexShrink: 0 }}>{emojiRight}</span>
         </div>
         <div className="ficha-header-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 10 }}>
-          {["Nombre y apellido", "Fecha", "Grado / Sección"].map(label => (
+          {["Nombre y apellido", "Fecha", "Grado / SecciÃ³n"].map(label => (
             <div key={label}>
               <p style={{ fontSize: 9, color: C.muted, fontWeight: 700, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em" }}>
                 {label}
@@ -106,17 +106,15 @@ export default function FichaCierre({ ficha, registro, user, plan = 'free', onNu
         </div>
       </div>
 
-      {/* ── Escalera ── */}
+      {/* â”€â”€ Escalera â”€â”€ */}
       <div
         style={{
-          flex: 85,
+          flex: 1,
           padding: "12px 18px 8px",
           display: "flex",
-          gap: 10,
-          overflow: "hidden",
-        }}
+          gap: 10,        }}
       >
-        {/* Línea lateral degradada */}
+        {/* LÃ­nea lateral degradada */}
         <div
           style={{
             width: 3,
@@ -127,7 +125,7 @@ export default function FichaCierre({ ficha, registro, user, plan = 'free', onNu
           }}
         />
 
-        {/* Peldaños */}
+        {/* PeldaÃ±os */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
           {escalera.map((peldano, idx) => {
             if (!peldano) return null;
@@ -185,7 +183,7 @@ export default function FichaCierre({ ficha, registro, user, plan = 'free', onNu
         </div>
       </div>
 
-      {/* ── Footer ── */}
+      {/* â”€â”€ Footer â”€â”€ */}
       <div
         style={{
           background: C.fondoHeader,
@@ -198,8 +196,8 @@ export default function FichaCierre({ ficha, registro, user, plan = 'free', onNu
           color: C.muted,
         }}
       >
-        <span>tiza. · Diseño Curricular 2018</span>
-        <span>{gradoDisplay} · {registro.area} · {registro.bloque}</span>
+        <span>tiza. Â· DiseÃ±o Curricular 2018</span>
+        <span>{gradoDisplay} Â· {registro.area} Â· {registro.bloque}</span>
       </div>
     </div>
   );
