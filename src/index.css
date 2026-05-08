@@ -73,4 +73,14 @@
     padding-left: 20px !important;
     padding-right: 20px !important;
   }
+
+  /* Precios */
+  .precios-grid {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  .precios-card {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
 }

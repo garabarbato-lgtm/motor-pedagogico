@@ -24,6 +24,13 @@ export default function FichaCanvas({
   const [panelAbierto, setPanelAbierto] = useState(
     () => localStorage.getItem("inspector_panel") !== "false"
   );
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 960);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 960);
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const togglePanel = () => {
     setPanelAbierto(v => {
@@ -56,6 +63,12 @@ export default function FichaCanvas({
   const applyFontSize = (val) => {
     const map = { small: "1", medium: "3", large: "5" };
     apply("fontSize", map[val] || "3");
+  };
+
+  const descargarWord = async () => {
+    if (!ficha || !registro) return;
+    const { exportFichaToDocx } = await import("../utils/docxExport.js");
+    exportFichaToDocx(ficha, registro, hojaId);
   };
 
   return (
@@ -108,6 +121,20 @@ export default function FichaCanvas({
         )}
       </div>
 
+      {isMobile && (
+        <div className="ficha-mobile-bar">
+          {onDescargar && (
+            <button className="ficha-mobile-bar-btn ficha-mobile-bar-btn--pdf" onClick={onDescargar}>
+              Descargar PDF
+            </button>
+          )}
+          {ficha && registro && (
+            <button className="ficha-mobile-bar-btn ficha-mobile-bar-btn--word" onClick={descargarWord}>
+              Descargar Word
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

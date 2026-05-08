@@ -189,10 +189,10 @@ function Precios({ onEmpezar }) {
           Sin tarjeta. Sin compromisos. Solo generás, descargás y enseñás.
         </p>
 
-        <div style={{ display: "flex", gap: 24, justifyContent: "center", flexWrap: "wrap" }}>
+        <div className="precios-grid" style={{ display: "flex", gap: 24, justifyContent: "center", flexWrap: "wrap" }}>
 
           {/* FREE */}
-          <div style={{ ...cardBase, border: "1.5px solid #e0ede8", background: "#fafcfb" }}>
+          <div className="precios-card" style={{ ...cardBase, border: "1.5px solid #e0ede8", background: "#fafcfb" }}>
             <p style={{ fontSize: 13, fontWeight: 700, color: "#555", textTransform: "uppercase", letterSpacing: "0.08em", margin: 0 }}>Gratis</p>
             <p style={{ fontSize: 40, fontWeight: 800, color: "#0d1f1a", margin: "8px 0 4px", lineHeight: 1 }}>$0</p>
             <p style={{ fontSize: 13, color: "#aaa", margin: "0 0 24px" }}>Para siempre</p>
@@ -213,7 +213,7 @@ function Precios({ onEmpezar }) {
           </div>
 
           {/* PREMIUM */}
-          <div style={{ ...cardBase, border: "2px solid #00c48c", background: "#f0fdf8", position: "relative" }}>
+          <div className="precios-card" style={{ ...cardBase, border: "2px solid #00c48c", background: "#f0fdf8", position: "relative" }}>
             <span style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", background: "#00c48c", color: "#004733", fontSize: 12, fontWeight: 800, padding: "4px 16px", borderRadius: 99, whiteSpace: "nowrap" }}>
               MÁS POPULAR
             </span>
