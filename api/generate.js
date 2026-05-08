@@ -82,6 +82,36 @@ function buildPDLLecturaPrompt(contenido, feedback = null) {
   ]`;
   }
 
+  // Cuando el docente sube su propio texto: solo generar preguntas, sin texto
+  if (contenido.textoDocente) {
+    return `Sos un docente experto en nivel primario de la Provincia de Buenos Aires.
+Generá preguntas de comprensión lectora para ${contenido.grado}° grado de Prácticas del Lenguaje, basadas en el texto que aportó el docente.
+${feedbackSection}
+
+${instruccionNivel}
+
+TEXTO DEL DOCENTE:
+---
+${contenido.textoDocente}
+---
+
+Generá entre 2 y 3 preguntas de comprensión sobre este texto exacto.
+- Formulalas en lenguaje de alumno, no de docente
+- No usar terminología técnica en las consignas
+- El campo "texto" NO debe incluirse — el frontend lo muestra directamente
+- Elegí un título atractivo basado en el contenido del texto, con 1 o 2 emojis
+
+FORMATO DE RESPUESTA (JSON estricto, sin markdown):
+{
+  "emojis": ["emoji1"],
+  "titulo": "título atractivo basado en el texto",
+${formatoGlosario}
+${formatoPreguntas}
+}
+
+Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdown.`;
+  }
+
   return `Sos un docente experto en nivel primario de la Provincia de Buenos Aires.
 Generá una ficha de lectura para ${contenido.grado}° grado de Prácticas del Lenguaje.
 

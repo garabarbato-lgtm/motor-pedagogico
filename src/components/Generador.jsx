@@ -658,6 +658,9 @@ export default function Generador({ onFichaGenerada, onVolver, user, profile, on
   const [isMobile, setIsMobile] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [textoDocente, setTextoDocente] = useState("");
+  const [showTextoUploader, setShowTextoUploader] = useState(false);
+  const [cargandoTexto, setCargandoTexto] = useState(false);
 
   // Ref al elemento DOM del PasoWrap actual (para salirPaso)
   const pasoWrapEl = useRef(null);
@@ -700,6 +703,43 @@ export default function Generador({ onFichaGenerada, onVolver, user, profile, on
     if (mobileStep === 3) setRegistro(null);
     else if (mobileStep === 2) { setArea(null); setAreaConfig(null); }
     else if (mobileStep === 1) { setGradoData(null); setArea(null); setAreaConfig(null); }
+  };
+
+  const LIMITE_PALABRAS_TEXTO = 5000;
+
+  const extraerTextoArchivo = async (file) => {
+    setCargandoTexto(true);
+    try {
+      const ext = file.name.split(".").pop().toLowerCase();
+      let texto = "";
+      if (ext === "docx") {
+        const mammoth = await import("mammoth");
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        texto = result.value;
+      } else if (ext === "pdf") {
+        const pdfjsLib = await import("pdfjs-dist");
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const paginas = [];
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          paginas.push(content.items.map(item => item.str).join(" "));
+        }
+        texto = paginas.join("\n\n");
+      }
+      const palabras = texto.trim().split(/\s+/);
+      if (palabras.length > LIMITE_PALABRAS_TEXTO) {
+        texto = palabras.slice(0, LIMITE_PALABRAS_TEXTO).join(" ");
+      }
+      setTextoDocente(texto.trim());
+    } catch (err) {
+      console.error("Error extrayendo texto:", err);
+    } finally {
+      setCargandoTexto(false);
+    }
   };
 
   // ── Datos derivados ────────────────────────────────────────────────────
@@ -798,6 +838,7 @@ export default function Generador({ onFichaGenerada, onVolver, user, profile, on
       }
       setBusqueda(""); setBusquedaGrado(null);
       setError(null); setGenerando(false); setMensajeLoading(0);
+      setTextoDocente(""); setShowTextoUploader(false);
     });
   };
 
@@ -843,6 +884,11 @@ export default function Generador({ onFichaGenerada, onVolver, user, profile, on
       }
       const resultado = await res.json();
 
+      // Si el docente proveyó un texto propio, inyectarlo en la ficha (no se eco desde la API)
+      if (payload.contenido?.textoDocente && resultado.ficha) {
+        resultado.ficha.texto = payload.contenido.textoDocente;
+      }
+
       if (!isRetry && resultado.validacion?.observaciones?.length > 0) {
         setMensajeLoading(0);
         await generarConPayload(payload, registroParaFicha, true);
@@ -882,9 +928,11 @@ export default function Generador({ onFichaGenerada, onVolver, user, profile, on
 
     let payload, registroParaFicha;
     if (isPDL) {
+      const textoDocenteTrimmed = tipoFicha === "Lectura de textos" && textoDocente.trim() ? textoDocente.trim() : null;
       payload = {
         contenido: {
           grado: gradoNum, area, tipoTexto: genero,
+          textoDocente: textoDocenteTrimmed,
           contexto_pedagogico: {
             momento: momento || null,
             nivelGrupo: nivelGrupo || null,
@@ -1457,6 +1505,67 @@ export default function Generador({ onFichaGenerada, onVolver, user, profile, on
                     ))}
                   </div>
 
+
+                  {/* Texto del docente — solo PDL Lectura */}
+                  {isPDL && tipoFicha === "Lectura de textos" && (
+                    <div style={{ margin: "20px 0 0" }}>
+                      <button
+                        onClick={() => { setShowTextoUploader(v => !v); if (showTextoUploader) setTextoDocente(""); }}
+                        style={{
+                          width: "100%", padding: "10px 14px", borderRadius: 10,
+                          border: `1.5px solid ${showTextoUploader ? "#00c48c" : "#D4E6DE"}`,
+                          background: showTextoUploader ? "#E6FAF3" : "#fff",
+                          color: "#004733", fontSize: 13, fontWeight: 600,
+                          cursor: "pointer", fontFamily: "'Lexend', sans-serif",
+                          display: "flex", alignItems: "center", gap: 8, transition: "all 0.2s",
+                        }}
+                      >
+                        <span style={{ fontSize: 16 }}>{showTextoUploader ? "✕" : "+"}</span>
+                        {showTextoUploader ? "Quitar texto propio" : "Usar texto propio (opcional)"}
+                      </button>
+
+                      {showTextoUploader && (
+                        <div style={{ marginTop: 10, padding: "14px", background: "#F7FDF9", borderRadius: 10, border: "1px solid #D4E6DE" }}>
+                          <p style={{ fontSize: 12, color: "#4a6b60", margin: "0 0 12px", lineHeight: 1.5 }}>
+                            La ficha usará tu texto en lugar de generar uno nuevo. Subí un PDF o Word, o pegá el texto directamente.
+                          </p>
+                          <label style={{
+                            display: "inline-flex", alignItems: "center", gap: 8,
+                            padding: "9px 16px", borderRadius: 8,
+                            border: "1.5px solid #D4E6DE", background: "#fff",
+                            fontSize: 13, fontWeight: 600, color: "#004733",
+                            cursor: cargandoTexto ? "wait" : "pointer",
+                            fontFamily: "'Lexend', sans-serif", marginBottom: 10,
+                          }}>
+                            <input
+                              type="file"
+                              accept=".pdf,.docx"
+                              style={{ display: "none" }}
+                              onChange={e => { if (e.target.files[0]) extraerTextoArchivo(e.target.files[0]); }}
+                            />
+                            {cargandoTexto ? "⏳ Extrayendo..." : "📄 Subir PDF o Word"}
+                          </label>
+                          <textarea
+                            value={textoDocente}
+                            onChange={e => setTextoDocente(e.target.value)}
+                            placeholder="O pegá el texto acá directamente..."
+                            style={{
+                              width: "100%", minHeight: 120,
+                              border: "1.5px solid #D4E6DE", borderRadius: 8,
+                              padding: "10px 12px", fontSize: 12, color: "#004733",
+                              resize: "vertical", fontFamily: "'Lexend', sans-serif",
+                              background: "#fff", outline: "none", boxSizing: "border-box",
+                            }}
+                            onFocus={e => { e.target.style.borderColor = "#00c48c"; }}
+                            onBlur={e => { e.target.style.borderColor = "#D4E6DE"; }}
+                          />
+                          <p style={{ fontSize: 11, color: textoDocente.trim().split(/\s+/).filter(Boolean).length > 4500 ? "#F5A623" : "#4a6b60", textAlign: "right", margin: "4px 0 0" }}>
+                            {textoDocente.trim() ? textoDocente.trim().split(/\s+/).filter(Boolean).length.toLocaleString() : 0} / 5.000 palabras
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Separador */}
                   <hr style={{ border: "none", borderTop: "1px solid #D4E6DE", margin: "20px 0" }} />
