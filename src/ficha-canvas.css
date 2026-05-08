@@ -255,5 +255,46 @@
 /* ── Responsive: ocultar panel en pantallas chicas ── */
 @media (max-width: 960px) {
   .ficha-inspector-panel { display: none !important; }
-  .ficha-canvas-wrapper { margin-right: 0 !important; }
+  .ficha-canvas-wrapper { margin-right: 0 !important; padding-bottom: 80px !important; }
+  .feedback-button { display: none !important; }
+}
+
+/* ── Barra de descarga mobile ── */
+.ficha-mobile-bar {
+  display: none;
+}
+@media (max-width: 960px) {
+  .ficha-mobile-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10001;
+    background: #fff;
+    border-top: 1px solid #d0cece;
+    padding: 10px 16px;
+    gap: 10px;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+  }
+  .ficha-mobile-bar-btn {
+    flex: 1;
+    padding: 13px 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Lexend', sans-serif;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+  }
+  .ficha-mobile-bar-btn--pdf {
+    background: #00c48c;
+    color: #004733;
+  }
+  .ficha-mobile-bar-btn--word {
+    background: #f0f4ff;
+    border: 1.5px solid #c5d3f5 !important;
+    color: #1565c0;
+  }
 }

@@ -1211,12 +1211,13 @@ export default function Generador({ onFichaGenerada, onVolver, user, profile, on
               {isMobile && (
                 <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 16px", background: C.fondoApp, borderBottom: `1px solid ${C.bordeSuave}` }}>
                   {mobileStep > 0 && (
-                    <button onClick={mobileBack} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 700, color: C.verdeOscuro, background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "'Lexend', sans-serif" }}>
-                      <CaretLeft size={14} weight="bold" /> Atrás
+                    <button onClick={mobileBack} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 13, fontWeight: 700, color: C.verdeOscuro, background: "none", border: "none", cursor: "pointer", padding: "8px 12px 8px 0", minHeight: 44, fontFamily: "'Lexend', sans-serif" }}>
+                      <CaretLeft size={16} weight="bold" /> Atrás
                     </button>
                   )}
-                  <span style={{ fontSize: 12, color: C.textoMuted, marginLeft: mobileStep > 0 ? 4 : 0 }}>
+                  <span style={{ fontSize: 12, color: C.textoMuted }}>
                     {["Elegí un grado", "Elegí un área", "Elegí un contenido", "Confirmá tu selección"][mobileStep]}
+                    {mobileStep < 3 && <span style={{ fontWeight: 700 }}>{" · "}{mobileStep + 1}/3</span>}
                   </span>
                 </div>
               )}
